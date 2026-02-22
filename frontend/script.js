@@ -10,6 +10,10 @@ let state = {
     products: {},
     ideals: []
 };
+let currentStyleIndex = 0;
+let allStyles = null;
+const styleNames = ['data', 'story', 'compare', 'action'];
+const styleLabels = ['📊 Data-Driven', '📖 Storytelling', '⚖️ Comparative', '⚡ Actionable'];
 
 // Step 1: Initialize setup
 function startSetup() {
@@ -233,16 +237,19 @@ async function calculateResult() {
 function displayResults(result) {
     const container = document.getElementById('results-container');
     
+    // Store styles for refresh button
+    allStyles = result.explanation_styles || null;
+    currentStyleIndex = 0;
+    
     let html = '';
     
-    // Winner or tie
+    // Winner/Tie (same as before)
     if (result.tie.length === 1) {
         html += `
             <div class="winner-card">
                 <h3>🏆 Recommended Choice</h3>
                 <div style="font-size: 2.5rem; margin: 16px 0;">${result.winner}</div>
                 <div>Score: ${result.agg_sum[result.winner].toFixed(2)} points</div>
-                <div style="margin-top: 8px; opacity: 0.9;">(Lower score = Better match)</div>
             </div>
         `;
     } else {
@@ -250,13 +257,25 @@ function displayResults(result) {
             <div class="tie-alert">
                 <h3>🤝 Tie Detected</h3>
                 <p>The following options are equally optimal:</p>
-                <ul>
-                    ${result.tie.map(p => `<li><strong>${p}</strong> (${result.agg_sum[p].toFixed(2)} points)</li>`).join('')}
-                </ul>
+                <ul>${result.tie.map(p => `<li>${p}</li>`).join('')}</ul>
             </div>
         `;
     }
     
+    // EXPLANATION CARD with REFRESH button
+    html += `
+        <div class="explanation-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>💡 Why This Result?</h3>
+                <button onclick="cycleExplanation()" class="refresh-btn">
+                    🔄 <span id="style-label">${styleLabels[0]}</span>
+                </button>
+            </div>
+            <p id="explanation-text">${result.explanation}</p>
+            <span class="source-tag">${result.explanation_source === 'groq' ? '⚡ Groq' : result.explanation_source === 'gemini' ? '🤖 Gemini' : '📋 Template'}</span>
+        </div>
+    `;
+
     // Ranking
     html += `
         <h3>📊 Complete Ranking</h3>
@@ -297,6 +316,18 @@ function displayResults(result) {
     `;
     
     container.innerHTML = html;
+}
+
+function cycleExplanation() {
+    if (!allStyles) return;
+    
+    currentStyleIndex = (currentStyleIndex + 1) % 4;
+    const styleName = styleNames[currentStyleIndex];
+    const nextText = allStyles[styleName];
+    if (!nextText) return;
+    
+    document.getElementById('explanation-text').textContent = nextText;
+    document.getElementById('style-label').textContent = styleLabels[currentStyleIndex];
 }
 
 // Navigation functions

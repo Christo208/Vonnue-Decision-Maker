@@ -185,6 +185,36 @@ button {
     margin-bottom: 8px;
 }
 
+.explanation-card {
+    background: white;
+    border-left: 4px solid #667eea;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.explanation-card h3 {
+    color: #2d3748;
+    margin-bottom: 12px;
+}
+
+.explanation-card p {
+    color: #4a5568;
+    line-height: 1.7;
+    font-size: 1rem;
+    white-space: pre-line;
+}
+
+.source-tag {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: #718096;
+    background: #f7fafc;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
 .ranking-list {
     list-style: none;
     margin-bottom: 24px;
@@ -257,4 +287,24 @@ button {
     border-radius: 8px;
     margin-bottom: 16px;
     color: #c53030;
+}
+/* ADD to your style.css */
+
+.refresh-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: transform 0.2s;
+}
+
+.refresh-btn:hover {
+    transform: scale(1.05);
+}
+
+.refresh-btn:active {
+    transform: scale(0.95);
 }
