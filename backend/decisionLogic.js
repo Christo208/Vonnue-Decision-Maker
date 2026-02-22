@@ -1,9 +1,26 @@
 // decisionLogic.js
 // Decision scoring is deterministic. Explanations are AI-assisted with
 // robust template fallbacks and four user-facing narrative styles.
+// Phase 1.5: Adds subjective/qualitative criteria support.
 
 require("dotenv").config();
 
+// ─────────────────────────────────────────────────────────────────────────────
+// SCALE MAP  (100% manual logic — no AI involved)
+// ─────────────────────────────────────────────────────────────────────────────
+const SCALE_MAP = {
+  "Excellent": 10,
+  "Very Good": 9,
+  "Good": 8,
+  "Above Average": 7,
+  "Average": 6,
+  "Below Average": 5,
+  "Poor": 4,
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CORE DECISION ALGORITHM (unchanged from Phase 1)
+// ─────────────────────────────────────────────────────────────────────────────
 function calculateDecision(products_data, f_list, rate_list, req_list, high_or_low) {
   const total = rate_list.reduce((sum, r) => sum + r, 0);
   const weights = rate_list.map((r) => r / total);
@@ -90,10 +107,266 @@ function calculateDecision(products_data, f_list, rate_list, req_list, high_or_l
   };
 }
 
-async function generateExplanation(result, f_list) {
-  const fallback = buildDataStyle(result, f_list);
-  const prompt = buildPrompt(result, f_list);
+// ─────────────────────────────────────────────────────────────────────────────
+// PHASE 1.5 — AI SCORE EXTRACTOR
+// ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Builds the shared prompt for AI score extraction.
+ * AI is a TRANSLATOR only — outputs a score, not a decision.
+ */
+function buildScorePrompt(text, featureName, idealDescription) {
+  return `You are a feature scorer. Score how well a review text matches an ideal target for a specific feature.
+
+Feature: "${featureName}"
+Ideal Target: "${idealDescription}"
+Review Text: "${text}"
+
+Scoring guide (use the FULL 1-10 range, not just extremes):
+- 10: Review text is a near-perfect match for the ideal target
+- 8-9: Clearly matches the ideal with minor differences
+- 6-7: Partial match, mostly relevant
+- 4-5: Somewhat related but noticeably different from ideal
+- 2-3: Opposite of ideal, or mostly irrelevant text
+- 1: Completely off-topic (e.g. review is about a different subject entirely)
+
+Examples:
+- Ideal: "relaxing and quiet", Review: "Very peaceful atmosphere" → {"score": 9, "confidence": "high"}
+- Ideal: "relaxing and quiet", Review: "Somewhat calm but occasionally noisy" → {"score": 5, "confidence": "medium"}
+- Ideal: "relaxing and quiet", Review: "Loud party scene every night" → {"score": 2, "confidence": "high"}
+- Ideal: "fast performance", Review: "The weather is nice" → {"score": 1, "confidence": "low"}
+
+Output ONLY a raw JSON object. No markdown, no backticks, no explanation.
+Required format: {"score": 7, "confidence": "high"}`;
+}
+
+/**
+ * Parses and validates the AI's JSON response.
+ * Returns { score, confidence } or throws if invalid.
+ */
+function parseScoreResponse(text) {
+  try {
+    // Regex to find the JSON block {...} in case the LLM adds chatter
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("No JSON object found in response");
+
+    const cleaned = match[0].trim();
+    const parsed = JSON.parse(cleaned);
+
+    const score = parseInt(parsed.score, 10);
+    const validConfidences = ["high", "medium", "low"];
+
+    if (isNaN(score) || score < 1 || score > 10) throw new Error("Score out of range");
+    if (!validConfidences.includes(parsed.confidence)) throw new Error("Invalid confidence value");
+
+    return { score, confidence: parsed.confidence };
+  } catch (err) {
+    console.error("Parse error raw text:", text);
+    throw new Error(`JSON Parse failed: ${err.message}`);
+  }
+}
+
+/**
+ * Calls Gemini first, then Groq, then returns AI_FAIL.
+ * API order: Gemini → Groq → Fallback (per approved design decision #4).
+ */
+async function extractScoreFromText(text, featureName, idealDescription) {
+  const prompt = buildScorePrompt(text, featureName, idealDescription);
+
+  // ── Try Gemini first ────────────────────────────────────────────────────────
+  try {
+    const geminiKey = process.env.GEMINI_API_KEY;
+    if (!geminiKey) throw new Error("No Gemini key");
+
+    // gemini-2.0-flash: fast, no thinking tokens, reliable short JSON outputs
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 150, temperature: 0.2 },
+      }),
+    });
+
+    if (!response.ok) throw new Error(`Gemini error: ${response.status}`);
+    const data = await response.json();
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if (!raw) throw new Error("Empty Gemini response");
+
+    const { score, confidence } = parseScoreResponse(raw);
+    return { score, confidence, source: "gemini" };
+  } catch (geminiErr) {
+    console.log("Gemini score extraction failed:", geminiErr.message);
+  }
+
+  // ── Try Groq second ─────────────────────────────────────────────────────────
+  try {
+    const groqKey = process.env.GROQ_API_KEY;
+    if (!groqKey) throw new Error("No Groq key");
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${groqKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        max_tokens: 150,
+        temperature: 0.2,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+
+    if (!response.ok) throw new Error(`Groq error: ${response.status}`);
+    const data = await response.json();
+    const raw = data.choices?.[0]?.message?.content?.trim();
+    if (!raw) throw new Error("Empty Groq response");
+
+    const { score, confidence } = parseScoreResponse(raw);
+    return { score, confidence, source: "groq" };
+  } catch (groqErr) {
+    console.log("Groq score extraction failed:", groqErr.message);
+  }
+
+  // ── Both failed ─────────────────────────────────────────────────────────────
+  return { score: null, confidence: null, source: "AI_FAIL" };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PHASE 1.5 — PREPROCESSOR
+// Converts scale strings and review texts → numbers.
+// The core calculateDecision ALWAYS receives pure numbers.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * products_data : { ProductName: { FeatureName: rawValue, ... }, ... }
+ * feature_types : ["numeric"|"scale"|"review", ...]
+ * f_list        : feature name array
+ * ideals        : raw ideal values (numbers, scale strings, or description strings)
+ *
+ * Returns:
+ * {
+ *   scored_data  : products_data with all values converted to numbers,
+ *   scored_ideals: ideals array with all values converted to numbers,
+ *   metadata     : { ProductName: { FeatureName: { source, confidence } } },
+ *   ai_failures  : [ { product, feature } ]  — slots where AI failed
+ * }
+ */
+async function preprocessInputs(products_data, feature_types, f_list, ideals) {
+  const scored_data = JSON.parse(JSON.stringify(products_data));
+  const scored_ideals = [...ideals];
+  const metadata = {};
+  const ai_failures = [];
+
+  for (const product of Object.keys(scored_data)) {
+    metadata[product] = {};
+  }
+
+  for (let fi = 0; fi < f_list.length; fi++) {
+    const feature = f_list[fi];
+    const type = feature_types[fi];
+
+    // ── Numeric: pass through ─────────────────────────────────────────────────
+    if (type === "numeric") {
+      for (const product of Object.keys(scored_data)) {
+        metadata[product][feature] = { source: "numeric", confidence: null };
+      }
+      // ideal is already a number — no change needed
+      continue;
+    }
+
+    // ── Scale: map string → number ────────────────────────────────────────────
+    if (type === "scale") {
+      for (const product of Object.keys(scored_data)) {
+        const rawVal = scored_data[product][feature];
+        scored_data[product][feature] = SCALE_MAP[rawVal] ?? 5; // default Average if unknown
+        metadata[product][feature] = { source: "scale", confidence: null };
+      }
+      // Map ideal scale string too
+      scored_ideals[fi] = SCALE_MAP[ideals[fi]] ?? 5;
+      continue;
+    }
+
+    // ── Review: call AI for all products ──────────────────────────
+    if (type === "review") {
+      const idealDescription = String(ideals[fi]);
+      const products = Object.keys(scored_data);
+
+      const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      const results = [];
+
+      for (const product of products) {
+        const res = await extractScoreFromText(
+          String(scored_data[product][feature]),
+          feature,
+          idealDescription
+        );
+        results.push(res);
+        // Small stagger to avoid hammering free-tier rate limits (Concern: 429 errors)
+        await delay(200);
+      }
+
+      results.forEach(({ score, confidence, source }, idx) => {
+        const product = products[idx];
+        if (source === "AI_FAIL" || score === null) {
+          // Leave raw text; mark as failure for frontend to handle
+          ai_failures.push({ product, feature });
+          metadata[product][feature] = { source: "AI_FAIL", confidence: null };
+        } else {
+          scored_data[product][feature] = score;
+          metadata[product][feature] = { source, confidence };
+        }
+      });
+
+      // Ideal for a review feature is already a description string.
+      // Use the midpoint (5) as a numeric ideal — the AI-scored products
+      // will naturally cluster relative to each other via normalization.
+      // The ideal description is used only to *score* each product's review.
+      scored_ideals[fi] = 10; // Anchor: "perfect match" = score of 10 is ideal
+      continue;
+    }
+  }
+
+  return { scored_data, scored_ideals, metadata, ai_failures };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXPLANATION SYSTEM (Phase 1 — unchanged)
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function generateExplanation(result, f_list, raw_data) {
+  const fallback = buildDataStyle(result, f_list, raw_data);
+  const prompt = buildPrompt(result, f_list, raw_data);
+
+  // ── Try Gemini first ──────────────────────────────────────────────────────
+  try {
+    const geminiKey = process.env.GEMINI_API_KEY;
+    if (!geminiKey) throw new Error("No Gemini key");
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { maxOutputTokens: 260, temperature: 0.6 },
+      }),
+    });
+
+    if (!response.ok) throw new Error(`Gemini API error: ${response.status}`);
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if (!text) throw new Error("Empty Gemini response");
+    if (!isDetailedExplanation(text)) throw new Error("Gemini response too short");
+
+    return { explanation: text, source: "gemini" };
+  } catch (geminiError) {
+    console.log("Gemini explanation failed:", geminiError.message);
+  }
+
+  // ── Try Groq second ───────────────────────────────────────────────────────
   try {
     const groqKey = process.env.GROQ_API_KEY;
     if (!groqKey) throw new Error("No Groq key");
@@ -111,8 +384,7 @@ async function generateExplanation(result, f_list) {
         messages: [
           {
             role: "system",
-            content:
-              "You explain weighted decision outcomes in clear business language. Be specific and metric-driven.",
+            content: "You explain weighted decision outcomes in clear, simple language. Use the actual values the user entered. Never say 'penalty', 'normalized', or 'weighted points'.",
           },
           { role: "user", content: prompt },
         ],
@@ -120,7 +392,6 @@ async function generateExplanation(result, f_list) {
     });
 
     if (!response.ok) throw new Error(`Groq API error: ${response.status}`);
-
     const data = await response.json();
     const text = data.choices?.[0]?.message?.content?.trim();
     if (!text) throw new Error("Empty Groq response");
@@ -128,33 +399,7 @@ async function generateExplanation(result, f_list) {
 
     return { explanation: text, source: "groq" };
   } catch (groqError) {
-    console.log("Groq fallback:", groqError.message);
-  }
-
-  try {
-    const geminiKey = process.env.GEMINI_API_KEY;
-    if (!geminiKey) throw new Error("No Gemini key");
-
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 260 },
-      }),
-    });
-
-    if (!response.ok) throw new Error(`Gemini API error: ${response.status}`);
-
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-    if (!text) throw new Error("Empty Gemini response");
-    if (!isDetailedExplanation(text)) throw new Error("Gemini response too short");
-
-    return { explanation: text, source: "gemini" };
-  } catch (geminiError) {
-    console.log("Gemini fallback:", geminiError.message);
+    console.log("Groq explanation failed:", groqError.message);
   }
 
   return { explanation: fallback, source: "fallback" };
@@ -166,38 +411,44 @@ function isDetailedExplanation(text) {
   return words >= 45 && sentences >= 3;
 }
 
-function buildPrompt(result, f_list) {
-  const winner = result.winner || result.tie.join(" and ");
-  const weightSummary = buildWeightSummary(result, f_list);
+// ── Helper: get a display-friendly actual value ───────────────────────────────
+function getActualValue(raw_data, product, feature) {
+  if (!raw_data || !raw_data[product]) return null;
+  const val = raw_data[product][feature];
+  return val !== undefined && val !== null ? val : null;
+}
 
-  const rankingText = result.ranking
-    .map((r) => `${r.rank}. ${r.product} (${r.score.toFixed(2)} pts)`)
-    .join("\n");
+// ── buildPrompt: tells AI to speak in actual values ───────────────────────────
+function buildPrompt(result, f_list, raw_data) {
+  const winner = result.winner || result.tie.join(" and ");
+  const weightSummary = f_list
+    .map((f, i) => `${f}: ${(result.weights[i] * 100).toFixed(0)}% importance`)
+    .join(", ");
 
   const breakdownText = result.ranking
     .map(({ product }) => {
-      const lines = f_list.map((f) => {
+      const featureLines = f_list.map((f) => {
+        const actual = getActualValue(raw_data, product, f);
         const b = result.detailed_breakdown[product][f];
-        return `${f}: penalty ${b.penalty.toFixed(2)}, weighted ${b.weighted_penalty.toFixed(2)}, weight ${(b.weight * 100).toFixed(1)}%`;
+        const met = b.penalty === 0 ? "meets ideal" : "does not meet ideal";
+        return `  ${f}: ${actual !== null ? actual : "N/A"} (${met})`;
       });
-      return `${product}\n- ${lines.join("\n- ")}`;
+      return `${product}:\n${featureLines.join("\n")}`;
     })
-    .join("\n");
+    .join("\n\n");
 
-  return `A weighted-penalty decision model selected ${winner}.
+  return `A decision model chose ${winner}.
+Criteria weights: ${weightSummary}.
 
-Feature weights:
-${weightSummary}
-
-Ranking:
-${rankingText}
-
-Breakdown:
+Actual values entered by user:
 ${breakdownText}
 
-Write 5-7 sentences (90-140 words). Include: why #1 won, why #2 lost, strongest feature, key trade-off, and one practical recommendation. Keep it factual and concise.`;
+Write 4-5 plain sentences explaining WHY ${winner} won using the actual values above.
+Do NOT mention "penalty", "normalized", "weighted points", or any math jargon.
+Speak simply — like explaining to a friend. Example: "${winner} had the best Price at X and its Quality was Y."`;
 }
 
+// ── buildWeightSummary (kept for reference) ───────────────────────────────────
 function buildWeightSummary(result, f_list) {
   return f_list
     .map((f, i) => `${f}: ${(result.weights[i] * 100).toFixed(1)}%`)
@@ -243,115 +494,154 @@ function getWinnerContext(result, f_list) {
   };
 }
 
-function buildFallbackExplanation(result, f_list) {
-  return buildDataStyle(result, f_list);
+function buildFallbackExplanation(result, f_list, raw_data) {
+  return buildDataStyle(result, f_list, raw_data);
 }
 
-function build4Styles(result, f_list) {
+function build4Styles(result, f_list, raw_data) {
   return {
-    data: buildDataStyle(result, f_list),
-    story: buildStoryStyle(result, f_list),
-    compare: buildCompareStyle(result, f_list),
-    action: buildActionStyle(result, f_list),
+    data: buildDataStyle(result, f_list, raw_data),
+    story: buildStoryStyle(result, f_list, raw_data),
+    compare: buildCompareStyle(result, f_list, raw_data),
+    action: buildActionStyle(result, f_list, raw_data),
   };
 }
 
-function buildDataStyle(result, f_list) {
+// ── Data-Driven style ─────────────────────────────────────────────────────────
+function buildDataStyle(result, f_list, raw_data) {
   if (result.tie.length > 1) {
-    const tieLine = result.tie
-      .map((p) => `${p} (${result.agg_sum[p].toFixed(2)} pts)`)
-      .join(", ");
-    return `The system found a tie: ${tieLine}. Each tied option produced the same weighted penalty total, so there is no mathematical winner under the current priorities. If you want a single winner, increase the weight of your most critical feature or add one more differentiating criterion.`;
+    return `It's a tie between ${result.tie.join(" and ")}! Both options performed equally well. To get a clear winner, increase the importance of your most critical criterion or add a new one.`;
   }
 
   const ctx = getWinnerContext(result, f_list);
-  const winnerScore = ctx.winnerScore.toFixed(2);
-  const secondScore = ctx.secondScore !== null ? ctx.secondScore.toFixed(2) : null;
-  const worstPenalty = ctx.winnerBreakdown[ctx.worstFeature].weighted_penalty.toFixed(2);
-  const bestWeight = ctx.winnerBreakdown[ctx.bestFeature].weight * 100;
-  const perfectText = ctx.perfectFeatures.length
-    ? `It has zero penalty on ${ctx.perfectFeatures.join(", ")}, including high-priority areas.`
-    : `Its strongest contribution comes from ${ctx.bestFeature}, where weighted penalty is lowest.`;
-
-  return `Based on your priorities, the system recommends ${ctx.winner} at ${winnerScore} points (lower is better). ${perfectText} ${ctx.second ? `${ctx.winner} outperforms ${ctx.second} by ${ctx.gapToSecond.toFixed(2)} points (${winnerScore} vs ${secondScore}).` : ""} The key trade-off is ${ctx.worstFeature}, adding ${worstPenalty} weighted points, but the stronger performance on higher-impact criteria keeps ${ctx.winner} in first place. Weight context: ${ctx.bestFeature} carries ${bestWeight.toFixed(1)}% importance in this model.`;
-}
-
-function buildStoryStyle(result, f_list) {
-  if (result.tie.length > 1) {
-    return `No single candidate separates from the pack. ${result.tie.join(" and ")} finish tied under your current priorities, which means their weaknesses and strengths balance out to the same final score. If speed matters, choose the one with lower implementation risk; if long-term upside matters, run a second pass with one additional criterion to break the tie.`;
-  }
-
-  const ctx = getWinnerContext(result, f_list);
-  const secondName = ctx.second || "the next option";
-  const topWeight = `${ctx.topWeightFeature} (${ctx.topWeightPct.toFixed(1)}%)`;
-  const worstPenalty = ctx.winnerBreakdown[ctx.worstFeature].weighted_penalty.toFixed(2);
-
-  return `${ctx.winner} emerges as the most balanced fit for what you asked the model to prioritize. ${secondName} has clear strengths, but it gives up too much ground where your weights are heaviest, especially ${topWeight}. ${ctx.winner} stays consistent across the board and avoids large misses on core criteria. The only notable gap is ${ctx.worstFeature}, which contributes ${worstPenalty} weighted points, but that shortfall is not large enough to overturn the overall lead. In short, the ranking rewards consistency on the criteria you marked as most important.`;
-}
-
-function buildCompareStyle(result, f_list) {
-  if (result.tie.length > 1) {
-    return `${result.tie.join(" and ")} scored identically.\n- Their weighted penalties are effectively the same.\n- There is no statistically meaningful difference under current weights.\n- To break the tie, raise one key weight or add another criterion.`;
-  }
-
   const lines = [];
-  const winner = result.winner;
-  lines.push(`Why ${winner} ranks first:`);
 
-  result.ranking.slice(0, 3).forEach(({ product, score }) => {
-    const breakdown = result.detailed_breakdown[product];
-    const best = [...f_list].sort(
-      (a, b) => breakdown[a].weighted_penalty - breakdown[b].weighted_penalty
-    )[0];
-    const worst = [...f_list].sort(
-      (a, b) => breakdown[b].weighted_penalty - breakdown[a].weighted_penalty
-    )[0];
-    lines.push(
-      `- ${product}: score ${score.toFixed(2)} | strongest ${best} | biggest gap ${worst} (${breakdown[worst].weighted_penalty.toFixed(2)} pts)`
-    );
+  lines.push(`✅ ${ctx.winner} is your best match.`);
+
+  const featureSummary = f_list.map((f) => {
+    const actual = getActualValue(raw_data, ctx.winner, f);
+    const b = ctx.winnerBreakdown[f];
+    const actualStr = actual !== null ? ` (${actual})` : "";
+    return b.penalty === 0
+      ? `${f}${actualStr} ✓`
+      : `${f}${actualStr} ✗`;
+  });
+  lines.push(`Criteria check: ${featureSummary.join(", ")}.`);
+
+  if (ctx.second) {
+    const loserGaps = f_list.filter(
+      (f) => result.detailed_breakdown[ctx.second][f].penalty > 0
+    ).map((f) => {
+      const actual = getActualValue(raw_data, ctx.second, f);
+      return actual !== null ? `${f} (${actual})` : f;
+    });
+    if (loserGaps.length) {
+      lines.push(`${ctx.second} fell short on: ${loserGaps.join(", ")}.`);
+    }
+  }
+
+  const topIdx = result.weights.indexOf(Math.max(...result.weights));
+  lines.push(`The deciding factor was "${f_list[topIdx]}" — your highest-priority criterion.`);
+
+  return lines.join(" ");
+}
+
+// ── Storytelling style ────────────────────────────────────────────────────────
+function buildStoryStyle(result, f_list, raw_data) {
+  if (result.tie.length > 1) {
+    return `No clear winner this time — ${result.tie.join(" and ")} are perfectly matched. Try increasing the importance of whichever criterion matters most to you right now.`;
+  }
+
+  const ctx = getWinnerContext(result, f_list);
+  const topIdx = result.weights.indexOf(Math.max(...result.weights));
+  const topFeature = f_list[topIdx];
+
+  const winnerHighlights = f_list
+    .filter((f) => ctx.winnerBreakdown[f].penalty === 0)
+    .map((f) => {
+      const actual = getActualValue(raw_data, ctx.winner, f);
+      return actual !== null ? `${f} (${actual})` : f;
+    });
+
+  let text = `${ctx.winner} is the standout choice. `;
+  if (winnerHighlights.length) {
+    text += `It nails your target on ${winnerHighlights.join(", ")}. `;
+  }
+  if (ctx.second) {
+    const secondGaps = f_list
+      .filter((f) => result.detailed_breakdown[ctx.second][f].penalty > 0)
+      .map((f) => {
+        const actual = getActualValue(raw_data, ctx.second, f);
+        return actual !== null ? `${f} at ${actual}` : f;
+      });
+    if (secondGaps.length) {
+      text += `${ctx.second} couldn't quite keep up — it missed on ${secondGaps.join(", ")}. `;
+    }
+  }
+  text += `In the end, "${topFeature}" was the tiebreaker — and ${ctx.winner} handled it best.`;
+  return text;
+}
+
+// ── Comparative style ─────────────────────────────────────────────────────────
+function buildCompareStyle(result, f_list, raw_data) {
+  if (result.tie.length > 1) {
+    return `${result.tie.join(" and ")} are tied — no difference under current priorities.\nTo separate them: raise the weight of your most important criterion or add a new one.`;
+  }
+
+  const lines = [`📊 Option comparison by criterion:\n`];
+
+  f_list.forEach((feature) => {
+    const cells = result.ranking.map(({ product }) => {
+      const actual = getActualValue(raw_data, product, feature);
+      const b = result.detailed_breakdown[product][feature];
+      const met = b.penalty === 0 ? "✓" : "✗";
+      return `${product}: ${actual !== null ? actual : "?"} ${met}`;
+    });
+    lines.push(`• ${feature} → ${cells.join("  |  ")}`);
   });
 
-  const topWeightIndex = result.weights.reduce(
-    (bestIdx, w, idx, arr) => (w > arr[bestIdx] ? idx : bestIdx),
-    0
-  );
-  lines.push(
-    `The ranking favors consistency on high-weight criteria, especially ${f_list[topWeightIndex]} (${(result.weights[topWeightIndex] * 100).toFixed(1)}%).`
-  );
+  const topIdx = result.weights.indexOf(Math.max(...result.weights));
+  lines.push(`\n🏆 ${result.winner} wins — strongest on "${f_list[topIdx]}", your top priority.`);
 
   return lines.join("\n");
 }
 
-function buildActionStyle(result, f_list) {
+// ── Action style ──────────────────────────────────────────────────────────────
+function buildActionStyle(result, f_list, raw_data) {
   if (result.tie.length > 1) {
-    return `Decision: choose either ${result.tie.join(" or ")}.\nReason: both options produce the same weighted score.\nNext step: pick based on non-modeled constraints (budget, timeline, risk), or re-run with an added criterion to force separation.`;
+    return `Decision: Either ${result.tie.join(" or ")} — both are equally good.\nNext step: choose based on availability, gut feel, or factors not in the model.`;
   }
 
   const ctx = getWinnerContext(result, f_list);
   const lines = [];
 
-  lines.push(`Decision: choose ${ctx.winner} (${ctx.winnerScore.toFixed(2)} pts).`);
-  lines.push(`Why now: lowest total weighted penalty in the set.`);
+  lines.push(`✅ Go with: ${ctx.winner}`);
 
-  if (ctx.perfectFeatures.length) {
-    lines.push(`Strengths: zero gap on ${ctx.perfectFeatures.join(", ")}.`);
-  } else {
-    lines.push(
-      `Strength: strongest performance on ${ctx.bestFeature} (lowest weighted penalty).`
-    );
-  }
+  const strengths = f_list
+    .filter((f) => ctx.winnerBreakdown[f].penalty === 0)
+    .map((f) => {
+      const actual = getActualValue(raw_data, ctx.winner, f);
+      return actual !== null ? `${f} (${actual})` : f;
+    });
 
-  lines.push(
-    `Trade-off: ${ctx.worstFeature} contributes ${ctx.winnerBreakdown[ctx.worstFeature].weighted_penalty.toFixed(2)} weighted points.`
-  );
+  const gaps = f_list
+    .filter((f) => ctx.winnerBreakdown[f].penalty > 0)
+    .map((f) => {
+      const actual = getActualValue(raw_data, ctx.winner, f);
+      return actual !== null ? `${f} (${actual})` : f;
+    });
 
-  if (ctx.second && ctx.gapToSecond !== null) {
-    lines.push(
-      `Alternative: ${ctx.second} is next best, but trails by ${ctx.gapToSecond.toFixed(2)} points overall.`
-    );
-  }
+  if (strengths.length) lines.push(`Why: Hits your ideal on ${strengths.join(", ")}.`);
+  if (gaps.length) lines.push(`Trade-off: Not perfect on ${gaps.join(", ")} — but still the best overall.`);
+  if (ctx.second) lines.push(`Alternative: ${ctx.second} is next best if ${ctx.winner} isn't available.`);
 
   return lines.join("\n");
 }
 
-module.exports = { calculateDecision, generateExplanation, build4Styles };
+module.exports = {
+  calculateDecision,
+  generateExplanation,
+  build4Styles,
+  preprocessInputs,
+  SCALE_MAP,
+};

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Decision Companion System</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -17,9 +19,9 @@
         <div id="step-setup" class="step active">
             <h2>Step 1: Setup Your Decision</h2>
             <div class="form-group">
-                <label for="num-products">Number of Products:</label>
+                <label for="num-products">Number of Options:</label>
                 <input type="number" id="num-products" min="2" value="3" required>
-                <span class="hint">At least 2 Products to compare</span>
+                <span class="hint">At least 2 options to compare</span>
             </div>
             <div class="form-group">
                 <label for="num-features">Number of Criteria:</label>
@@ -32,6 +34,7 @@
         <!-- Step 2: Features and Weights -->
         <div id="step-features" class="step">
             <h2>Step 2: Define Your Criteria</h2>
+            <p class="hint">Choose how each criterion will be entered: a number, a grade, or a written review.</p>
             <div id="features-container"></div>
             <button onclick="goToProducts()" class="btn-primary">Next Step →</button>
             <button onclick="goBack('step-setup')" class="btn-secondary">← Back</button>
@@ -48,9 +51,20 @@
         <!-- Step 4: Ideal Values -->
         <div id="step-ideals" class="step">
             <h2>Step 4: Define Your Ideal Values</h2>
+            <p class="hint">For <strong>Review</strong> criteria, enter a short target description (e.g. "Healthy and
+                tasty").</p>
             <div id="ideals-container"></div>
             <button onclick="calculateResult()" class="btn-primary">Calculate Decision 🚀</button>
             <button onclick="goBack('step-products')" class="btn-secondary">← Back</button>
+        </div>
+
+        <!-- Step 4.5: Approval Stage -->
+        <div id="step-approval" class="step">
+            <h2>Step 4.5: Review AI Scores</h2>
+            <p class="hint">The AI has interpreted your review inputs into scores. Verify or override any score before
+                the final calculation.</p>
+            <div id="approval-container"></div>
+            <button onclick="confirmApproval()" class="btn-primary">Confirm & Calculate 🚀</button>
         </div>
 
         <!-- Step 5: Results -->
@@ -61,6 +75,15 @@
         </div>
     </div>
 
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden">
+        <div class="loading-card">
+            <div class="spinner"></div>
+            <p id="loading-text">Optimizing to requirements...</p>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
+
 </html>

@@ -60,6 +60,7 @@ h2 {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -288,6 +289,104 @@ button {
     margin-bottom: 16px;
     color: #c53030;
 }
+
+/* ADD to your style.css */
+
+.refresh-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: transform 0.2s;
+}
+
+.source-tag {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: #718096;
+    background: #f7fafc;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.ranking-list {
+    list-style: none;
+    margin-bottom: 24px;
+}
+
+.ranking-list li {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #667eea;
+}
+
+.rank-number {
+    font-weight: bold;
+    color: #667eea;
+    font-size: 1.2rem;
+    margin-right: 12px;
+}
+
+.product-name {
+    flex: 1;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.score {
+    color: #718096;
+    font-family: 'Courier New', monospace;
+}
+
+.breakdown-section {
+    margin-top: 24px;
+}
+
+.breakdown-product {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.breakdown-product h4 {
+    color: #2d3748;
+    margin-bottom: 12px;
+}
+
+.breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tie-alert {
+    background: #fef5e7;
+    border-left: 4px solid #f39c12;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.error {
+    background: #fee;
+    border-left: 4px solid #e53e3e;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    color: #c53030;
+}
+
 /* ADD to your style.css */
 
 .refresh-btn {
@@ -307,4 +406,194 @@ button {
 
 .refresh-btn:active {
     transform: scale(0.95);
+}
+
+/* ─── PHASE 1.5 STYLES ──────────────────────────────────────────────────────── */
+
+/* Loading Overlay */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(102, 126, 234, 0.85);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+#loading-overlay.hidden {
+    display: none;
+}
+
+.loading-card {
+    background: white;
+    border-radius: 20px;
+    padding: 48px 56px;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.3s ease;
+}
+
+.spinner {
+    width: 56px;
+    height: 56px;
+    border: 5px solid #e2e8f0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 24px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#loading-text {
+    font-size: 1.15rem;
+    color: #2d3748;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Approval Stage */
+.approval-section {
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.approval-section h4 {
+    color: #2d3748;
+    margin-bottom: 16px;
+}
+
+.feature-ideal-tag {
+    font-size: 0.8rem;
+    color: #667eea;
+    background: #ebf4ff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    font-weight: normal;
+}
+
+.approval-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.approval-table thead th {
+    background: #667eea;
+    color: white;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.approval-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.approval-table tbody tr:hover {
+    background: #ebf4ff;
+}
+
+.approval-table tbody tr.row-failure {
+    background: #fff5f5;
+}
+
+.approval-table tbody tr.row-warning {
+    background: #fffdf0;
+}
+
+.approval-table td {
+    padding: 10px 12px;
+    vertical-align: middle;
+}
+
+.review-text-cell {
+    max-width: 240px;
+    font-style: italic;
+    color: #718096;
+    font-size: 0.85rem;
+}
+
+.score-cell {
+    font-weight: 700;
+    color: #667eea;
+}
+
+.override-select {
+    width: auto;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+}
+
+/* Input source badges */
+.input-badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.badge-numeric {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.badge-scale {
+    background: #e9d8fd;
+    color: #553c9a;
+}
+
+.badge-review {
+    background: #c6f6d5;
+    color: #276749;
+}
+
+.badge-gemini {
+    background: #bee3f8;
+    color: #2b6cb0;
+}
+
+.badge-groq {
+    background: #fefcbf;
+    color: #975a16;
+}
+
+.badge-fail {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.badge-low-conf {
+    background: #fef5e7;
+    color: #c05621;
+    border-radius: 6px;
+    padding: 1px 5px;
+    font-size: 0.75rem;
+    cursor: help;
+}
+
+/* Warning alert */
+.warning-alert {
+    background: #fef5e7;
+    border-left: 4px solid #ed8936;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    color: #7b341e;
+    font-size: 0.9rem;
 }
