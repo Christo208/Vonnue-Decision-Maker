@@ -1,4 +1,4 @@
-node_modules/
-.env
-*.log
-.DS_Store
+node_modules/ 
+backend/.env 
+"*.docx" 
+"backend/text.txt" 
