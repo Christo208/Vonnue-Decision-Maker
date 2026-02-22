@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Decision Visualizer v2</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a1a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; }
+
+    #narrator-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: linear-gradient(135deg, rgba(15,10,40,0.97), rgba(40,20,80,0.97));
+      border-bottom: 2px solid rgba(180,130,255,0.4);
+      padding: 14px 24px; display: flex; align-items: center; gap: 16px;
+      z-index: 20; min-height: 90px;
+    }
+    #wise-portrait {
+      width: 64px; height: 64px; border-radius: 50%;
+      border: 2px solid rgba(180,130,255,0.6);
+      object-fit: cover; object-position: top center; flex-shrink: 0;
+      background: rgba(180,130,255,0.25);
+    }
+    #narrator-name { font-size: 0.72rem; color: rgba(180,130,255,0.9); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+    #narrator-text { font-size: 0.97rem; color: #e8e0ff; line-height: 1.5; }
+
+    #criterion-badge {
+      background: rgba(180,130,255,0.15); border: 1px solid rgba(180,130,255,0.4);
+      border-radius: 12px; padding: 8px 18px; text-align: center; flex-shrink: 0;
+      opacity: 0; transition: opacity 0.5s;
+    }
+    #criterion-badge.visible { opacity: 1; }
+    #criterion-name { font-size: 0.8rem; color: #c4a0ff; font-weight: 700; letter-spacing: 1px; }
+    #criterion-weight { font-size: 1.5rem; color: #fff; font-weight: 900; }
+    #criterion-weight-label { font-size: 0.68rem; color: rgba(196,160,255,0.7); }
+
+    #pixi-canvas { position: fixed; top: 90px; left: 0; right: 0; bottom: 60px; }
+
+    #control-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(10,10,26,0.97); border-top: 1px solid rgba(180,130,255,0.2);
+      padding: 10px 24px; display: flex; align-items: center; justify-content: space-between;
+      z-index: 20; height: 60px;
+    }
+    #step-indicator { font-size: 0.8rem; color: rgba(180,130,255,0.7); letter-spacing: 1px; }
+    #progress-bar-wrap { width: 180px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+    #progress-bar { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 2px; transition: width 0.6s ease; width: 0%; }
+    #next-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none;
+      padding: 10px 28px; border-radius: 8px; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; letter-spacing: 0.5px;
+    }
+    #next-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(118,75,162,0.5); }
+    #next-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    #winner-overlay {
+      position: fixed; top: 90px; left: 0; right: 0; bottom: 60px;
+      background: rgba(0,0,0,0.78); display: flex; align-items: center; justify-content: center;
+      z-index: 30; opacity: 0; pointer-events: none; transition: opacity 0.8s;
+    }
+    #winner-overlay.visible { opacity: 1; pointer-events: auto; }
+    #winner-card {
+      background: linear-gradient(135deg, rgba(102,126,234,0.93), rgba(118,75,162,0.93));
+      border: 2px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 40px 60px; text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+    }
+    @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    #winner-title { font-size: 0.9rem; color: rgba(255,255,255,0.7); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+    #winner-name  { font-size: 2.4rem; font-weight: 900; color: white; margin-bottom: 6px; }
+    #winner-score { font-size: 0.95rem; color: rgba(255,255,255,0.7); font-family: monospace; margin-bottom: 20px; }
+    #winner-reason { font-size: 0.95rem; color: rgba(255,255,255,0.85); line-height: 1.6; max-width: 420px; }
+    #restart-btn {
+      margin-top: 24px; background: white; color: #667eea; border: none;
+      padding: 12px 32px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; transition: transform 0.2s;
+    }
+    #restart-btn:hover { transform: scale(1.03); }
+  </style>
+</head>
+<body>
+
+<div id="narrator-bar">
+  <img id="wise-portrait" src="sprites/wise/wise_neutral.png" alt="Analyst" onerror="this.style.background='rgba(180,130,255,0.35)'"/>
+  <div style="flex:1">
+    <div id="narrator-name">⚗️ The Analyst</div>
+    <div id="narrator-text">Initializing decision matrix...</div>
+  </div>
+  <div id="criterion-badge">
+    <div id="criterion-name">CRITERION</div>
+    <div id="criterion-weight">0%</div>
+    <div id="criterion-weight-label">WEIGHT</div>
+  </div>
+</div>
+
+<div id="pixi-canvas"></div>
+
+<div id="winner-overlay">
+  <div id="winner-card">
+    <div id="winner-title">🏆 The Decision Is Clear</div>
+    <div id="winner-name">—</div>
+    <div id="winner-score">Total Penalty: 0.00</div>
+    <div id="winner-reason">—</div>
+    <button id="restart-btn" onclick="restartVisualization()">↺ Watch Again</button>
+  </div>
+</div>
+
+<div id="control-bar">
+  <div id="step-indicator">STEP 0 / 0</div>
+  <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+  <button id="next-btn" onclick="nextStep()">Begin →</button>
+</div>
+
+<script>
+// ── DEMO DATA ──────────────────────────────────────────────────────────────
+const DEMO = {
+  candidates: ["Alice", "Bob", "Charlie"],
+  features:   ["Skills", "Experience", "Culture Fit"],
+  weights:    [0.5, 0.3, 0.2],
+  raw: {
+    "Alice":   { "Skills":85, "Experience":70, "Culture Fit":90 },
+    "Bob":     { "Skills":92, "Experience":60, "Culture Fit":65 },
+    "Charlie": { "Skills":75, "Experience":88, "Culture Fit":80 },
+  },
+  detailed_breakdown: {
+    "Alice":   { "Skills":{ weighted_penalty:0    }, "Experience":{ weighted_penalty:7.22 }, "Culture Fit":{ weighted_penalty:0   } },
+    "Bob":     { "Skills":{ weighted_penalty:0    }, "Experience":{ weighted_penalty:30   }, "Culture Fit":{ weighted_penalty:20  } },
+    "Charlie": { "Skills":{ weighted_penalty:20.3 }, "Experience":{ weighted_penalty:0    }, "Culture Fit":{ weighted_penalty:8   } },
+  },
+  ranking: [
+    { rank:1, product:"Alice",   score:7.22 },
+    { rank:2, product:"Charlie", score:28.3 },
+    { rank:3, product:"Bob",     score:50.0 },
+  ],
+  winner: "Alice",
+  explanation: "Alice wins with the lowest total penalty. Her exceptional Skills (weight 50%) keep her ahead despite a moderate Experience gap. Bob's strength is undermined by poor Experience and Culture Fit. Charlie falls short in Skills — the most critical criterion.",
+};
+
+// ── SPRITE PATHS ───────────────────────────────────────────────────────────
+const SPRITES = {
+  char1: { laugh:'sprites/char1/char_laugh.png', smile1:'sprites/char1/char_smile1.png', smirk:'sprites/char1/char_smirk.png', normal:'sprites/char1/char_normal.png', surprised:'sprites/char1/char_surprised.png', sad:'sprites/char1/char_sad.png' },
+  char2: { laugh:'sprites/char2/char2_laugh.png', smile1:'sprites/char2/char2_smile1.png', smirk:'sprites/char2/char2_smirk.png', normal:'sprites/char2/char2_normal.png', surprised:'sprites/char2/char2_surprised.png', sad:'sprites/char2/char2_sad.png' },
+  char3: { laugh:'sprites/char3/char3_laugh.png', smile1:'sprites/char3/char3_smile1.png', smirk:'sprites/char3/char3_smirk.png', normal:'sprites/char3/char3_normal.png', surprised:'sprites/char3/char3_surprised.png', sad:'sprites/char3/char3_sad.png' },
+  wise:  { neutral:'sprites/wise/wise_neutral.png', explaining:'sprites/wise/wise_explaining.png', impressed:'sprites/wise/wise_impressed.png', concerned:'sprites/wise/wise_concerned.png', proud:'sprites/wise/wise_proud.png' },
+};
+const CHAR_KEYS   = ['char1','char2','char3'];
+const CHAR_COLORS = [0x667eea, 0xe85d75, 0x38b2ac];
+const N = 3;
+
+// ── PIXI SETUP ─────────────────────────────────────────────────────────────
+const W = window.innerWidth;
+const H = window.innerHeight - 150;
+const app = new PIXI.Application({ width:W, height:H, backgroundColor:0x0a0a1a, resolution:window.devicePixelRatio||1, autoDensity:true, antialias:true });
+document.getElementById('pixi-canvas').appendChild(app.view);
+app.view.style.width = '100%'; app.view.style.height = '100%';
+
+// ── LAYOUT ─────────────────────────────────────────────────────────────────
+const SLOT_W     = W / N;
+const GROUND_Y   = H * 0.78;       // where platforms START (top of platform)
+const PLAT_H     = 20;
+const PLAT_W     = SLOT_W * 0.52;
+const CHAR_H     = H * 0.46;
+const MAX_SINK   = H * 0.30;       // max downward travel
+const CENTERS    = [SLOT_W*0.5, SLOT_W*1.5, SLOT_W*2.5];
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let platSink      = [0, 0, 0];   // increases → platform moves DOWN
+let runPenalty    = [0, 0, 0];
+let currentStep   = 0;
+let animating     = false;
+let currentEmos   = ['normal', 'normal', 'normal'];
+
+// ── LAYERS ─────────────────────────────────────────────────────────────────
+const bgL   = new PIXI.Container();
+const platL = new PIXI.Container();
+const charL = new PIXI.Container();
+const lblL  = new PIXI.Container();
+const fxL   = new PIXI.Container();
+app.stage.addChild(bgL, platL, charL, lblL, fxL);
+
+// ── BACKGROUND ─────────────────────────────────────────────────────────────
+function drawBG() {
+  const g = new PIXI.Graphics();
+  g.beginFill(0x0a0a1a); g.drawRect(0,0,W,H); g.endFill();
+  for (let i=0;i<90;i++) {
+    const x=Math.random()*W, y=Math.random()*H*0.75;
+    g.beginFill(0xffffff, Math.random()*0.5+0.15); g.drawCircle(x,y,Math.random()*1.4+0.3); g.endFill();
+  }
+  // Abyss
+  g.beginFill(0x03030f); g.drawRect(0, GROUND_Y+PLAT_H, W, H); g.endFill();
+  g.lineStyle(2, 0x667eea, 0.2); g.moveTo(0, GROUND_Y+PLAT_H); g.lineTo(W, GROUND_Y+PLAT_H);
+  bgL.addChild(g);
+}
+
+// ── PLATFORMS ──────────────────────────────────────────────────────────────
+function drawPlatforms() {
+  platL.removeChildren();
+  for (let i=0;i<N;i++) {
+    const cx = CENTERS[i];
+    const py = GROUND_Y + platSink[i];  // sinks DOWN as penalty grows
+
+    const g = new PIXI.Graphics();
+    // Shadow
+    g.beginFill(0x000000,0.2); g.drawEllipse(cx, py+PLAT_H+5, PLAT_W*0.44, 7); g.endFill();
+    // Body
+    g.beginFill(CHAR_COLORS[i], 0.88); g.drawRoundedRect(cx-PLAT_W/2, py, PLAT_W, PLAT_H, 9); g.endFill();
+    // Highlight
+    g.lineStyle(1.5, 0xffffff, 0.22); g.moveTo(cx-PLAT_W/2+10, py+3); g.lineTo(cx+PLAT_W/2-10, py+3);
+    platL.addChild(g);
+
+    // Penalty score
+    const sc = new PIXI.Text(
+      runPenalty[i] < 0.01 ? '✓ 0.0' : `⚠ ${runPenalty[i].toFixed(1)}`,
+      { fontFamily:'Courier New', fontSize:13, fill: runPenalty[i]<0.01?0x4ade80:0xff6b6b, fontWeight:'bold' }
+    );
+    sc.anchor.set(0.5,0); sc.x=cx; sc.y=py+PLAT_H+8;
+    platL.addChild(sc);
+  }
+}
+
+// ── CHARACTERS ─────────────────────────────────────────────────────────────
+const charSprites = [null,null,null];
+const charTex     = [{},{},{}];
+const charOrigH   = [0,0,0];   // store original texture heights after first load
+const wiseTex     = {};
+
+async function loadTextures() {
+  const all = [];
+  for (let i=0;i<N;i++) {
+    for (const [e,p] of Object.entries(SPRITES[CHAR_KEYS[i]])) {
+      all.push(PIXI.Assets.load(p).then(t=>{
+        charTex[i][e]=t;
+        // Store height from normal expression for consistent scaling
+        if (e==='normal') charOrigH[i] = t.height;
+      }).catch(()=>{}));
+    }
+  }
+  for (const [e,p] of Object.entries(SPRITES.wise)) {
+    all.push(PIXI.Assets.load(p).then(t=>{ wiseTex[e]=t; }).catch(()=>{}));
+  }
+  await Promise.all(all);
+}
+
+function spawnChars() {
+  charL.removeChildren();
+  for (let i=0;i<N;i++) {
+    const tex = charTex[i]['normal'] || PIXI.Texture.WHITE;
+    const sp  = new PIXI.Sprite(tex);
+    sp.anchor.set(0.5,1.0);
+    // Always use stored original height — safe on restart when textures are cached
+    const h = charOrigH[i] > 0 ? charOrigH[i] : Math.max(sp.texture.height, 1);
+    sp.scale.set(CHAR_H / h);
+    sp.x = CENTERS[i];
+    sp.y = GROUND_Y;   // always start at ground level (platSink=0 on init/restart)
+    charSprites[i] = sp;
+    currentEmos[i] = 'normal';
+    charL.addChild(sp);
+  }
+}
+
+function setEmo(i, emo) { const t=charTex[i][emo]; if(t&&charSprites[i]) charSprites[i].texture=t; }
+
+// ── NAME LABELS ────────────────────────────────────────────────────────────
+const nameLbls = [];
+function spawnLabels() {
+  lblL.removeChildren(); nameLbls.length=0;
+  for (let i=0;i<N;i++) {
+    const lbl = new PIXI.Text(DEMO.candidates[i], {
+      fontFamily:'-apple-system,sans-serif', fontSize:15,
+      fill:CHAR_COLORS[i], fontWeight:'bold',
+      dropShadow:true, dropShadowColor:0x000000, dropShadowDistance:2,
+    });
+    lbl.anchor.set(0.5,1); lbl.x=CENTERS[i]; lbl.y=GROUND_Y+platSink[i]-CHAR_H-10;
+    nameLbls.push(lbl); lblL.addChild(lbl);
+  }
+}
+
+// ── REDRAW ─────────────────────────────────────────────────────────────────
+function redraw() {
+  drawPlatforms();
+  for (let i=0;i<N;i++) {
+    if (charSprites[i]) charSprites[i].y = GROUND_Y + platSink[i];
+    if (nameLbls[i])    nameLbls[i].y    = GROUND_Y + platSink[i] - CHAR_H - 10;
+  }
+}
+
+// ── ORB: drops to ONE candidate ────────────────────────────────────────────
+function dropOrbTo(ci, weight, penalty) {
+  return new Promise(resolve => {
+    const r     = 14 + weight * 55;
+    const color = penalty < 0.01 ? 0x4ade80 : penalty < 15 ? 0xfbbf24 : 0xff5050;
+
+    const orb = new PIXI.Graphics();
+    orb.beginFill(color, 0.9); orb.drawCircle(0,0,r); orb.endFill();
+    orb.lineStyle(2,0xffffff,0.35); orb.drawCircle(0,0,r);
+
+    const lbl = new PIXI.Text(penalty<0.01?'✓':`-${penalty.toFixed(1)}`, {
+      fontFamily:'Courier New', fontSize:Math.max(10,r*0.55), fill:0x0a0a1a, fontWeight:'bold',
+    });
+    lbl.anchor.set(0.5,0.5); orb.addChild(lbl);
+
+    orb.x = CENTERS[ci];
+    orb.y = -r - 10;
+    const endY = GROUND_Y + platSink[ci] - CHAR_H * 0.45;
+    fxL.addChild(orb);
+
+    let t=0;
+    const tick = () => {
+      t += 0.013;
+      const e = 1-Math.pow(1-Math.min(t,1),2);
+      orb.y = -r-10 + (endY-(-r-10)) * e;
+      if (t>0.82) orb.alpha = 1-(t-0.82)/0.18;
+      if (t>=1) { app.ticker.remove(tick); fxL.removeChild(orb); resolve(); }
+    };
+    app.ticker.add(tick);
+  });
+}
+
+// ── PLATFORM SINK (downward) ───────────────────────────────────────────────
+function sinkPlatform(ci, px) {
+  return new Promise(resolve => {
+    const start = platSink[ci];
+    const end   = start + px;
+    let t=0;
+    if (px>8) shakeChar(ci);
+    const tick = () => {
+      t += 0.013;
+      platSink[ci] = start + (end-start)*(1-Math.pow(1-Math.min(t,1),3));
+      redraw();
+      if (t>=1) { platSink[ci]=end; app.ticker.remove(tick); resolve(); }
+    };
+    app.ticker.add(tick);
+  });
+}
+
+function shakeChar(i) {
+  if (!charSprites[i]) return;
+  const ox = charSprites[i].x; let t=0;
+  const tick = () => {
+    t+=0.12; charSprites[i].x = ox + Math.sin(t*22)*9*(1-t);
+    if (t>=1) { charSprites[i].x=ox; app.ticker.remove(tick); }
+  };
+  app.ticker.add(tick);
+}
+
+// ── EMOTIONS ───────────────────────────────────────────────────────────────
+async function updateEmos() {
+  const sorted = runPenalty.map((p,i)=>({i,p})).sort((a,b)=>a.p-b.p);
+  const nextEmos = Array(N).fill('normal');
+
+  for (let r=0;r<sorted.length;r++) {
+    const ci=sorted[r].i, gap=sorted[r].p-sorted[0].p;
+    let emo;
+    if (r===0) emo = sorted[0].p<2?'laugh':'smile1';
+    else if (r===1) emo = gap<12?'smirk':'surprised';
+    else emo = gap>30?'sad':'surprised';
+    nextEmos[ci] = emo;
+  }
+
+  // Apply changes one-by-one (never simultaneous).
+  for (const { i } of sorted) {
+    if (currentEmos[i] !== nextEmos[i]) {
+      setEmo(i, nextEmos[i]);
+      currentEmos[i] = nextEmos[i];
+      await delay(120);
+    }
+  }
+}
+
+// ── FLOATING TEXT ──────────────────────────────────────────────────────────
+function floatTxt(x,y,text,color) {
+  const t=new PIXI.Text(text,{fontFamily:'Courier New',fontSize:14,fill:color,fontWeight:'bold',dropShadow:true,dropShadowDistance:2,dropShadowColor:0x000000});
+  t.anchor.set(0.5,1); t.x=x; t.y=y; fxL.addChild(t);
+  let tick2=0;
+  const ticker = () => {
+    tick2 += 0.015;
+    t.y -= 0.7;
+    t.alpha = 1 - tick2;
+    if (tick2 >= 1) { app.ticker.remove(ticker); fxL.removeChild(t); }
+  };
+  app.ticker.add(ticker);
+}
+
+// ── NARRATOR ───────────────────────────────────────────────────────────────
+function setNarrator(text, emo='neutral') {
+  document.getElementById('narrator-text').textContent = text;
+  const img = document.getElementById('wise-portrait');
+  img.src = SPRITES.wise[emo] || SPRITES.wise.neutral;
+}
+function showBadge(name,w) {
+  document.getElementById('criterion-name').textContent=name.toUpperCase();
+  document.getElementById('criterion-weight').textContent=`${Math.round(w*100)}%`;
+  document.getElementById('criterion-badge').classList.add('visible');
+}
+function hideBadge() { document.getElementById('criterion-badge').classList.remove('visible'); }
+function updateProgress(s,tot) {
+  document.getElementById('step-indicator').textContent=`STEP ${s} / ${tot}`;
+  document.getElementById('progress-bar').style.width=`${(s/tot)*100}%`;
+}
+
+// ── STEP MACHINE ───────────────────────────────────────────────────────────
+const TOTAL = 2 + DEMO.features.length;
+
+async function nextStep() {
+  if (animating) return;
+  animating=true;
+  document.getElementById('next-btn').disabled=true;
+
+  if      (currentStep===0) await stepIntro();
+  else if (currentStep===1) await stepNorm();
+  else                      await stepCriterion(currentStep-2);
+
+  currentStep++;
+  updateProgress(currentStep, TOTAL);
+
+  if (currentStep>=TOTAL) {
+    await delay(700); showWinner();
+  } else {
+    document.getElementById('next-btn').disabled=false;
+    const fi=currentStep-2;
+    document.getElementById('next-btn').textContent =
+      currentStep===TOTAL-1 ? `Final Criterion →` :
+      currentStep>=2 ? `Apply: ${DEMO.features[fi]} →` : 'See Normalization →';
+  }
+  animating=false;
+}
+
+async function stepIntro() {
+  setNarrator("I am The Analyst. Today we evaluate 3 candidates across 3 weighted criteria. The one with the lowest total penalty shall prevail.", 'explaining');
+  document.getElementById('next-btn').textContent='See Normalization →';
+  await delay(600);
+}
+
+async function stepNorm() {
+  setNarrator("First — normalization. All raw scores are compressed to 0–100 so every criterion is judged on equal footing.", 'explaining');
+  hideBadge();
+  for (let i=0;i<N;i++) {
+    let off=0;
+    for (const feat of DEMO.features) {
+      floatTxt(CENTERS[i], GROUND_Y+platSink[i]-CHAR_H*0.2-off, `${feat}: ${DEMO.raw[DEMO.candidates[i]][feat]}`, CHAR_COLORS[i]);
+      off+=24;
+    }
+  }
+  await delay(2600);
+  document.getElementById('next-btn').textContent=`Apply: ${DEMO.features[0]} →`;
+}
+
+async function stepCriterion(fi) {
+  const feat=DEMO.features[fi], w=DEMO.weights[fi];
+  const narrations=[
+    `Criterion 1 — ${feat}. Weight: ${Math.round(w*100)}%. The most critical factor. I evaluate each candidate in turn.`,
+    `Criterion 2 — ${feat}. Weight: ${Math.round(w*100)}%. Experience carries weight — but less than raw skill.`,
+    `Criterion 3 — ${feat}. Weight: ${Math.round(w*100)}%. The final layer. This seals the verdict.`,
+  ];
+  setNarrator(narrations[fi]||`Applying ${feat}`, 'explaining');
+  showBadge(feat, w);
+  await delay(1200);
+
+  // Evaluate ONE candidate at a time
+  for (let i=0;i<N;i++) {
+    const wp=DEMO.detailed_breakdown[DEMO.candidates[i]][feat].weighted_penalty;
+    const sinkPx=(wp/100)*MAX_SINK;
+
+    await dropOrbTo(i, w, wp);   // orb falls to this candidate
+
+    const color=wp<0.01?0x4ade80:wp<15?0xfbbf24:0xff6b6b;
+    floatTxt(CENTERS[i], GROUND_Y+platSink[i]-CHAR_H-18, wp<0.01?'✓ No penalty!':`Penalty: ${wp.toFixed(1)}`, color);
+
+    runPenalty[i]+=wp;
+    await sinkPlatform(i, sinkPx);   // platform sinks DOWN
+    await updateEmos();
+    await delay(450);
+  }
+
+  const leader=runPenalty.indexOf(Math.min(...runPenalty));
+  const reactions=[
+    `After ${feat} — ${DEMO.candidates[leader]} leads. The contest is just beginning.`,
+    `${DEMO.candidates[leader]} holds the lead. Pressure mounts.`,
+    `The analysis is complete. ${DEMO.candidates[leader]} stands above all.`,
+  ];
+  setNarrator(reactions[fi], leader===0?'impressed':'concerned');
+  if (fi<DEMO.features.length-1) document.getElementById('next-btn').textContent=`Apply: ${DEMO.features[fi+1]} →`;
+  await delay(500);
+}
+
+// ── WINNER ─────────────────────────────────────────────────────────────────
+function showWinner() {
+  const wi=DEMO.candidates.indexOf(DEMO.winner);
+  const sc=DEMO.ranking.find(r=>r.product===DEMO.winner).score;
+  for (let i=0;i<N;i++) {
+    const emo = i===wi ? 'laugh' : 'sad';
+    setEmo(i, emo);
+    currentEmos[i] = emo;
+  }
+  setNarrator(`${DEMO.winner} achieves the lowest penalty of ${sc.toFixed(2)}. The decision is clear.`, 'proud');
+  document.getElementById('winner-name').textContent=DEMO.winner;
+  document.getElementById('winner-score').textContent=`Total Penalty: ${sc.toFixed(2)} (lower = better)`;
+  document.getElementById('winner-reason').textContent=DEMO.explanation;
+  document.getElementById('winner-overlay').classList.add('visible');
+  document.getElementById('next-btn').textContent='✓ Complete';
+}
+
+// ── RESTART ────────────────────────────────────────────────────────────────
+function restartVisualization() {
+  // Reset all state
+  platSink=[0,0,0]; runPenalty=[0,0,0]; currentStep=0; animating=false;
+  currentEmos=['normal','normal','normal'];
+
+  // Clear any lingering fx
+  fxL.removeChildren();
+
+  // Respawn characters and labels at original Y positions
+  spawnChars();
+  spawnLabels();
+
+  // Redraw platforms at original position
+  redraw();
+
+  // Reset all emotions to normal
+  for (let i=0;i<N;i++) {
+    setEmo(i,'normal');
+    currentEmos[i] = 'normal';
+  }
+
+  // Reset UI
+  document.getElementById('winner-overlay').classList.remove('visible');
+  document.getElementById('next-btn').disabled=false;
+  document.getElementById('next-btn').textContent='Begin →';
+  hideBadge();
+  updateProgress(0,TOTAL);
+  setNarrator('All candidates present. Press Begin when ready.','neutral');
+}
+
+function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+async function init() {
+  document.getElementById('next-btn').disabled=true;
+  document.getElementById('next-btn').textContent='Loading sprites...';
+  drawBG(); drawPlatforms();
+  await loadTextures();
+  spawnChars(); spawnLabels();
+  updateProgress(0,TOTAL);
+  setNarrator('All candidates present. Press Begin when ready.','neutral');
+  document.getElementById('next-btn').disabled=false;
+  document.getElementById('next-btn').textContent='Begin →';
+}
+
+init();
+</script>
+</body>
+</html>
