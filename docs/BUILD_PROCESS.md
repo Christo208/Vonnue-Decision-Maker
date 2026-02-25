@@ -366,6 +366,160 @@ Until today I had only one commit. Today I learned proper git workflow and built
 
 ---
 
+## Phase 2 Pre-work: Decision Visualizer — February 24–25, 2026
+
+### Why This Feature Exists
+
+After Phase 1.5 was complete, I had a working decision system but a transparency problem. The results page showed a ranking and a penalty score — correct, but not convincing. A user might ask: *why did Alice win? How did the weights actually affect the outcome?* The answer was buried in a breakdown table that most users would skip.
+
+The Visualizer was my answer to that. The goal: make the algorithm visible step by step, so the user watches the weights and penalties determine the winner rather than just reading the conclusion.
+
+This directly addresses Vonnue's evaluation criteria — *"clarity of thinking"* and *"transparency."* The animation is not decoration. It is the algorithm made watchable.
+
+---
+
+### Technology Decision: Pixi.js
+
+**First instinct was GSAP + CSS.** Both are capable of animation and I already had some familiarity. Claude agreed they could work for basic movement.
+
+**But I wanted WebGL-quality glow effects** — the kind that make something look like a fireball rather than a colored circle. CSS `box-shadow` is flat. GSAP animates CSS properties. Neither can do real-time bloom, additive blending, or particle effects without WebGL.
+
+**Pixi.js chosen because:**
+- WebGL renderer — real glow via `BlurFilter`, layered concentric rendering
+- `AnimatedSprite` — plays PNG frame sequences natively, exactly what fireball spritesheets need
+- `app.ticker` — frame-perfect animation loop, same as a game engine
+- One CDN import, no build step
+
+**Honest assessment:** For the current prototype, GSAP could have matched most of what we built. Pixi earns its place specifically for the fireball glow and the future particle system. The choice was forward-looking, not immediately necessary.
+
+---
+
+### Sprite Sourcing
+
+**Character sprites — Sutemo Male Sprite Pack (itch.io)**
+
+Three candidates needed distinct visual identities. I searched itch.io for visual novel style bust-up sprites — head and torso, transparent background, multiple expressions.
+
+Sutemo's pack had:
+- 10 expressions per character (laugh, smile, smirk, normal, surprised, sad, angry)
+- 5 hair colors — used brown, black, light brown for the 3 candidates
+- PSD format with separate layers per expression
+
+**Export workflow:** Opened PSD in Photopea (free browser Photoshop). Toggle one expression layer visible at a time, hide the Paper (white background) layer, export PNG with `Ctrl+Shift+Alt+S`. Repeated for 3 characters × 9 expressions = 27 PNGs.
+
+Naming convention: `char_normal.png`, `char2_smile1.png`, etc.
+
+**Narrator sprite — Finch Tired Teacher (itch.io, by Eufasy)**
+
+The narrator needed to look like an analyst, not a player. A lab-coat scientist character fit the "Decision Companion" theme. 6 expressions used: neutral, explaining, impressed, concerned, proud, surprised.
+
+License: School/personal projects allowed. Credit: Eufasy.
+
+---
+
+### Fireball Asset Research
+
+The original design used Pixi `Graphics` circles with concentric rings for the penalty orb — simulating glow by drawing overlapping semi-transparent circles. The result looked like a plain circle, not a fireball.
+
+**What a real fireball requires:** white-hot core, color gradient outward (white → yellow → orange → red), organic irregular flame shape, animated. This cannot be drawn programmatically at acceptable quality without a spritesheet made by an artist.
+
+**Research path:**
+1. Reviewed a Godot 4 particle fireball tutorial — too complex, game-engine-specific
+2. Checked a Unity paid asset ($29) — confirmed the spec I needed (256×256 frames, transparent PNG)
+3. Found `weisinx7` fireball pack on itch.io — free for personal use, 5 types, 30–40 frames each
+
+**The 5 types and how they map to penalties:**
+
+| Type | Penalty Range | Visual Character |
+|------|--------------|-----------------|
+| `fire_ball_side_small` | 1–20 | Small, calm flame |
+| `fire_ball_side_medium` | 21–45 | Medium intensity |
+| `fireball_high_speed_side_small` | 46–70 | Fast, aggressive |
+| `meteor_side_medium` | 71–88 | Heavy, devastating |
+| `fire_ball_blue_side_small` | 89–100 | Maximum penalty, blue energy |
+
+All frames are side-facing. Since fireballs fall downward in the visualizer, I applied `rotation = Math.PI / 2` in Pixi to turn side-facing frames into downward-falling ones. The flame trail then points upward as the ball descends — physically correct.
+
+---
+
+### Iterative Design Decisions
+
+**Orb → Fireball**
+
+The first implementation used simple `PIXI.Graphics` orbs — concentric circles at decreasing alpha to simulate glow. After seeing them in the browser they looked like plain circles. Switched to spritesheet `AnimatedSprite` approach once the weisinx7 asset was confirmed suitable.
+
+**Left-Right Layout for Penalty and Values**
+
+Early versions placed penalty scores below the platform. This caused three-way overlap: running total, per-criterion penalty, and the values box all competed for the same narrow space.
+
+Resolution after ASCII drawing iterations:
+- Penalty value (`-20.3`) → **left of character**, right-aligned text anchor
+- Values box (S/E/C raw data) → **right of character**, bordered box
+- Running total (`⚠ 7.2`) → **below platform**, always visible
+
+Both left and right elements are Y-anchored to platform position and update in real time as the platform sinks.
+
+**Auto-Follow Camera**
+
+With 3 criteria the bottom element (`⚠ 50.0`) was already partially cut off. With 5–6 criteria it would disappear entirely.
+
+Solution: all game objects (platforms, characters, fireballs, math boxes) live inside a `gameWorld` Pixi container. Background stars live directly on `app.stage` and stay fixed. When platforms sink, `recalcCameraTarget()` calculates the lowest visible element and smoothly shifts `gameWorld.y` upward. The camera follows in real time during sink animations.
+
+Manual scroll buttons (↑ ↓ ⌂) added as HTML overlay on right edge of canvas for cases where user wants to look around freely. ⌂ snaps back to origin.
+
+**Math Equations in Boxes**
+
+Early floating text (drifting upward, fading) was hard to read — text moved while users were trying to read it. Replaced with static bordered boxes, one per candidate, appearing sequentially and staying until the next criterion begins. This gives users time to understand the calculation before the fireball fires.
+
+---
+
+### CHANGES.md Approach with Codex
+
+The visualizer accumulated many iterative changes over the session. Writing and applying changes directly in Claude would have consumed tokens rapidly on a 700+ line file.
+
+**Solution:** I wrote precise `CHANGES.md` specification files describing exactly what to add, remove, or replace — including pseudocode and positioning specs. Codex (which reads the actual file on disk) applied them. Claude reviewed the results and wrote the next spec.
+
+Files written this session:
+- `CHANGES.md` — initial Idea 2 laser system
+- `CHANGES_fireball.md` — fireball spritesheet system
+- `CHANGES_fixes.md` — layout and UX fixes round 1
+- `CHANGES_fixes2.md` — math boxes, penalty labels, static no-penalty text
+- `CHANGES_fixes3.md` — penalty-left values-right layout, blue ball size, ideal badge
+- `CHANGES_layout.md` — final layout with ASCII-confirmed positioning
+- `CHANGES_final.md` — auto-follow camera, scroll controls, normalization boxes, winner reveal button
+
+This workflow — Claude designs, Codex implements, Claude reviews — proved more efficient than direct file editing for large iterative changes.
+
+---
+
+### Mistakes Made During Visualizer Development
+
+| Mistake | Impact | Fix |
+|---------|--------|-----|
+| Used `app.ticker.add()` return value to remove callback | Stale tickers never removed, platforms stayed down after Watch Again | Store callback reference in named variable, pass to `app.ticker.remove()` |
+| All 3 orbs dropped simultaneously | User attention split, couldn't follow individual candidate evaluation | Sequential per-candidate loop with `await` between each |
+| Math text floated above character, not above column center | Overlap with character name labels | Fixed x position to `CENTERS[i]`, anchor `(0.5, 0)` |
+| Ideal text rendered in Pixi canvas | Overlapped with narrator HTML bar | Moved raw ideal to HTML `div#ideal-badge`, normalized ideal to second line of same badge |
+| Side-facing fireball sprites used without rotation | Flame trail pointed sideways during downward fall | Applied `rotation = Math.PI / 2` to all `AnimatedSprite` instances |
+| Values box used abbreviated S/E/C labels | Unclear to user what S/E/C meant | Changed to full feature names from `DEMO.features` array |
+| Winner overlay appeared automatically | User had no time to see final state before overlay covered it | Added `waitingForWinnerReveal` flag, "Reveal Winner 🏆" button |
+
+---
+
+### Current State (Updated)
+
+**Phase 1 — Complete ✅** Generic decision system, direction-aware penalty scoring, normalization, weighted ranking, tie detection, 5-step web wizard, AI explanations with 4 styles and offline fallback.
+
+**Phase 1.5 — Complete ✅** 3 input types, preprocessing pipeline, Approval Stage, source badges, confidence indicators, AI failure handling with manual override.
+
+**Visualizer Prototype — Complete ✅** Step-by-step animated decision explanation. Pixi.js WebGL renderer. Fireball spritesheets with 5 penalty tiers. Analyst narrator with expression changes. Auto-follow camera. Math equation boxes. Sequential per-candidate evaluation. Hardcoded demo data (Alice/Bob/Charlie). Pending: integration with real `/api/calculate` response data.
+
+**Phase 2 — Planned** Web scraping for automatic product data fetching. Visualizer integration with real API data.
+
+**Phase 3 — Planned** Customer review analysis.
+
+---
+
 ## What I Would Do Differently
 
 1. Start documentation from Day 1, not catch up later
