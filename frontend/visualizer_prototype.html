@@ -1,39 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Decision Visualizer v2</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0a0a1a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0a1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+    }
 
     #narrator-bar {
-      position: fixed; top: 0; left: 0; right: 0;
-      background: linear-gradient(135deg, rgba(15,10,40,0.97), rgba(40,20,80,0.97));
-      border-bottom: 2px solid rgba(180,130,255,0.4);
-      padding: 8px 16px; display: flex; align-items: center; gap: 16px;
-      z-index: 20; min-height: 65px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg, rgba(15, 10, 40, 0.97), rgba(40, 20, 80, 0.97));
+      border-bottom: 2px solid rgba(180, 130, 255, 0.4);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 20;
+      min-height: 65px;
     }
+
     #wise-portrait {
-      width: 48px; height: 48px; border-radius: 50%;
-      border: 2px solid rgba(180,130,255,0.6);
-      object-fit: cover; object-position: top center; flex-shrink: 0;
-      background: rgba(180,130,255,0.25);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid rgba(180, 130, 255, 0.6);
+      object-fit: cover;
+      object-position: top center;
+      flex-shrink: 0;
+      background: rgba(180, 130, 255, 0.25);
     }
-    #narrator-name { font-size: 0.65rem; color: rgba(180,130,255,0.9); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
-    #narrator-text { font-size: 0.88rem; color: #e8e0ff; line-height: 1.5; }
+
+    #narrator-name {
+      font-size: 0.65rem;
+      color: rgba(180, 130, 255, 0.9);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    #narrator-text {
+      font-size: 0.88rem;
+      color: #e8e0ff;
+      line-height: 1.5;
+    }
 
     #criterion-badge {
-      background: rgba(180,130,255,0.15); border: 1px solid rgba(180,130,255,0.4);
-      border-radius: 12px; padding: 8px 18px; text-align: center; flex-shrink: 0;
-      opacity: 0; transition: opacity 0.5s;
+      background: rgba(180, 130, 255, 0.15);
+      border: 1px solid rgba(180, 130, 255, 0.4);
+      border-radius: 12px;
+      padding: 8px 18px;
+      text-align: center;
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity 0.5s;
     }
-    #criterion-badge.visible { opacity: 1; }
-    #criterion-name { font-size: 0.8rem; color: #c4a0ff; font-weight: 700; letter-spacing: 1px; }
-    #criterion-weight { font-size: 1.5rem; color: #fff; font-weight: 900; }
-    #criterion-weight-label { font-size: 0.68rem; color: rgba(196,160,255,0.7); }
+
+    #criterion-badge.visible {
+      opacity: 1;
+    }
+
+    #criterion-name {
+      font-size: 0.8rem;
+      color: #c4a0ff;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    #criterion-weight {
+      font-size: 1.5rem;
+      color: #fff;
+      font-weight: 900;
+    }
+
+    #criterion-weight-label {
+      font-size: 0.68rem;
+      color: rgba(196, 160, 255, 0.7);
+    }
+
     #ideal-badge {
       background: rgba(255, 215, 0, 0.15);
       border: 1.5px solid rgba(255, 215, 0, 0.6);
@@ -46,68 +106,192 @@
       margin-left: 8px;
       min-width: 80px;
     }
-    #ideal-badge.visible { opacity: 1; }
+
+    #ideal-badge.visible {
+      opacity: 1;
+    }
+
     #ideal-label {
       font-size: 0.62rem;
-      color: rgba(255,215,0,0.75);
+      color: rgba(255, 215, 0, 0.75);
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
       margin-bottom: 1px;
     }
+
     #ideal-value {
       font-size: 1.2rem;
       color: #ffd700;
       font-weight: 900;
       line-height: 1.1;
     }
+
     #ideal-norm-value {
       font-size: 0.7rem;
-      color: rgba(255,215,0,0.65);
+      color: rgba(255, 215, 0, 0.65);
       font-family: 'Courier New', monospace;
       margin-top: 1px;
     }
-    #pixi-canvas { position: fixed; top: 65px; left: 0; right: 0; bottom: 60px; }
+
+    #pixi-canvas {
+      position: fixed;
+      top: 65px;
+      left: 0;
+      right: 0;
+      bottom: 60px;
+    }
 
     #control-bar {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: rgba(10,10,26,0.97); border-top: 1px solid rgba(180,130,255,0.2);
-      padding: 10px 24px; display: flex; align-items: center; justify-content: space-between;
-      z-index: 20; height: 60px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10, 10, 26, 0.97);
+      border-top: 1px solid rgba(180, 130, 255, 0.2);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 20;
+      height: 60px;
     }
-    #step-indicator { font-size: 0.8rem; color: rgba(180,130,255,0.7); letter-spacing: 1px; }
-    #progress-bar-wrap { width: 180px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
-    #progress-bar { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 2px; transition: width 0.6s ease; width: 0%; }
+
+    #step-indicator {
+      font-size: 0.8rem;
+      color: rgba(180, 130, 255, 0.7);
+      letter-spacing: 1px;
+    }
+
+    #progress-bar-wrap {
+      width: 180px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    #progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 2px;
+      transition: width 0.6s ease;
+      width: 0%;
+    }
+
     #next-btn {
-      background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none;
-      padding: 10px 28px; border-radius: 8px; font-size: 0.95rem; font-weight: 700;
-      cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.5px;
     }
-    #next-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(118,75,162,0.5); }
-    #next-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    #next-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(118, 75, 162, 0.5);
+    }
+
+    #next-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
 
     #winner-overlay {
-      position: fixed; top: 65px; left: 0; right: 0; bottom: 60px;
-      background: rgba(0,0,0,0.78); display: flex; align-items: center; justify-content: center;
-      z-index: 30; opacity: 0; pointer-events: none; transition: opacity 0.8s;
+      position: fixed;
+      top: 65px;
+      left: 0;
+      right: 0;
+      bottom: 60px;
+      background: rgba(0, 0, 0, 0.78);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s;
     }
-    #winner-overlay.visible { opacity: 1; pointer-events: auto; }
+
+    #winner-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     #winner-card {
-      background: linear-gradient(135deg, rgba(102,126,234,0.93), rgba(118,75,162,0.93));
-      border: 2px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 40px 60px; text-align: center;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-      animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.93), rgba(118, 75, 162, 0.93));
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 40px 60px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
-    @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    #winner-title { font-size: 0.9rem; color: rgba(255,255,255,0.7); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
-    #winner-name  { font-size: 2.4rem; font-weight: 900; color: white; margin-bottom: 6px; }
-    #winner-score { font-size: 0.95rem; color: rgba(255,255,255,0.7); font-family: monospace; margin-bottom: 20px; }
-    #winner-reason { font-size: 0.95rem; color: rgba(255,255,255,0.85); line-height: 1.6; max-width: 420px; }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    #winner-title {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    #winner-name {
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    #winner-score {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-family: monospace;
+      margin-bottom: 20px;
+    }
+
+    #winner-reason {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.6;
+      max-width: 420px;
+    }
+
     #restart-btn {
-      margin-top: 24px; background: white; color: #667eea; border: none;
-      padding: 12px 32px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; transition: transform 0.2s;
+      margin-top: 24px;
+      background: white;
+      color: #667eea;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: transform 0.2s;
     }
-    #restart-btn:hover { transform: scale(1.03); }
+
+    #restart-btn:hover {
+      transform: scale(1.03);
+    }
 
     #scroll-controls {
       position: fixed;
@@ -119,6 +303,7 @@
       gap: 6px;
       z-index: 25;
     }
+
     #scroll-controls button {
       width: 34px;
       height: 34px;
@@ -133,1047 +318,1237 @@
       margin: 0;
       line-height: 1;
     }
-    #scroll-controls button:hover {
+
+        #scroll-controls button:hover {
       background: rgba(102, 126, 234, 0.55);
+    }
+
+    #h-scroll-wrap {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 66px;
+      width: min(58vw, 560px);
+      z-index: 25;
+      display: none;
+      background: rgba(10, 10, 26, 0.72);
+      border: 1px solid rgba(102, 126, 234, 0.45);
+      border-radius: 999px;
+      padding: 6px 12px;
+      backdrop-filter: blur(3px);
+    }
+
+    #h-scroll {
+      width: 100%;
+      accent-color: #667eea;
+      cursor: pointer;
     }
   </style>
 </head>
+
 <body>
 
-<div id="narrator-bar">
-  <img id="wise-portrait" src="sprites/wise/wise_neutral.png" alt="Analyst" onerror="this.style.background='rgba(180,130,255,0.35)'"/>
-  <div style="flex:1">
-    <div id="narrator-name">⚗️ The Analyst</div>
-    <div id="narrator-text">Initializing decision matrix...</div>
+  <div id="narrator-bar">
+    <img id="wise-portrait" src="sprites/wise/wise_neutral.png" alt="Analyst"
+      onerror="this.style.background='rgba(180,130,255,0.35)'" />
+    <div style="flex:1">
+      <div id="narrator-name">THE ANALYST</div>
+      <div id="narrator-text">Initializing decision matrix...</div>
+    </div>
+    <div id="criterion-badge">
+      <div id="criterion-name">CRITERION</div>
+      <div id="criterion-weight">0%</div>
+      <div id="criterion-weight-label">WEIGHT</div>
+    </div>
+    <div id="ideal-badge">
+      <div id="ideal-label">IDEAL</div>
+      <div id="ideal-value">-</div>
+      <div id="ideal-norm-value">norm: -</div>
+    </div>
   </div>
-  <div id="criterion-badge">
-    <div id="criterion-name">CRITERION</div>
-    <div id="criterion-weight">0%</div>
-    <div id="criterion-weight-label">WEIGHT</div>
+
+  <div id="pixi-canvas"></div>
+
+  <div id="winner-overlay">
+    <div id="winner-card">
+      <div id="winner-title">The Decision Is Clear</div>
+      <div id="winner-name">-</div>
+      <div id="winner-score">Total Penalty: 0.00</div>
+      <div id="winner-reason">-</div>
+      <button id="restart-btn" onclick="restartVisualization()">Watch Again</button>
+    </div>
   </div>
-  <div id="ideal-badge">
-    <div id="ideal-label">IDEAL</div>
-    <div id="ideal-value">-</div>
-    <div id="ideal-norm-value">norm: -</div>
+
+    <div id="scroll-controls">
+    <button id="scroll-left-btn" onclick="manualScrollX(120)" aria-label="Scroll left">&#8592;</button>
+    <button id="scroll-up-btn" onclick="manualScroll(-140)" aria-label="Scroll up">&#8593;</button>
+    <button id="scroll-top-btn" onclick="scrollToTop()" aria-label="Scroll home">&#8962;</button>
+    <button id="scroll-down-btn" onclick="manualScroll(140)" aria-label="Scroll down">&#8595;</button>
+    <button id="scroll-right-btn" onclick="manualScrollX(-120)" aria-label="Scroll right">&#8594;</button>
   </div>
-</div>
 
-<div id="pixi-canvas"></div>
-
-<div id="winner-overlay">
-  <div id="winner-card">
-    <div id="winner-title">🏆 The Decision Is Clear</div>
-    <div id="winner-name">—</div>
-    <div id="winner-score">Total Penalty: 0.00</div>
-    <div id="winner-reason">—</div>
-    <button id="restart-btn" onclick="restartVisualization()">↺ Watch Again</button>
+  <div id="h-scroll-wrap">
+    <input id="h-scroll" type="range" min="0" max="1000" value="0" oninput="manualScrollXTo(this.value)" />
   </div>
-</div>
 
-<div id="scroll-controls">
-  <button id="scroll-up-btn" onclick="manualScroll(-100)">&#8593;</button>
-  <button id="scroll-top-btn" onclick="scrollToTop()">&#8962;</button>
-  <button id="scroll-down-btn" onclick="manualScroll(100)">&#8595;</button>
-</div>
+  <div id="control-bar">
+    <div id="step-indicator">STEP 0 / 0</div>
+    <div id="progress-bar-wrap">
+      <div id="progress-bar"></div>
+    </div>
+    <button id="next-btn" onclick="nextStep()">Begin -></button>
+  </div>
 
-<div id="control-bar">
-  <div id="step-indicator">STEP 0 / 0</div>
-  <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
-  <button id="next-btn" onclick="nextStep()">Begin →</button>
-</div>
+  <script>
+    // Ã¢â€â‚¬Ã¢â€â‚¬ DEMO DATA Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    const DEMO_FALLBACK = {
+      candidates: ["Alice", "Bob", "Charlie"],
+      features: ["Skills", "Experience", "Culture Fit"],
+      weights: [0.5, 0.3, 0.2],
+      raw: {
+        "Alice": { "Skills": 85, "Experience": 70, "Culture Fit": 90 },
+        "Bob": { "Skills": 92, "Experience": 60, "Culture Fit": 65 },
+        "Charlie": { "Skills": 75, "Experience": 88, "Culture Fit": 80 },
+      },
+      ideals: { "Skills": 90, "Experience": 85, "Culture Fit": 95 },
+      normed: {
+        "Alice": { "Skills": 58.8, "Experience": 100.0, "Culture Fit": 100.0 },
+        "Bob": { "Skills": 100.0, "Experience": 0.0, "Culture Fit": 0.0 },
+        "Charlie": { "Skills": 0.0, "Experience": 88.2, "Culture Fit": 57.1 },
+      },
+      normedIdeals: { "Skills": 88.2, "Experience": 58.8, "Culture Fit": 80.0 },
+      detailed_breakdown: {
+        "Alice": { "Skills": { penalty: 0, weighted_penalty: 0 }, "Experience": { penalty: 24.07, weighted_penalty: 7.22 }, "Culture Fit": { penalty: 0, weighted_penalty: 0 } },
+        "Bob": { "Skills": { penalty: 0, weighted_penalty: 0 }, "Experience": { penalty: 100, weighted_penalty: 30 }, "Culture Fit": { penalty: 100, weighted_penalty: 20 } },
+        "Charlie": { "Skills": { penalty: 40.6, weighted_penalty: 20.3 }, "Experience": { penalty: 0, weighted_penalty: 0 }, "Culture Fit": { penalty: 40, weighted_penalty: 8 } },
+      },
+      ranking: [
+        { rank: 1, product: "Alice", score: 7.22 },
+        { rank: 2, product: "Charlie", score: 28.3 },
+        { rank: 3, product: "Bob", score: 50.0 },
+      ],
+      winner: "Alice",
+      explanation: "Alice wins with the lowest total penalty. Her exceptional Skills (weight 50%) keep her ahead despite a moderate Experience gap. Bob's strength is undermined by poor Experience and Culture Fit. Charlie falls short in Skills - the most critical criterion.",
+    };
 
-<script>
-// ── DEMO DATA ──────────────────────────────────────────────────────────────
-const DEMO = {
-  candidates: ["Alice", "Bob", "Charlie"],
-  features:   ["Skills", "Experience", "Culture Fit"],
-  weights:    [0.5, 0.3, 0.2],
-  raw: {
-    "Alice":   { "Skills":85, "Experience":70, "Culture Fit":90 },
-    "Bob":     { "Skills":92, "Experience":60, "Culture Fit":65 },
-    "Charlie": { "Skills":75, "Experience":88, "Culture Fit":80 },
-  },
-  ideals: { "Skills":90, "Experience":85, "Culture Fit":95 },
-  normed: {
-    "Alice":   { "Skills":58.8,  "Experience":100.0, "Culture Fit":100.0 },
-    "Bob":     { "Skills":100.0, "Experience":0.0,   "Culture Fit":0.0   },
-    "Charlie": { "Skills":0.0,   "Experience":88.2,  "Culture Fit":57.1  },
-  },
-  normedIdeals: { "Skills":88.2, "Experience":58.8, "Culture Fit":80.0 },
-  detailed_breakdown: {
-    "Alice":   { "Skills":{ penalty:0,     weighted_penalty:0    }, "Experience":{ penalty:24.07, weighted_penalty:7.22 }, "Culture Fit":{ penalty:0,  weighted_penalty:0   } },
-    "Bob":     { "Skills":{ penalty:0,     weighted_penalty:0    }, "Experience":{ penalty:100,   weighted_penalty:30   }, "Culture Fit":{ penalty:100,weighted_penalty:20  } },
-    "Charlie": { "Skills":{ penalty:40.6,  weighted_penalty:20.3 }, "Experience":{ penalty:0,     weighted_penalty:0    }, "Culture Fit":{ penalty:40, weighted_penalty:8   } },
-  },
-  ranking: [
-    { rank:1, product:"Alice",   score:7.22 },
-    { rank:2, product:"Charlie", score:28.3 },
-    { rank:3, product:"Bob",     score:50.0 },
-  ],
-  winner: "Alice",
-  explanation: "Alice wins with the lowest total penalty. Her exceptional Skills (weight 50%) keep her ahead despite a moderate Experience gap. Bob's strength is undermined by poor Experience and Culture Fit. Charlie falls short in Skills — the most critical criterion.",
-};
+    // Ã¢â€â‚¬Ã¢â€â‚¬ SPRITE PATHS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    const VISUALIZER_BUILD_ID = 'runtime-source-fix-2026-02-25-1';
+    console.log('[Visualizer] Build:', VISUALIZER_BUILD_ID, 'URL:', window.location.href);
 
-// ── SPRITE PATHS ───────────────────────────────────────────────────────────
-const SPRITES = {
-  char1: { laugh:'sprites/char1/char_laugh.png', smile1:'sprites/char1/char_smile1.png', smirk:'sprites/char1/char_smirk.png', normal:'sprites/char1/char_normal.png', surprised:'sprites/char1/char_surprised.png', sad:'sprites/char1/char_sad.png' },
-  char2: { laugh:'sprites/char2/char2_laugh.png', smile1:'sprites/char2/char2_smile1.png', smirk:'sprites/char2/char2_smirk.png', normal:'sprites/char2/char2_normal.png', surprised:'sprites/char2/char2_surprised.png', sad:'sprites/char2/char2_sad.png' },
-  char3: { laugh:'sprites/char3/char3_laugh.png', smile1:'sprites/char3/char3_smile1.png', smirk:'sprites/char3/char3_smirk.png', normal:'sprites/char3/char3_normal.png', surprised:'sprites/char3/char3_surprised.png', sad:'sprites/char3/char3_sad.png' },
-  wise:  { neutral:'sprites/wise/wise_neutral.png', explaining:'sprites/wise/wise_explaining.png', impressed:'sprites/wise/wise_impressed.png', concerned:'sprites/wise/wise_concerned.png', proud:'sprites/wise/wise_proud.png' },
-};
-const CHAR_KEYS   = ['char1','char2','char3'];
-const CHAR_COLORS = [0x667eea, 0xe85d75, 0x38b2ac];
-const N = 3;
-const FIREBALL_TYPES = [
-  'fire_ball_side_small',
-  'fire_ball_side_medium',
-  'fireball_high_speed_side_small',
-  'meteor_side_medium',
-  'fire_ball_blue_side_small',
-];
-const fireballTextures = {
-  fire_ball_side_small: [],
-  fire_ball_side_medium: [],
-  fireball_high_speed_side_small: [],
-  meteor_side_medium: [],
-  fire_ball_blue_side_small: [],
-};
-
-function getFireballType(penalty) {
-  if (penalty < 0.01) return null;
-  if (penalty <= 20) return 'fire_ball_side_small';
-  if (penalty <= 45) return 'fire_ball_side_medium';
-  if (penalty <= 70) return 'fireball_high_speed_side_small';
-  if (penalty <= 88) return 'meteor_side_medium';
-  return 'fire_ball_blue_side_small';
-}
-
-function getFrameCount(type) {
-  if (type === 'fireball_high_speed_side_small') return 40;
-  if (type === 'fire_ball_blue_side_small') return 35;
-  return 30;
-}
-
-// ── PIXI SETUP ─────────────────────────────────────────────────────────────
-const W = window.innerWidth;
-const H = window.innerHeight - 125;
-const app = new PIXI.Application({ width:W, height:H, backgroundColor:0x0a0a1a, resolution:window.devicePixelRatio||1, autoDensity:true, antialias:true });
-document.getElementById('pixi-canvas').appendChild(app.view);
-app.view.style.width = '100%'; app.view.style.height = '100%';
-
-// ── LAYOUT ─────────────────────────────────────────────────────────────────
-const SLOT_W     = W / N;
-const GROUND_Y   = H * 0.78;       // where platforms START (top of platform)
-const PLAT_H     = 20;
-const PLAT_W     = SLOT_W * 0.52;
-const CHAR_H     = H * 0.46;
-const MAX_SINK   = H * 0.30;       // max downward travel
-const CENTERS    = [SLOT_W*0.5, SLOT_W*1.5, SLOT_W*2.5];
-const MATH_ZONE_Y = H * 0.08;
-const BALL_ZONE_Y = H * 0.22;
-const BASE_RADIUS = 28;
-
-// ── STATE ──────────────────────────────────────────────────────────────────
-let platSink      = [0, 0, 0];   // increases → platform moves DOWN
-let runPenalty    = [0, 0, 0];
-let currentStep   = 0;
-let animating     = false;
-let currentEmos   = ['normal', 'normal', 'normal'];
-const mathBoxes   = Array(N).fill(null);
-const penaltyLabelObjs = [null, null, null];
-const valueBoxObjs = [null, null, null];
-let cameraY = 0;
-let cameraTargetY = 0;
-let waitingForWinnerReveal = false;
-
-const gameWorld = new PIXI.Container();
-
-// ── LAYERS ─────────────────────────────────────────────────────────────────
-const bgL   = new PIXI.Container();
-const platL = new PIXI.Container();
-const charL = new PIXI.Container();
-const fxL   = new PIXI.Container();
-app.stage.addChild(bgL);
-app.stage.addChild(gameWorld);
-gameWorld.addChild(platL);
-gameWorld.addChild(charL);
-gameWorld.addChild(fxL);
-
-app.ticker.add(() => {
-  if (Math.abs(gameWorld.y - cameraTargetY) > 0.5) {
-    gameWorld.y += (cameraTargetY - gameWorld.y) * 0.08;
-  } else {
-    gameWorld.y = cameraTargetY;
-  }
-  cameraY = gameWorld.y;
-});
-
-// ── BACKGROUND ─────────────────────────────────────────────────────────────
-function drawBG() {
-  const g = new PIXI.Graphics();
-  g.beginFill(0x0a0a1a); g.drawRect(0,0,W,H); g.endFill();
-  for (let i=0;i<90;i++) {
-    const x=Math.random()*W, y=Math.random()*H*0.75;
-    g.beginFill(0xffffff, Math.random()*0.5+0.15); g.drawCircle(x,y,Math.random()*1.4+0.3); g.endFill();
-  }
-  // Abyss
-  g.beginFill(0x03030f); g.drawRect(0, GROUND_Y+PLAT_H, W, H); g.endFill();
-  g.lineStyle(2, 0x667eea, 0.2); g.moveTo(0, GROUND_Y+PLAT_H); g.lineTo(W, GROUND_Y+PLAT_H);
-  bgL.addChild(g);
-}
-
-// ── PLATFORMS ──────────────────────────────────────────────────────────────
-function drawPlatforms() {
-  platL.removeChildren();
-  for (let i=0;i<N;i++) {
-    const cx = CENTERS[i];
-    const py = GROUND_Y + platSink[i];  // sinks DOWN as penalty grows
-
-    const g = new PIXI.Graphics();
-    // Shadow
-    g.beginFill(0x000000,0.2); g.drawEllipse(cx, py+PLAT_H+5, PLAT_W*0.44, 7); g.endFill();
-    // Body
-    g.beginFill(CHAR_COLORS[i], 0.88); g.drawRoundedRect(cx-PLAT_W/2, py, PLAT_W, PLAT_H, 9); g.endFill();
-    // Highlight
-    g.lineStyle(1.5, 0xffffff, 0.22); g.moveTo(cx-PLAT_W/2+10, py+3); g.lineTo(cx+PLAT_W/2-10, py+3);
-    platL.addChild(g);
-
-    const nameTxt = new PIXI.Text(DEMO.candidates[i], {
-      fontFamily:'-apple-system, sans-serif',
-      fontSize:15,
-      fill:0xffffff,
-      fontWeight:'bold',
-      dropShadow:true,
-      dropShadowColor:0x000000,
-      dropShadowDistance:1,
-    });
-    nameTxt.anchor.set(0.5, 0.5);
-    nameTxt.x = cx;
-    nameTxt.y = py + PLAT_H / 2;
-    platL.addChild(nameTxt);
-
-    // Penalty score
-    const sc = new PIXI.Text(
-      runPenalty[i] < 0.01 ? '' : ('⚠ ' + runPenalty[i].toFixed(1)),
-      { fontFamily:'Courier New', fontSize:13, fill: runPenalty[i]<0.01?0x4ade80:0xff6b6b, fontWeight:'bold' }
-    );
-    sc.anchor.set(0.5,0); sc.x=cx; sc.y=py+PLAT_H+8;
-    platL.addChild(sc);
-  }
-}
-
-// ── CHARACTERS ─────────────────────────────────────────────────────────────
-const charSprites = [null,null,null];
-const charTex     = [{},{},{}];
-const charOrigH   = [0,0,0];   // store original texture heights after first load
-const wiseTex     = {};
-
-async function loadTextures() {
-  const all = [];
-  for (let i=0;i<N;i++) {
-    for (const [e,p] of Object.entries(SPRITES[CHAR_KEYS[i]])) {
-      all.push(PIXI.Assets.load(p).then(t=>{
-        charTex[i][e]=t;
-        // Store height from normal expression for consistent scaling
-        if (e==='normal') charOrigH[i] = t.height;
-      }).catch(()=>{}));
-    }
-  }
-  for (const [e,p] of Object.entries(SPRITES.wise)) {
-    all.push(PIXI.Assets.load(p).then(t=>{ wiseTex[e]=t; }).catch(()=>{}));
-  }
-
-  for (const type of FIREBALL_TYPES) {
-    const frames = getFrameCount(type);
-    for (let f=0; f<frames; f++) {
-      const path = `sprites/fireballs/${type}/imgs/img_${f}.png`;
-      all.push(
-        PIXI.Assets.load(path)
-          .then(tex => { fireballTextures[type][f] = tex; })
-          .catch(() => {})
-      );
-    }
-  }
-
-  await Promise.all(all);
-}
-
-function spawnChars() {
-  charL.removeChildren();
-  for (let i=0;i<N;i++) {
-    const tex = charTex[i]['normal'] || PIXI.Texture.WHITE;
-    const sp  = new PIXI.Sprite(tex);
-    sp.anchor.set(0.5,1.0);
-    // Always use stored original height — safe on restart when textures are cached
-    const h = charOrigH[i] > 0 ? charOrigH[i] : Math.max(sp.texture.height, 1);
-    sp.scale.set(CHAR_H / h);
-    sp.x = CENTERS[i];
-    sp.y = GROUND_Y;   // always start at ground level (platSink=0 on init/restart)
-    charSprites[i] = sp;
-    currentEmos[i] = 'normal';
-    charL.addChild(sp);
-  }
-}
-
-function setEmo(i, emo) { const t=charTex[i][emo]; if(t&&charSprites[i]) charSprites[i].texture=t; }
-
-function updateFloatingElements() {
-  for (let i=0; i<N; i++) {
-    const torsoY = GROUND_Y + platSink[i] - CHAR_H * 0.5;
-
-    if (penaltyLabelObjs[i]) {
-      penaltyLabelObjs[i].y = torsoY;
-    }
-
-    if (valueBoxObjs[i]) {
-      const BOX_H = 72;
-      valueBoxObjs[i].y = torsoY - BOX_H / 2;
-    }
-  }
-}
-
-function recalcCameraTarget() {
-  let lowestY = 0;
-  for (let i=0; i<N; i++) {
-    const bottom = GROUND_Y + platSink[i] + PLAT_H + 50;
-    if (bottom > lowestY) lowestY = bottom;
-  }
-
-  const margin = 50;
-  if (lowestY > H - margin) {
-    cameraTargetY = -(lowestY - (H - margin));
-  } else {
-    cameraTargetY = 0;
-  }
-  cameraTargetY = Math.min(cameraTargetY, 0);
-}
-
-function manualScroll(deltaPx) {
-  cameraTargetY -= deltaPx;
-  const maxDown = -(MAX_SINK * 1.2);
-  cameraTargetY = Math.max(cameraTargetY, maxDown);
-  cameraTargetY = Math.min(cameraTargetY, 0);
-}
-
-function scrollToTop() {
-  cameraTargetY = 0;
-}
-
-// ── REDRAW ─────────────────────────────────────────────────────────────────
-function redraw() {
-  drawPlatforms();
-  for (let i=0;i<N;i++) {
-    if (charSprites[i]) charSprites[i].y = GROUND_Y + platSink[i];
-  }
-  updateFloatingElements();
-}
-
-// ── ORB: drops to ONE candidate ────────────────────────────────────────────
-function makeLaserBall(penalty) {
-  const container = new PIXI.Container();
-  const type = getFireballType(penalty);
-
-  if (!type) {
-    const txt = new PIXI.Text('No Penalty - No Fire', {
-      fontFamily:'-apple-system, BlinkMacSystemFont, sans-serif',
-      fontSize:16,
-      fontWeight:'bold',
-      fill:0xffffff,
-      dropShadow:true,
-      dropShadowColor:0x000000,
-      dropShadowDistance:2,
-    });
-    txt.anchor.set(0.5, 0.5);
-    container.addChild(txt);
-    container._isRing = true;
-    container._isText = true;
-    container._noAnim = true;
-    return container;
-  }
-
-  const frames = fireballTextures[type].filter(Boolean);
-  if (!frames.length) {
-    const fallback = new PIXI.Graphics();
-    fallback.lineStyle(3, 0xff9900, 0.9);
-    fallback.drawCircle(0, 0, 28);
-    container.addChild(fallback);
-    container._isRing = true;
-    return container;
-  }
-
-  const anim = new PIXI.AnimatedSprite(frames);
-  anim.anchor.set(0.5, 0.5);
-  anim.rotation = Math.PI / 2;
-
-  const t = Math.min(penalty / 100, 1);
-  let baseScale = 0.32 + t * 0.45;
-  if (type === 'fire_ball_blue_side_small') {
-    baseScale = baseScale * 0.6;
-  }
-  anim.scale.set(baseScale);
-
-  anim.animationSpeed = 0.4;
-  anim.loop = true;
-  anim.play();
-
-  container.addChild(anim);
-  container._anim = anim;
-  container._isRing = false;
-  return container;
-}
-
-function startPulse(ball) {
-  if (ball._noAnim) {
-    return () => {};
-  }
-  let t = 0;
-  const fn = () => {
-    t += 0.035;
-    ball.y += Math.sin(t) * 0.4;
-  };
-  app.ticker.add(fn);
-  return fn;
-}
-
-function fireBall(ball, pulseFn, targetY) {
-  return new Promise(resolve => {
-    app.ticker.remove(pulseFn);
-    if (ball._noAnim) {
-      resolve();
-      return;
-    }
-    const startY = ball.y;
-    let t = 0;
-    const fn = () => {
-      t += 0.02;
-      const ease = Math.pow(Math.min(t, 1), 2);
-      ball.y = startY + (targetY - startY) * ease;
-      if (t >= 1) {
-        app.ticker.remove(fn);
-        fxL.removeChild(ball);
-        if (ball._anim) ball._anim.stop();
-        resolve();
+    function validateAndPrepare(d) {
+      if (
+        Array.isArray(d.candidates) && d.candidates.length >= 2 &&
+        Array.isArray(d.features) && d.features.length >= 1 &&
+        Array.isArray(d.weights) && d.weights.length >= 1 &&
+        d.normed && d.normedIdeals &&
+        d.detailed_breakdown && d.ranking && ('winner' in d)
+      ) {
+        if (!d.raw) {
+          d.raw = {};
+          for (const c of d.candidates) {
+            d.raw[c] = {};
+            for (const f of d.features) {
+              d.raw[c][f] = d.normed[c]?.[f]?.toFixed(1) ?? '?';
+            }
+          }
+        }
+        return d;
       }
+      return null;
+    }
+
+    function loadDemoData() {
+      const parentSource = window.parent?.__VISUALIZER_SOURCE__;
+      if (parentSource) {
+        console.log('[Visualizer] Parent source:', parentSource.build, parentSource.url);
+      }
+
+      // Primary: read from parent window (set before iframe.src assigned)
+      const injected = window.__VISUALIZER_DATA__ || window.parent?.__VISUALIZER_DATA__;
+      if (injected) {
+        try {
+          const d = typeof injected === 'string'
+            ? JSON.parse(injected)
+            : injected;
+          const valid = validateAndPrepare(d);
+          if (valid) {
+            console.log('[Visualizer] Using injected data for:', valid.candidates);
+            return valid;
+          } else {
+            console.warn('[Visualizer] Injected data failed validation. Keys:', Object.keys(d || {}));
+          }
+        } catch (e) {
+          console.warn('[Visualizer] Injected data parse failed:', e);
+        }
+      }
+
+      // Secondary: localStorage fallback
+      try {
+        const stored = localStorage.getItem('visualizerData');
+        if (stored) {
+          localStorage.removeItem('visualizerData');
+          const d = JSON.parse(stored);
+          const valid = validateAndPrepare(d);
+          if (valid) {
+            console.log('[Visualizer] Using localStorage data for:', valid.candidates);
+            return valid;
+          } else {
+            console.warn('[Visualizer] localStorage data failed validation. Keys:', Object.keys(d));
+          }
+        }
+      } catch (e) {
+        console.warn('[Visualizer] localStorage read failed:', e);
+      }
+
+      console.log('[Visualizer] Using fallback DEMO data');
+      return DEMO_FALLBACK;
+    }
+
+    const DEMO = loadDemoData();
+
+    // Called by parent window after injecting __VISUALIZER_DATA__
+    // Only needed if visualizer was initialized before data arrived.
+    function loadInjectedData() {
+      console.warn('[Visualizer] loadInjectedData() called. Parent script may be stale/cached.');
+    }
+
+        const SPRITES = {
+      char1: { laugh: 'sprites/char1/char_laugh.png', smile1: 'sprites/char1/char_smile1.png', smirk: 'sprites/char1/char_smirk.png', normal: 'sprites/char1/char_normal.png', surprised: 'sprites/char1/char_surprised.png', sad: 'sprites/char1/char_sad.png' },
+      char2: { laugh: 'sprites/char2/char2_laugh.png', smile1: 'sprites/char2/char2_smile1.png', smirk: 'sprites/char2/char2_smirk.png', normal: 'sprites/char2/char2_normal.png', surprised: 'sprites/char2/char2_surprised.png', sad: 'sprites/char2/char2_sad.png' },
+      char3: { laugh: 'sprites/char3/char3_laugh.png', smile1: 'sprites/char3/char3_smile1.png', smirk: 'sprites/char3/char3_smirk.png', normal: 'sprites/char3/char3_normal.png', surprised: 'sprites/char3/char3_surprised.png', sad: 'sprites/char3/char3_sad.png' },
+      char4: { laugh: 'sprites/char4/char4_laugh.png', smile1: 'sprites/char4/char4_smile1.png', smirk: 'sprites/char4/char4_smirk.png', normal: 'sprites/char4/char4_normal.png', surprised: 'sprites/char4/char4_surprised.png', sad: 'sprites/char4/char4_sad.png' },
+      char5: { laugh: 'sprites/char5/char5_laugh.png', smile1: 'sprites/char5/char5_smile1.png', smirk: 'sprites/char5/char5_smirk.png', normal: 'sprites/char5/char5_normal.png', surprised: 'sprites/char5/char5_surprised.png', sad: 'sprites/char5/char5_sad.png' },
+      wise: { neutral: 'sprites/wise/wise_neutral.png', explaining: 'sprites/wise/wise_explaining.png', impressed: 'sprites/wise/wise_impressed.png', concerned: 'sprites/wise/wise_concerned.png', proud: 'sprites/wise/wise_proud.png' },
     };
-    app.ticker.add(fn);
-  });
-}
-
-function scaleBallToWeight(ball, weight, penalty) {
-  return new Promise(resolve => {
-    if (ball._isRing || ball._noAnim) { resolve(); return; }
-    const anim = ball._anim;
-    const t = Math.min(penalty / 100, 1);
-    const baseScale = 0.32 + t * 0.45;
-    const weightedScale = baseScale + weight * 0.45;
-    const startScale = anim.scale.x;
-    let tick = 0;
-    const fn = () => {
-      tick += 0.025;
-      const ease = 1 - Math.pow(1 - Math.min(tick, 1), 3);
-      const s = startScale + (weightedScale - startScale) * ease;
-      anim.scale.set(s);
-      if (tick >= 1) { app.ticker.remove(fn); resolve(); }
+    const N = DEMO.candidates.length;
+    const BASE_CHAR_KEYS = ['char1', 'char2', 'char3', 'char4', 'char5'];
+    const BASE_CHAR_COLORS = [0x667eea, 0xe85d75, 0x38b2ac, 0xf6a623, 0x48bb78, 0xed64a6, 0x5aa9e6, 0xd69e2e, 0x2f855a, 0xb7791f];
+    const CHAR_KEYS = Array.from({ length: N }, (_, i) => BASE_CHAR_KEYS[i % BASE_CHAR_KEYS.length]);
+    const CHAR_COLORS = Array.from({ length: N }, (_, i) => BASE_CHAR_COLORS[i % BASE_CHAR_COLORS.length]);
+    const FIREBALL_TYPES = [
+      'fire_ball_side_small',
+      'fire_ball_side_medium',
+      'fireball_high_speed_side_small',
+      'meteor_side_medium',
+      'fire_ball_blue_side_small',
+    ];
+    const fireballTextures = {
+      fire_ball_side_small: [],
+      fire_ball_side_medium: [],
+      fireball_high_speed_side_small: [],
+      meteor_side_medium: [],
+      fire_ball_blue_side_small: [],
     };
-    app.ticker.add(fn);
-  });
-}
-function flashImpact(x, y, penalty) {
-  const color = penalty < 0.01 ? 0x4ade80 : penalty < 50 ? 0xff9900 : 0xff2200;
-  const flash = new PIXI.Graphics();
-  flash.beginFill(color, 0.7);
-  flash.drawCircle(x, y, 40);
-  flash.endFill();
-  fxL.addChild(flash);
-  let t = 0;
-  const fn = () => {
-    t += 0.06;
-    flash.alpha = 1 - t;
-    flash.scale.set(1 + t * 0.8);
-    if (t >= 1) { app.ticker.remove(fn); fxL.removeChild(flash); }
-  };
-  app.ticker.add(fn);
-}
 
-function showMathText(charIndex, line1, line2, line3='', borderOverride=null, line3Color=null) {
-  if (mathBoxes[charIndex]?.objs) {
-    for (const obj of mathBoxes[charIndex].objs) {
-      if (obj && obj.parent === fxL) fxL.removeChild(obj);
+    function getFireballType(penalty) {
+      if (penalty < 0.01) return null;
+      if (penalty <= 20) return 'fire_ball_side_small';
+      if (penalty <= 45) return 'fire_ball_side_medium';
+      if (penalty <= 70) return 'fireball_high_speed_side_small';
+      if (penalty <= 88) return 'meteor_side_medium';
+      return 'fire_ball_blue_side_small';
     }
-  }
 
-  const boxW = SLOT_W * 0.72;
-  const boxH = 72;
-  const boxX = CENTERS[charIndex] - boxW / 2;
-  const boxY = MATH_ZONE_Y - 8;
-  const borderColor = borderOverride ?? CHAR_COLORS[charIndex];
+    function getFrameCount(type) {
+      if (type === 'fireball_high_speed_side_small') return 40;
+      if (type === 'fire_ball_blue_side_small') return 35;
+      return 30;
+    }
 
-  const box = new PIXI.Graphics();
-  box.beginFill(0x0a0a28, 0.82);
-  box.lineStyle(1.5, borderColor, 0.7);
-  box.drawRoundedRect(boxX, boxY, boxW, boxH, 8);
-  box.endFill();
+    // Ã¢â€â‚¬Ã¢â€â‚¬ PIXI SETUP Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    const W = window.innerWidth;
+    const H = window.innerHeight - 125;
+    const app = new PIXI.Application({ width: W, height: H, backgroundColor: 0x0a0a1a, resolution: window.devicePixelRatio || 1, autoDensity: true, antialias: true });
+    document.getElementById('pixi-canvas').appendChild(app.view);
+    app.view.style.width = '100%'; app.view.style.height = '100%';
 
-  const line1Txt = new PIXI.Text(line1, {
-    fontFamily:'Courier New',
-    fontSize:12,
-    fill:0xaaaaff,
-    dropShadow:true,
-    dropShadowDistance:2,
-    dropShadowColor:0x000000,
-  });
-  line1Txt.anchor.set(0.5,0);
-  line1Txt.x = CENTERS[charIndex];
-  line1Txt.y = MATH_ZONE_Y + 4;
+    // Ã¢â€â‚¬Ã¢â€â‚¬ LAYOUT Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+        const VISIBLE_SLOTS = Math.min(Math.max(N, 1), 4);
+    const SLOT_W = W / VISIBLE_SLOTS;
+    const WORLD_W = SLOT_W * N;
+    const GROUND_Y = H * 0.78;       // where platforms START (top of platform)
+    const PLAT_H = 20;
+    const PLAT_W = SLOT_W * 0.52;
+    const CHAR_H = H * 0.46;
+    const MAX_SINK = H * 0.30;       // max downward travel
+    const CENTERS = Array.from({ length: N }, (_, i) => SLOT_W * (i + 0.5));
+    const MATH_ZONE_Y = H * 0.08;
+    const BALL_ZONE_Y = H * 0.22;
+    const BASE_RADIUS = 28;
 
-  const line2Txt = new PIXI.Text(line2, {
-    fontFamily:'Courier New',
-    fontSize:12,
-    fill:0xffffff,
-    dropShadow:true,
-    dropShadowDistance:2,
-    dropShadowColor:0x000000,
-  });
-  line2Txt.anchor.set(0.5,0);
-  line2Txt.x = CENTERS[charIndex];
-  line2Txt.y = MATH_ZONE_Y + 26;
+    // Ã¢â€â‚¬Ã¢â€â‚¬ STATE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    let platSink = Array(N).fill(0);   // increases Ã¢â€ â€™ platform moves DOWN
+    let runPenalty = Array(N).fill(0);
+    let currentStep = 0;
+    let animating = false;
+    let currentEmos = Array(N).fill('normal');
+    const mathBoxes = Array(N).fill(null);
+    const penaltyLabelObjs = Array(N).fill(null);
+    const valueBoxObjs = Array(N).fill(null);
+    const charSprites = Array(N).fill(null);
+    const charTex = Array.from({ length: N }, () => ({}));
+    const charOrigH = Array(N).fill(0);
+    let cameraX = 0;
+    let cameraY = 0;
+    let cameraTargetX = 0;
+    let cameraTargetY = 0;
+    let waitingForWinnerReveal = false;
 
-  const objs = [box, line1Txt, line2Txt];
-  fxL.addChild(box, line1Txt, line2Txt);
+    const gameWorld = new PIXI.Container();
 
-  if (line3) {
-    const line3Txt = new PIXI.Text(line3, {
-      fontFamily:'Courier New',
-      fontSize:12,
-      fill:line3Color ?? CHAR_COLORS[charIndex],
-      dropShadow:true,
-      dropShadowDistance:2,
-      dropShadowColor:0x000000,
+    // Ã¢â€â‚¬Ã¢â€â‚¬ LAYERS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    const bgL = new PIXI.Container();
+    const platL = new PIXI.Container();
+    const charL = new PIXI.Container();
+    const fxL = new PIXI.Container();
+    app.stage.addChild(bgL);
+    app.stage.addChild(gameWorld);
+    gameWorld.addChild(platL);
+    gameWorld.addChild(charL);
+    gameWorld.addChild(fxL);
+
+        app.ticker.add(() => {
+      if (Math.abs(gameWorld.x - cameraTargetX) > 0.5) {
+        gameWorld.x += (cameraTargetX - gameWorld.x) * 0.08;
+      } else {
+        gameWorld.x = cameraTargetX;
+      }
+
+      if (Math.abs(gameWorld.y - cameraTargetY) > 0.5) {
+        gameWorld.y += (cameraTargetY - gameWorld.y) * 0.08;
+      } else {
+        gameWorld.y = cameraTargetY;
+      }
+
+      cameraX = gameWorld.x;
+      cameraY = gameWorld.y;
     });
-    line3Txt.anchor.set(0.5,0);
-    line3Txt.x = CENTERS[charIndex];
-    line3Txt.y = MATH_ZONE_Y + 48;
-    objs.push(line3Txt);
-    fxL.addChild(line3Txt);
-  }
 
-  mathBoxes[charIndex] = { objs };
-}
-
-function showValuesBox(charIndex, activeFeature) {
-  if (valueBoxObjs[charIndex]) {
-    if (valueBoxObjs[charIndex].parent === fxL) fxL.removeChild(valueBoxObjs[charIndex]);
-    valueBoxObjs[charIndex] = null;
-  }
-
-  const cx = CENTERS[charIndex];
-  const torsoY = GROUND_Y + platSink[charIndex] - CHAR_H * 0.5;
-
-  const BOX_W = SLOT_W * 0.38;
-  const BOX_H = 72;
-  const BOX_X = cx + SLOT_W * 0.18;
-  const BOX_Y = torsoY - BOX_H / 2;
-
-  const container = new PIXI.Container();
-  container._charIndex = charIndex;
-
-  const box = new PIXI.Graphics();
-  box.beginFill(0x0a0a28, 0.88);
-  box.drawRoundedRect(0, 0, BOX_W, BOX_H, 7);
-  box.endFill();
-  box.lineStyle(1.5, CHAR_COLORS[charIndex], 0.65);
-  box.drawRoundedRect(0, 0, BOX_W, BOX_H, 7);
-  container.addChild(box);
-
-  const candidate = DEMO.candidates[charIndex];
-  const labels = DEMO.features;
-  const featKeys = DEMO.features;
-  for (let fi=0; fi<3; fi++) {
-    const feat = featKeys[fi];
-    const val = DEMO.raw[candidate][feat];
-    const isActive = feat === activeFeature;
-    const rowTxt = new PIXI.Text(`${labels[fi]} : ${val}`, {
-      fontFamily:'Courier New',
-      fontSize:13,
-      fontWeight:isActive ? 'bold' : 'normal',
-      fill:isActive ? CHAR_COLORS[charIndex] : 0x9999bb,
-      dropShadow:false,
-    });
-    rowTxt.x = 10;
-    rowTxt.y = 8 + fi * 20;
-    container.addChild(rowTxt);
-  }
-
-  container.x = BOX_X;
-  container.y = BOX_Y;
-  fxL.addChild(container);
-  valueBoxObjs[charIndex] = container;
-}
-
-function showPenaltyLabel(charIndex, weightedPenalty) {
-  return new Promise(resolve => {
-    if (penaltyLabelObjs[charIndex]) {
-      if (penaltyLabelObjs[charIndex].parent === fxL) fxL.removeChild(penaltyLabelObjs[charIndex]);
-      penaltyLabelObjs[charIndex] = null;
+    // Ã¢â€â‚¬Ã¢â€â‚¬ BACKGROUND Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    function drawBG() {
+      const g = new PIXI.Graphics();
+      g.beginFill(0x0a0a1a); g.drawRect(0, 0, W, H); g.endFill();
+      for (let i = 0; i < 90; i++) {
+        const x = Math.random() * W, y = Math.random() * H * 0.75;
+        g.beginFill(0xffffff, Math.random() * 0.5 + 0.15); g.drawCircle(x, y, Math.random() * 1.4 + 0.3); g.endFill();
+      }
+      // Abyss
+      g.beginFill(0x03030f); g.drawRect(0, GROUND_Y + PLAT_H, W, H); g.endFill();
+      g.lineStyle(2, 0x667eea, 0.2); g.moveTo(0, GROUND_Y + PLAT_H); g.lineTo(W, GROUND_Y + PLAT_H);
+      bgL.addChild(g);
     }
 
-    const cx = CENTERS[charIndex];
-    const torsoY = GROUND_Y + platSink[charIndex] - CHAR_H * 0.5;
+    // Ã¢â€â‚¬Ã¢â€â‚¬ PLATFORMS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    function drawPlatforms() {
+      platL.removeChildren();
+      for (let i = 0; i < N; i++) {
+        const cx = CENTERS[i];
+        const py = GROUND_Y + platSink[i];  // sinks DOWN as penalty grows
 
-    const txt = new PIXI.Text(`-${weightedPenalty.toFixed(1)}`, {
-      fontFamily:'-apple-system, BlinkMacSystemFont, sans-serif',
-      fontSize:24,
-      fontWeight:'bold',
-      fill:CHAR_COLORS[charIndex],
-      dropShadow:true,
-      dropShadowColor:0x000000,
-      dropShadowDistance:2,
-    });
-    txt.anchor.set(1.0, 0.5);
-    txt.x = cx - SLOT_W * 0.18;
-    txt.y = torsoY;
-    txt.alpha = 0;
-    txt._charIndex = charIndex;
-    fxL.addChild(txt);
-    penaltyLabelObjs[charIndex] = txt;
+        const g = new PIXI.Graphics();
+        // Shadow
+        g.beginFill(0x000000, 0.2); g.drawEllipse(cx, py + PLAT_H + 5, PLAT_W * 0.44, 7); g.endFill();
+        // Body
+        g.beginFill(CHAR_COLORS[i], 0.88); g.drawRoundedRect(cx - PLAT_W / 2, py, PLAT_W, PLAT_H, 9); g.endFill();
+        // Highlight
+        g.lineStyle(1.5, 0xffffff, 0.22); g.moveTo(cx - PLAT_W / 2 + 10, py + 3); g.lineTo(cx + PLAT_W / 2 - 10, py + 3);
+        platL.addChild(g);
 
-    let t = 0;
-    const fn = () => {
-      t += 0.04;
-      txt.alpha = Math.min(t, 1);
-      if (t >= 1) { app.ticker.remove(fn); resolve(); }
-    };
-    app.ticker.add(fn);
-  });
-}
+        const nameTxt = new PIXI.Text(DEMO.candidates[i], {
+          fontFamily: '-apple-system, sans-serif',
+          fontSize: 15,
+          fill: 0xffffff,
+          fontWeight: 'bold',
+          dropShadow: true,
+          dropShadowColor: 0x000000,
+          dropShadowDistance: 1,
+        });
+        nameTxt.anchor.set(0.5, 0.5);
+        nameTxt.x = cx;
+        nameTxt.y = py + PLAT_H / 2;
+        platL.addChild(nameTxt);
 
-function clearMathTexts() {
-  for (let i=0; i<mathBoxes.length; i++) {
-    const box = mathBoxes[i];
-    if (!box?.objs) continue;
-    for (const obj of box.objs) {
-      if (obj && obj.parent === fxL) fxL.removeChild(obj);
+        // Penalty score
+        const sc = new PIXI.Text(
+          runPenalty[i] < 0.01 ? '' : ('Penalty: ' + runPenalty[i].toFixed(1)),
+          { fontFamily: 'Courier New', fontSize: 13, fill: runPenalty[i] < 0.01 ? 0x4ade80 : 0xff6b6b, fontWeight: 'bold' }
+        );
+        sc.anchor.set(0.5, 0); sc.x = cx; sc.y = py + PLAT_H + 8;
+        platL.addChild(sc);
+      }
     }
-    mathBoxes[i] = null;
-  }
-  document.getElementById('ideal-badge').classList.remove('visible');
 
-  for (let i=0; i<N; i++) {
-    if (penaltyLabelObjs[i]) {
-      if (penaltyLabelObjs[i].parent === fxL) fxL.removeChild(penaltyLabelObjs[i]);
-      penaltyLabelObjs[i] = null;
+    // Ã¢â€â‚¬Ã¢â€â‚¬ CHARACTERS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    const wiseTex = {};
+
+    async function loadTextures() {
+      const all = [];
+      for (let i = 0; i < N; i++) {
+        for (const [e, p] of Object.entries(SPRITES[CHAR_KEYS[i]])) {
+          all.push(PIXI.Assets.load(p).then(t => {
+            charTex[i][e] = t;
+            // Store height from normal expression for consistent scaling
+            if (e === 'normal') charOrigH[i] = t.height;
+          }).catch(() => { }));
+        }
+      }
+      for (const [e, p] of Object.entries(SPRITES.wise)) {
+        all.push(PIXI.Assets.load(p).then(t => { wiseTex[e] = t; }).catch(() => { }));
+      }
+
+      for (const type of FIREBALL_TYPES) {
+        const frames = getFrameCount(type);
+        for (let f = 0; f < frames; f++) {
+          const path = `sprites/fireballs/${type}/imgs/img_${f}.png`;
+          all.push(
+            PIXI.Assets.load(path)
+              .then(tex => { fireballTextures[type][f] = tex; })
+              .catch(() => { })
+          );
+        }
+      }
+
+      await Promise.all(all);
     }
-    if (valueBoxObjs[i]) {
-      if (valueBoxObjs[i].parent === fxL) fxL.removeChild(valueBoxObjs[i]);
-      valueBoxObjs[i] = null;
+
+    function spawnChars() {
+      charL.removeChildren();
+      for (let i = 0; i < N; i++) {
+        const tex = charTex[i]['normal'] || PIXI.Texture.WHITE;
+        const sp = new PIXI.Sprite(tex);
+        sp.anchor.set(0.5, 1.0);
+        // Always use stored original height Ã¢â‚¬â€ safe on restart when textures are cached
+        const h = charOrigH[i] > 0 ? charOrigH[i] : Math.max(sp.texture.height, 1);
+        sp.scale.set(CHAR_H / h);
+        sp.x = CENTERS[i];
+        sp.y = GROUND_Y;   // always start at ground level (platSink=0 on init/restart)
+        charSprites[i] = sp;
+        currentEmos[i] = 'normal';
+        charL.addChild(sp);
+      }
     }
-  }
-}
-function sinkPlatform(ci, px) {
-  return new Promise(resolve => {
-    const start = platSink[ci];
-    const end   = start + px;
-    let t=0;
-    if (px>8) shakeChar(ci);
-    const tick = () => {
-      t += 0.013;
-      platSink[ci] = start + (end-start)*(1-Math.pow(1-Math.min(t,1),3));
-      recalcCameraTarget();
+
+    function setEmo(i, emo) { const t = charTex[i][emo]; if (t && charSprites[i]) charSprites[i].texture = t; }
+
+    function updateFloatingElements() {
+      for (let i = 0; i < N; i++) {
+        const torsoY = GROUND_Y + platSink[i] - CHAR_H * 0.5;
+
+        if (penaltyLabelObjs[i]) {
+          penaltyLabelObjs[i].y = torsoY;
+        }
+
+        if (valueBoxObjs[i]) {
+          const BOX_H = Math.max(72, DEMO.features.length * 20 + 12);
+          valueBoxObjs[i].y = torsoY - BOX_H / 2;
+        }
+      }
+    }
+
+    function recalcCameraTarget() {
+      let lowestY = 0;
+      for (let i = 0; i < N; i++) {
+        const bottom = GROUND_Y + platSink[i] + PLAT_H + 50;
+        if (bottom > lowestY) lowestY = bottom;
+      }
+
+      const margin = 50;
+      if (lowestY > H - margin) {
+        cameraTargetY = -(lowestY - (H - margin));
+      } else {
+        cameraTargetY = 0;
+      }
+      cameraTargetY = Math.min(cameraTargetY, 0);
+    }
+
+        function clampCameraX(x) {
+      const minX = Math.min(0, W - WORLD_W);
+      if (x < minX) return minX;
+      if (x > 0) return 0;
+      return x;
+    }
+
+    function syncHorizontalScrollUI() {
+      const wrap = document.getElementById('h-scroll-wrap');
+      const slider = document.getElementById('h-scroll');
+      const leftBtn = document.getElementById('scroll-left-btn');
+      const rightBtn = document.getElementById('scroll-right-btn');
+      const hasOverflow = WORLD_W > W + 1;
+
+      wrap.style.display = hasOverflow ? 'block' : 'none';
+      leftBtn.style.display = hasOverflow ? 'block' : 'none';
+      rightBtn.style.display = hasOverflow ? 'block' : 'none';
+
+      if (!hasOverflow) {
+        slider.value = '0';
+        cameraTargetX = 0;
+        return;
+      }
+
+      const minX = Math.min(0, W - WORLD_W);
+      const ratio = minX === 0 ? 0 : cameraTargetX / minX;
+      slider.value = Math.round(Math.max(0, Math.min(1, ratio)) * 1000).toString();
+    }
+
+    function focusCandidate(ci) {
+      if (WORLD_W <= W) return;
+      const cx = CENTERS[ci];
+      const desired = W * 0.5 - cx;
+      cameraTargetX = clampCameraX(desired);
+      syncHorizontalScrollUI();
+    }
+
+    function manualScroll(deltaPx) {
+      cameraTargetY -= deltaPx;
+      const maxDown = -(MAX_SINK * 1.2);
+      cameraTargetY = Math.max(cameraTargetY, maxDown);
+      cameraTargetY = Math.min(cameraTargetY, 0);
+    }
+
+    function manualScrollX(deltaPx) {
+      cameraTargetX = clampCameraX(cameraTargetX + deltaPx);
+      syncHorizontalScrollUI();
+    }
+
+    function manualScrollXTo(rawVal) {
+      const minX = Math.min(0, W - WORLD_W);
+      const ratio = Number(rawVal) / 1000;
+      cameraTargetX = clampCameraX(minX * ratio);
+      syncHorizontalScrollUI();
+    }
+
+    function scrollToTop() {
+      cameraTargetY = 0;
+      cameraTargetX = 0;
+      syncHorizontalScrollUI();
+    }
+
+    // Ã¢â€â‚¬Ã¢â€â‚¬ REDRAW Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    function redraw() {
+      drawPlatforms();
+      for (let i = 0; i < N; i++) {
+        if (charSprites[i]) charSprites[i].y = GROUND_Y + platSink[i];
+      }
       updateFloatingElements();
-      redraw();
-      if (t>=1) { platSink[ci]=end; app.ticker.remove(tick); resolve(); }
-    };
-    app.ticker.add(tick);
-  });
-}
-
-function shakeChar(i) {
-  if (!charSprites[i]) return;
-  const ox = charSprites[i].x; let t=0;
-  const tick = () => {
-    t+=0.12; charSprites[i].x = ox + Math.sin(t*22)*9*(1-t);
-    if (t>=1) { charSprites[i].x=ox; app.ticker.remove(tick); }
-  };
-  app.ticker.add(tick);
-}
-
-// ── EMOTIONS ───────────────────────────────────────────────────────────────
-async function updateEmos() {
-  const sorted = runPenalty.map((p,i)=>({i,p})).sort((a,b)=>a.p-b.p);
-  const nextEmos = Array(N).fill('normal');
-
-  for (let r=0;r<sorted.length;r++) {
-    const ci=sorted[r].i, gap=sorted[r].p-sorted[0].p;
-    let emo;
-    if (r===0) emo = sorted[0].p<2?'laugh':'smile1';
-    else if (r===1) emo = gap<12?'smirk':'surprised';
-    else emo = gap>30?'sad':'surprised';
-    nextEmos[ci] = emo;
-  }
-
-  // Apply changes one-by-one (never simultaneous).
-  for (const { i } of sorted) {
-    if (currentEmos[i] !== nextEmos[i]) {
-      setEmo(i, nextEmos[i]);
-      currentEmos[i] = nextEmos[i];
-      await delay(120);
     }
-  }
-}
 
-// ── FLOATING TEXT ──────────────────────────────────────────────────────────
-function floatTxt(x,y,text,color) {
-  const t=new PIXI.Text(text,{fontFamily:'Courier New',fontSize:14,fill:color,fontWeight:'bold',dropShadow:true,dropShadowDistance:2,dropShadowColor:0x000000});
-  t.anchor.set(0.5,1); t.x=x; t.y=y; fxL.addChild(t);
-  let tick2=0;
-  const ticker = () => {
-    tick2 += 0.015;
-    t.y -= 0.7;
-    t.alpha = 1 - tick2;
-    if (tick2 >= 1) { app.ticker.remove(ticker); fxL.removeChild(t); }
-  };
-  app.ticker.add(ticker);
-}
+    // Ã¢â€â‚¬Ã¢â€â‚¬ ORB: drops to ONE candidate Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    function makeLaserBall(penalty) {
+      const container = new PIXI.Container();
+      const type = getFireballType(penalty);
 
-// ── NARRATOR ───────────────────────────────────────────────────────────────
-function setNarrator(text, emo='neutral') {
-  document.getElementById('narrator-text').textContent = text;
-  const img = document.getElementById('wise-portrait');
-  img.src = SPRITES.wise[emo] || SPRITES.wise.neutral;
-}
-function showBadge(name,w) {
-  document.getElementById('criterion-name').textContent=name.toUpperCase();
-  document.getElementById('criterion-weight').textContent=`${Math.round(w*100)}%`;
-  document.getElementById('criterion-badge').classList.add('visible');
-}
-function hideBadge() { document.getElementById('criterion-badge').classList.remove('visible'); }
-function showIdealBadge(feat) {
-  const raw = DEMO.ideals[feat];
-  const norm = DEMO.normedIdeals[feat];
-  document.getElementById('ideal-label').textContent = 'IDEAL';
-  document.getElementById('ideal-value').textContent = raw;
-  document.getElementById('ideal-norm-value').textContent = `norm: ${norm.toFixed(1)}`;
-  document.getElementById('ideal-badge').classList.add('visible');
-}
-function hideIdealBadge() {
-  document.getElementById('ideal-badge').classList.remove('visible');
-}
-function updateProgress(s,tot) {
-  document.getElementById('step-indicator').textContent=`STEP ${s} / ${tot}`;
-  document.getElementById('progress-bar').style.width=`${(s/tot)*100}%`;
-}
+      if (!type) {
+        const txt = new PIXI.Text('No Penalty - No Fire', {
+          fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
+          fontSize: 16,
+          fontWeight: 'bold',
+          fill: 0xffffff,
+          dropShadow: true,
+          dropShadowColor: 0x000000,
+          dropShadowDistance: 2,
+        });
+        txt.anchor.set(0.5, 0.5);
+        container.addChild(txt);
+        container._isRing = true;
+        container._isText = true;
+        container._noAnim = true;
+        return container;
+      }
 
-// ── STEP MACHINE ───────────────────────────────────────────────────────────
-const TOTAL = 2 + DEMO.features.length;
+      const frames = fireballTextures[type].filter(Boolean);
+      if (!frames.length) {
+        const fallback = new PIXI.Graphics();
+        fallback.lineStyle(3, 0xff9900, 0.9);
+        fallback.drawCircle(0, 0, 28);
+        container.addChild(fallback);
+        container._isRing = true;
+        return container;
+      }
 
-async function nextStep() {
-  if (waitingForWinnerReveal) {
-    waitingForWinnerReveal = false;
-    document.getElementById('next-btn').disabled = true;
-    document.getElementById('next-btn').textContent = '\u2713 Complete';
-    showWinner();
-    return;
-  }
+      const anim = new PIXI.AnimatedSprite(frames);
+      anim.anchor.set(0.5, 0.5);
+      anim.rotation = Math.PI / 2;
 
-  if (animating) return;
-  animating = true;
-  document.getElementById('next-btn').disabled = true;
+      const t = Math.min(penalty / 100, 1);
+      let baseScale = 0.32 + t * 0.45;
+      if (type === 'fire_ball_blue_side_small') {
+        baseScale = baseScale * 0.6;
+      }
+      anim.scale.set(baseScale);
 
-  if (currentStep === 0) await stepIntro();
-  else if (currentStep === 1) await stepNorm();
-  else await laserCriterion(currentStep - 2);
+      anim.animationSpeed = 0.4;
+      anim.loop = true;
+      anim.play();
 
-  currentStep++;
-  updateProgress(currentStep, TOTAL);
+      container.addChild(anim);
+      container._anim = anim;
+      container._isRing = false;
+      return container;
+    }
 
-  if (currentStep >= TOTAL) {
-    waitingForWinnerReveal = true;
-    document.getElementById('next-btn').disabled = false;
-    document.getElementById('next-btn').textContent = 'Reveal Winner \uD83C\uDFC6';
-    animating = false;
-    return;
-  }
+    function startPulse(ball) {
+      if (ball._noAnim) {
+        return () => { };
+      }
+      let t = 0;
+      const fn = () => {
+        t += 0.035;
+        ball.y += Math.sin(t) * 0.4;
+      };
+      app.ticker.add(fn);
+      return fn;
+    }
 
-  document.getElementById('next-btn').disabled = false;
-  const fi = currentStep - 2;
-  document.getElementById('next-btn').textContent =
-    currentStep === TOTAL - 1 ? `Final Criterion ->` :
-    currentStep >= 2 ? `Apply: ${DEMO.features[fi]} ->` : 'See Normalization ->';
+    function fireBall(ball, pulseFn, targetY) {
+      return new Promise(resolve => {
+        app.ticker.remove(pulseFn);
+        if (ball._noAnim) {
+          resolve();
+          return;
+        }
+        const startY = ball.y;
+        let t = 0;
+        const fn = () => {
+          t += 0.02;
+          const ease = Math.pow(Math.min(t, 1), 2);
+          ball.y = startY + (targetY - startY) * ease;
+          if (t >= 1) {
+            app.ticker.remove(fn);
+            fxL.removeChild(ball);
+            if (ball._anim) ball._anim.stop();
+            resolve();
+          }
+        };
+        app.ticker.add(fn);
+      });
+    }
 
-  animating = false;
-}
+    function scaleBallToWeight(ball, weight, penalty) {
+      return new Promise(resolve => {
+        if (ball._isRing || ball._noAnim) { resolve(); return; }
+        const anim = ball._anim;
+        const t = Math.min(penalty / 100, 1);
+        const baseScale = 0.32 + t * 0.45;
+        const weightedScale = baseScale + weight * 0.45;
+        const startScale = anim.scale.x;
+        let tick = 0;
+        const fn = () => {
+          tick += 0.025;
+          const ease = 1 - Math.pow(1 - Math.min(tick, 1), 3);
+          const s = startScale + (weightedScale - startScale) * ease;
+          anim.scale.set(s);
+          if (tick >= 1) { app.ticker.remove(fn); resolve(); }
+        };
+        app.ticker.add(fn);
+      });
+    }
+    function flashImpact(x, y, penalty) {
+      const color = penalty < 0.01 ? 0x4ade80 : penalty < 50 ? 0xff9900 : 0xff2200;
+      const flash = new PIXI.Graphics();
+      flash.beginFill(color, 0.7);
+      flash.drawCircle(x, y, 40);
+      flash.endFill();
+      fxL.addChild(flash);
+      let t = 0;
+      const fn = () => {
+        t += 0.06;
+        flash.alpha = 1 - t;
+        flash.scale.set(1 + t * 0.8);
+        if (t >= 1) { app.ticker.remove(fn); fxL.removeChild(flash); }
+      };
+      app.ticker.add(fn);
+    }
 
-async function stepIntro() {
-  setNarrator("I am The Analyst. Today we evaluate 3 candidates across 3 weighted criteria. The one with the lowest total penalty shall prevail.", 'explaining');
-  document.getElementById('next-btn').textContent='See Normalization →';
-  await delay(600);
-}
+    function showMathText(charIndex, line1, line2, line3 = '', borderOverride = null, line3Color = null) {
+      if (mathBoxes[charIndex]?.objs) {
+        for (const obj of mathBoxes[charIndex].objs) {
+          if (obj && obj.parent === fxL) fxL.removeChild(obj);
+        }
+      }
 
-async function stepNorm() {
-  clearMathTexts();
-  setNarrator("Normalization compresses all raw scores to a 0-100 scale so every criterion is judged fairly.", 'explaining');
-  hideBadge();
-  hideIdealBadge();
+      const boxW = SLOT_W * 0.72;
+      const boxH = 72;
+      const boxX = CENTERS[charIndex] - boxW / 2;
+      const boxY = MATH_ZONE_Y - 8;
+      const borderColor = borderOverride ?? CHAR_COLORS[charIndex];
 
-  for (let i = 0; i < N; i++) {
-    const candidate = DEMO.candidates[i];
-    const BOX_W = SLOT_W * 0.52;
-    const BOX_H = 88;
-    const cx = CENTERS[i];
-    const cy = MATH_ZONE_Y + BOX_H / 2 + 10;
+      const box = new PIXI.Graphics();
+      box.beginFill(0x0a0a28, 0.82);
+      box.lineStyle(1.5, borderColor, 0.7);
+      box.drawRoundedRect(boxX, boxY, boxW, boxH, 8);
+      box.endFill();
 
-    const container = new PIXI.Container();
-
-    const box = new PIXI.Graphics();
-    box.beginFill(0x0a0a28, 0.9);
-    box.drawRoundedRect(0, 0, BOX_W, BOX_H, 8);
-    box.endFill();
-    box.lineStyle(1.5, CHAR_COLORS[i], 0.6);
-    box.drawRoundedRect(0, 0, BOX_W, BOX_H, 8);
-    container.addChild(box);
-
-    for (let fi = 0; fi < DEMO.features.length; fi++) {
-      const feat = DEMO.features[fi];
-      const raw = DEMO.raw[candidate][feat];
-      const norm = DEMO.normed[candidate][feat];
-      const rowTxt = new PIXI.Text(`${feat}: ${raw}  ->  norm: ${norm.toFixed(1)}`, {
+      const line1Txt = new PIXI.Text(line1, {
         fontFamily: 'Courier New',
         fontSize: 12,
         fill: 0xaaaaff,
-        dropShadow: false,
+        dropShadow: true,
+        dropShadowDistance: 2,
+        dropShadowColor: 0x000000,
       });
-      rowTxt.x = 10;
-      rowTxt.y = 8 + fi * 24;
-      container.addChild(rowTxt);
+      line1Txt.anchor.set(0.5, 0);
+      line1Txt.x = CENTERS[charIndex];
+      line1Txt.y = MATH_ZONE_Y + 4;
+
+      const line2Txt = new PIXI.Text(line2, {
+        fontFamily: 'Courier New',
+        fontSize: 12,
+        fill: 0xffffff,
+        dropShadow: true,
+        dropShadowDistance: 2,
+        dropShadowColor: 0x000000,
+      });
+      line2Txt.anchor.set(0.5, 0);
+      line2Txt.x = CENTERS[charIndex];
+      line2Txt.y = MATH_ZONE_Y + 26;
+
+      const objs = [box, line1Txt, line2Txt];
+      fxL.addChild(box, line1Txt, line2Txt);
+
+      if (line3) {
+        const line3Txt = new PIXI.Text(line3, {
+          fontFamily: 'Courier New',
+          fontSize: 12,
+          fill: line3Color ?? CHAR_COLORS[charIndex],
+          dropShadow: true,
+          dropShadowDistance: 2,
+          dropShadowColor: 0x000000,
+        });
+        line3Txt.anchor.set(0.5, 0);
+        line3Txt.x = CENTERS[charIndex];
+        line3Txt.y = MATH_ZONE_Y + 48;
+        objs.push(line3Txt);
+        fxL.addChild(line3Txt);
+      }
+
+      mathBoxes[charIndex] = { objs };
     }
 
-    container.x = cx - BOX_W / 2;
-    container.y = cy - BOX_H / 2;
-    fxL.addChild(container);
-    mathBoxes[i] = { objs: [container] };
-  }
+    function showValuesBox(charIndex, activeFeature) {
+      if (valueBoxObjs[charIndex]) {
+        if (valueBoxObjs[charIndex].parent === fxL) fxL.removeChild(valueBoxObjs[charIndex]);
+        valueBoxObjs[charIndex] = null;
+      }
 
-  document.getElementById('next-btn').textContent = `Apply: ${DEMO.features[0]} ->`;
-}
+      const cx = CENTERS[charIndex];
+      const torsoY = GROUND_Y + platSink[charIndex] - CHAR_H * 0.5;
 
-async function laserCriterion(fi) {
-  clearMathTexts();
+      const BOX_W = SLOT_W * 0.38;
+      const BOX_H = Math.max(72, DEMO.features.length * 20 + 12);
+      const BOX_X = cx + SLOT_W * 0.18;
+      const BOX_Y = torsoY - BOX_H / 2;
 
-  const feat=DEMO.features[fi], w=DEMO.weights[fi];
-  const narrations=[
-    `Criterion 1 — ${feat}. Weight: ${Math.round(w*100)}%. The most critical factor. I evaluate each candidate in turn.`,
-    `Criterion 2 — ${feat}. Weight: ${Math.round(w*100)}%. Experience carries weight — but less than raw skill.`,
-    `Criterion 3 — ${feat}. Weight: ${Math.round(w*100)}%. The final layer. This seals the verdict.`,
-  ];
+      const container = new PIXI.Container();
+      container._charIndex = charIndex;
 
-  setNarrator(narrations[fi]||`Applying ${feat}`, 'explaining');
-  showBadge(feat, w);
-  showIdealBadge(feat);
-  await delay(1000);
+      const box = new PIXI.Graphics();
+      box.beginFill(0x0a0a28, 0.88);
+      box.drawRoundedRect(0, 0, BOX_W, BOX_H, 7);
+      box.endFill();
+      box.lineStyle(1.5, CHAR_COLORS[charIndex], 0.65);
+      box.drawRoundedRect(0, 0, BOX_W, BOX_H, 7);
+      container.addChild(box);
 
-  const balls = Array(N).fill(null);
-  const pulseFns = Array(N).fill(null);
+      const candidate = DEMO.candidates[charIndex];
+      const labels = DEMO.features;
+      const featKeys = DEMO.features;
+      for (let fi = 0; fi < DEMO.features.length; fi++) {
+        const feat = featKeys[fi];
+        const val = DEMO.raw[candidate][feat];
+        const isActive = feat === activeFeature;
+        const rowTxt = new PIXI.Text(`${labels[fi]} : ${val}`, {
+          fontFamily: 'Courier New',
+          fontSize: 13,
+          fontWeight: isActive ? 'bold' : 'normal',
+          fill: isActive ? CHAR_COLORS[charIndex] : 0x9999bb,
+          dropShadow: false,
+        });
+        rowTxt.x = 10;
+        rowTxt.y = 8 + fi * 20;
+        container.addChild(rowTxt);
+      }
 
-  // PHASE A: materialize boxes / balls one by one
-  for (let i=0;i<N;i++) {
-    showValuesBox(i, feat);
-
-    const candidate = DEMO.candidates[i];
-    const rawVal = DEMO.raw[candidate][feat];
-    const normVal = DEMO.normed[candidate][feat];
-    const normIdeal = DEMO.normedIdeals[feat];
-    const penaltyFromBreakdown = DEMO.detailed_breakdown[candidate][feat].penalty;
-    const penalty = penaltyFromBreakdown ?? Math.max(0, normIdeal - normVal);
-
-    if (penalty < 0.01) {
-      showMathText(
-        i,
-        `${feat}: ${rawVal} -> norm: ${normVal.toFixed(1)}`,
-        `Penalty = max(0, ${normIdeal.toFixed(1)} - ${normVal.toFixed(1)}) = ${penalty.toFixed(1)}`,
-        'No Penalty - No Fire',
-        0x4ade80,
-        0x4ade80
-      );
-      balls[i] = null;
-      pulseFns[i] = () => {};
-    } else {
-      showMathText(
-        i,
-        `${feat}: ${rawVal} -> norm: ${normVal.toFixed(1)}`,
-        `Penalty = max(0, ${normIdeal.toFixed(1)} - ${normVal.toFixed(1)}) = ${penalty.toFixed(1)}`
-      );
-
-      const ball = makeLaserBall(penalty);
-      ball.x = CENTERS[i];
-      ball.y = BALL_ZONE_Y;
-      fxL.addChild(ball);
-
-      pulseFns[i] = startPulse(ball);
-      balls[i] = ball;
+      container.x = BOX_X;
+      container.y = BOX_Y;
+      fxL.addChild(container);
+      valueBoxObjs[charIndex] = container;
     }
 
-    await delay(1400);
-  }
+    function showPenaltyLabel(charIndex, weightedPenalty) {
+      return new Promise(resolve => {
+        if (penaltyLabelObjs[charIndex]) {
+          if (penaltyLabelObjs[charIndex].parent === fxL) fxL.removeChild(penaltyLabelObjs[charIndex]);
+          penaltyLabelObjs[charIndex] = null;
+        }
 
-  await delay(1000);
+        const cx = CENTERS[charIndex];
+        const torsoY = GROUND_Y + platSink[charIndex] - CHAR_H * 0.5;
 
-  // PHASE B: apply weight and fire one by one
-  for (let i=0;i<N;i++) {
-    const candidate = DEMO.candidates[i];
-    const rawVal = DEMO.raw[candidate][feat];
-    const normVal = DEMO.normed[candidate][feat];
-    const normIdeal = DEMO.normedIdeals[feat];
-    const penaltyFromBreakdown = DEMO.detailed_breakdown[candidate][feat].penalty;
-    const penalty = penaltyFromBreakdown ?? Math.max(0, normIdeal - normVal);
-    const weightedPenalty = DEMO.detailed_breakdown[candidate][feat].weighted_penalty;
+        const txt = new PIXI.Text(`-${weightedPenalty.toFixed(1)}`, {
+          fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
+          fontSize: 24,
+          fontWeight: 'bold',
+          fill: CHAR_COLORS[charIndex],
+          dropShadow: true,
+          dropShadowColor: 0x000000,
+          dropShadowDistance: 2,
+        });
+        txt.anchor.set(1.0, 0.5);
+        txt.x = cx - SLOT_W * 0.18;
+        txt.y = torsoY;
+        txt.alpha = 0;
+        txt._charIndex = charIndex;
+        fxL.addChild(txt);
+        penaltyLabelObjs[charIndex] = txt;
 
-    if (weightedPenalty < 0.01) {
-      showMathText(
-        i,
-        `${feat}: ${rawVal} -> norm: ${normVal.toFixed(1)}`,
-        `Penalty = max(0, ${normIdeal.toFixed(1)} - ${normVal.toFixed(1)}) = ${penalty.toFixed(1)}`,
-        `Weighted = 0.0 x ${w.toFixed(2)} = 0.0`,
-        0x4ade80,
-        0x4ade80
-      );
-      runPenalty[i] += 0;
-      await updateEmos();
-      await delay(400);
-      continue;
+        let t = 0;
+        const fn = () => {
+          t += 0.04;
+          txt.alpha = Math.min(t, 1);
+          if (t >= 1) { app.ticker.remove(fn); resolve(); }
+        };
+        app.ticker.add(fn);
+      });
     }
 
-    showMathText(
-      i,
-      `${feat}: ${rawVal} -> norm: ${normVal.toFixed(1)}`,
-      `Penalty = max(0, ${normIdeal.toFixed(1)} - ${normVal.toFixed(1)}) = ${penalty.toFixed(1)}`,
-      `Weighted = ${penalty.toFixed(1)} x ${w.toFixed(2)} = ${weightedPenalty.toFixed(1)}`
-    );
+    function clearMathTexts() {
+      for (let i = 0; i < mathBoxes.length; i++) {
+        const box = mathBoxes[i];
+        if (!box?.objs) continue;
+        for (const obj of box.objs) {
+          if (obj && obj.parent === fxL) fxL.removeChild(obj);
+        }
+        mathBoxes[i] = null;
+      }
+      document.getElementById('ideal-badge').classList.remove('visible');
 
-    const targetY = GROUND_Y + platSink[i] - CHAR_H * 0.1;
-    await fireBall(balls[i], pulseFns[i], targetY);
-    flashImpact(CENTERS[i], targetY, weightedPenalty);
-
-    // Keep penalty score sync before redraw/sink
-    runPenalty[i] += weightedPenalty;
-
-    await sinkPlatform(i, (weightedPenalty/100)*MAX_SINK);
-    await showPenaltyLabel(i, weightedPenalty);
-    await updateEmos();
-    await delay(500);
-  }
-
-  const leader=runPenalty.indexOf(Math.min(...runPenalty));
-  const reactions=[
-    `After ${feat} — ${DEMO.candidates[leader]} leads. The contest is just beginning.`,
-    `${DEMO.candidates[leader]} holds the lead. Pressure mounts.`,
-    `The analysis is complete. ${DEMO.candidates[leader]} stands above all.`,
-  ];
-  setNarrator(reactions[fi], leader===0?'impressed':'concerned');
-  if (fi<DEMO.features.length-1) document.getElementById('next-btn').textContent=`Apply: ${DEMO.features[fi+1]} →`;
-  await delay(600);
-  if (fi === DEMO.features.length - 1) {
-    scrollToTop();
-    await delay(900);
-  }
-}
-
-function showWinner() {
-  clearMathTexts();
-  const wi=DEMO.candidates.indexOf(DEMO.winner);
-  const sc=DEMO.ranking.find(r=>r.product===DEMO.winner).score;
-  for (let i=0;i<N;i++) {
-    const emo = i===wi ? 'laugh' : 'sad';
-    setEmo(i, emo);
-    currentEmos[i] = emo;
-  }
-  setNarrator(`${DEMO.winner} achieves the lowest penalty of ${sc.toFixed(2)}. The decision is clear.`, 'proud');
-  document.getElementById('winner-name').textContent=DEMO.winner;
-  document.getElementById('winner-score').textContent=`Total Penalty: ${sc.toFixed(2)} (lower = better)`;
-  document.getElementById('winner-reason').textContent=DEMO.explanation;
-  document.getElementById('winner-overlay').classList.add('visible');
-  document.getElementById('next-btn').textContent='\u2713 Complete';
-}
-
-// ── RESTART ────────────────────────────────────────────────────────────────
-function restartVisualization() {
-  // Reset all state
-  platSink = [0, 0, 0];
-  runPenalty = [0, 0, 0];
-  currentStep = 0;
-  animating = false;
-  currentEmos = ['normal', 'normal', 'normal'];
-  waitingForWinnerReveal = false;
-  cameraY = 0;
-  cameraTargetY = 0;
-  gameWorld.y = 0;
-  scrollToTop();
-
-  // Clear any lingering fx
-  fxL.removeChildren();
-  clearMathTexts();
-
-  for (let i = 0; i < N; i++) {
-    if (penaltyLabelObjs[i]) {
-      if (penaltyLabelObjs[i].parent === fxL) fxL.removeChild(penaltyLabelObjs[i]);
-      penaltyLabelObjs[i] = null;
+      for (let i = 0; i < N; i++) {
+        if (penaltyLabelObjs[i]) {
+          if (penaltyLabelObjs[i].parent === fxL) fxL.removeChild(penaltyLabelObjs[i]);
+          penaltyLabelObjs[i] = null;
+        }
+        if (valueBoxObjs[i]) {
+          if (valueBoxObjs[i].parent === fxL) fxL.removeChild(valueBoxObjs[i]);
+          valueBoxObjs[i] = null;
+        }
+      }
     }
-    if (valueBoxObjs[i]) {
-      if (valueBoxObjs[i].parent === fxL) fxL.removeChild(valueBoxObjs[i]);
-      valueBoxObjs[i] = null;
+    function sinkPlatform(ci, px) {
+      return new Promise(resolve => {
+        const start = platSink[ci];
+        const end = start + px;
+        let t = 0;
+        if (px > 8) shakeChar(ci);
+        const tick = () => {
+          t += 0.013;
+          platSink[ci] = start + (end - start) * (1 - Math.pow(1 - Math.min(t, 1), 3));
+          recalcCameraTarget();
+          updateFloatingElements();
+          redraw();
+          if (t >= 1) { platSink[ci] = end; app.ticker.remove(tick); resolve(); }
+        };
+        app.ticker.add(tick);
+      });
     }
-  }
 
-  spawnChars();
-  redraw();
+    function shakeChar(i) {
+      if (!charSprites[i]) return;
+      const ox = charSprites[i].x; let t = 0;
+      const tick = () => {
+        t += 0.12; charSprites[i].x = ox + Math.sin(t * 22) * 9 * (1 - t);
+        if (t >= 1) { charSprites[i].x = ox; app.ticker.remove(tick); }
+      };
+      app.ticker.add(tick);
+    }
 
-  for (let i = 0; i < N; i++) {
-    setEmo(i, 'normal');
-    currentEmos[i] = 'normal';
-  }
+    // Ã¢â€â‚¬Ã¢â€â‚¬ EMOTIONS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    async function updateEmos() {
+      const sorted = runPenalty.map((p, i) => ({ i, p })).sort((a, b) => a.p - b.p);
+      const nextEmos = Array(N).fill('normal');
 
-  document.getElementById('winner-overlay').classList.remove('visible');
-  document.getElementById('next-btn').disabled = false;
-  document.getElementById('next-btn').textContent = 'Begin ->';
-  hideBadge();
-  hideIdealBadge();
-  document.getElementById('ideal-badge').classList.remove('visible');
-  updateProgress(0, TOTAL);
-  setNarrator('All candidates present. Press Begin when ready.', 'neutral');
-}
+      for (let r = 0; r < sorted.length; r++) {
+        const ci = sorted[r].i, gap = sorted[r].p - sorted[0].p;
+        let emo;
+        if (r === 0) emo = sorted[0].p < 2 ? 'laugh' : 'smile1';
+        else if (r === 1) emo = gap < 12 ? 'smirk' : 'surprised';
+        else emo = gap > 30 ? 'sad' : gap > 15 ? 'surprised' : 'smirk';
+        nextEmos[ci] = emo;
+      }
 
-function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
+      // Apply changes one-by-one (never simultaneous).
+      for (const { i } of sorted) {
+        if (currentEmos[i] !== nextEmos[i]) {
+          setEmo(i, nextEmos[i]);
+          currentEmos[i] = nextEmos[i];
+          await delay(120);
+        }
+      }
+    }
 
-// ── INIT ───────────────────────────────────────────────────────────────────
-async function init() {
-  document.getElementById('next-btn').disabled=true;
-  document.getElementById('next-btn').textContent='Loading sprites...';
-  drawBG(); drawPlatforms();
-  await loadTextures();
-  spawnChars();
-  updateProgress(0,TOTAL);
-  setNarrator('All candidates present. Press Begin when ready.','neutral');
-  document.getElementById('next-btn').disabled=false;
-  document.getElementById('next-btn').textContent='Begin →';
-  hideIdealBadge();
-}
+    // Ã¢â€â‚¬Ã¢â€â‚¬ FLOATING TEXT Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    function floatTxt(x, y, text, color) {
+      const t = new PIXI.Text(text, { fontFamily: 'Courier New', fontSize: 14, fill: color, fontWeight: 'bold', dropShadow: true, dropShadowDistance: 2, dropShadowColor: 0x000000 });
+      t.anchor.set(0.5, 1); t.x = x; t.y = y; fxL.addChild(t);
+      let tick2 = 0;
+      const ticker = () => {
+        tick2 += 0.015;
+        t.y -= 0.7;
+        t.alpha = 1 - tick2;
+        if (tick2 >= 1) { app.ticker.remove(ticker); fxL.removeChild(t); }
+      };
+      app.ticker.add(ticker);
+    }
 
-init();
-</script>
+    // Ã¢â€â‚¬Ã¢â€â‚¬ NARRATOR Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    function setNarrator(text, emo = 'neutral') {
+      document.getElementById('narrator-text').textContent = text;
+      const img = document.getElementById('wise-portrait');
+      img.src = SPRITES.wise[emo] || SPRITES.wise.neutral;
+    }
+    function showBadge(name, w) {
+      document.getElementById('criterion-name').textContent = name.toUpperCase();
+      document.getElementById('criterion-weight').textContent = `${Math.round(w * 100)}%`;
+      document.getElementById('criterion-badge').classList.add('visible');
+    }
+    function hideBadge() { document.getElementById('criterion-badge').classList.remove('visible'); }
+    function showIdealBadge(feat) {
+      const raw = DEMO.ideals[feat];
+      const norm = DEMO.normedIdeals[feat];
+      document.getElementById('ideal-label').textContent = 'IDEAL';
+      document.getElementById('ideal-value').textContent = raw;
+      document.getElementById('ideal-norm-value').textContent = `norm: ${norm.toFixed(1)}`;
+      document.getElementById('ideal-badge').classList.add('visible');
+    }
+    function hideIdealBadge() {
+      document.getElementById('ideal-badge').classList.remove('visible');
+    }
+    function updateProgress(s, tot) {
+      document.getElementById('step-indicator').textContent = `STEP ${s} / ${tot}`;
+      document.getElementById('progress-bar').style.width = `${(s / tot) * 100}%`;
+    }
+
+    // Ã¢â€â‚¬Ã¢â€â‚¬ STEP MACHINE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    const TOTAL = 2 + DEMO.features.length;
+
+    async function nextStep() {
+      if (waitingForWinnerReveal) {
+        waitingForWinnerReveal = false;
+        document.getElementById('next-btn').disabled = true;
+        document.getElementById('next-btn').textContent = '\u2713 Complete';
+        showWinner();
+        return;
+      }
+
+      if (animating) return;
+      animating = true;
+      document.getElementById('next-btn').disabled = true;
+
+      if (currentStep === 0) await stepIntro();
+      else if (currentStep === 1) await stepNorm();
+      else await laserCriterion(currentStep - 2);
+
+      currentStep++;
+      updateProgress(currentStep, TOTAL);
+
+      if (currentStep >= TOTAL) {
+        waitingForWinnerReveal = true;
+        document.getElementById('next-btn').disabled = false;
+        document.getElementById('next-btn').textContent = 'Reveal Winner \uD83C\uDFC6';
+        animating = false;
+        return;
+      }
+
+      document.getElementById('next-btn').disabled = false;
+      const fi = currentStep - 2;
+      document.getElementById('next-btn').textContent =
+        currentStep === TOTAL - 1 ? `Final Criterion ->` :
+          currentStep >= 2 ? `Apply: ${DEMO.features[fi]} ->` : 'See Normalization ->';
+
+      animating = false;
+    }
+
+    async function stepIntro() {
+      setNarrator(`I am The Analyst. Today we evaluate ${N} candidate${N !== 1 ? 's' : ''} across ${DEMO.features.length} weighted criteri${DEMO.features.length !== 1 ? 'a' : 'on'}. The one with the lowest total penalty shall prevail.`, 'explaining');
+      document.getElementById('next-btn').textContent = 'See Normalization ->';
+      await delay(600);
+    }
+
+    async function stepNorm() {
+      clearMathTexts();
+      setNarrator("Normalization compresses all raw scores to a 0-100 scale so every criterion is judged fairly.", 'explaining');
+      hideBadge();
+      hideIdealBadge();
+
+      for (let i = 0; i < N; i++) {
+        focusCandidate(i);
+        await delay(120);
+        const candidate = DEMO.candidates[i];
+        const BOX_W = SLOT_W * 0.52;
+        const BOX_H = 88;
+        const cx = CENTERS[i];
+        const cy = MATH_ZONE_Y + BOX_H / 2 + 10;
+
+        const container = new PIXI.Container();
+
+        const box = new PIXI.Graphics();
+        box.beginFill(0x0a0a28, 0.9);
+        box.drawRoundedRect(0, 0, BOX_W, BOX_H, 8);
+        box.endFill();
+        box.lineStyle(1.5, CHAR_COLORS[i], 0.6);
+        box.drawRoundedRect(0, 0, BOX_W, BOX_H, 8);
+        container.addChild(box);
+
+        for (let fi = 0; fi < DEMO.features.length; fi++) {
+          const feat = DEMO.features[fi];
+          const raw = DEMO.raw[candidate][feat];
+          const norm = DEMO.normed[candidate][feat];
+          const rowTxt = new PIXI.Text(`${feat}: ${raw}  ->  norm: ${norm.toFixed(1)}`, {
+            fontFamily: 'Courier New',
+            fontSize: 12,
+            fill: 0xaaaaff,
+            dropShadow: false,
+          });
+          rowTxt.x = 10;
+          rowTxt.y = 8 + fi * 24;
+          container.addChild(rowTxt);
+        }
+
+        container.x = cx - BOX_W / 2;
+        container.y = cy - BOX_H / 2;
+        fxL.addChild(container);
+        mathBoxes[i] = { objs: [container] };
+      }
+
+      document.getElementById('next-btn').textContent = `Apply: ${DEMO.features[0]} ->`;
+    }
+
+    async function laserCriterion(fi) {
+      clearMathTexts();
+
+      const feat = DEMO.features[fi], w = DEMO.weights[fi];
+                  const narrations = DEMO.features.map((f, idx) => {
+        if (idx === 0) return `Criterion 1 - ${feat}. Weight: ${Math.round(w * 100)}%. The most critical factor. I evaluate each candidate in turn.`;
+        if (idx === DEMO.features.length - 1) return `Criterion ${idx + 1} - ${feat}. Weight: ${Math.round(w * 100)}%. The final criterion. This seals the verdict.`;
+        return `Criterion ${idx + 1} - ${feat}. Weight: ${Math.round(w * 100)}%. Another dimension to weigh.`;
+      });
+
+      setNarrator(narrations[fi] || `Applying ${feat}`, 'explaining');
+      showBadge(feat, w);
+      showIdealBadge(feat);
+      await delay(1000);
+
+      const balls = Array(N).fill(null);
+      const pulseFns = Array(N).fill(null);
+
+      // PHASE A: materialize boxes / balls one by one
+      for (let i = 0; i < N; i++) {
+        focusCandidate(i);
+        await delay(120);
+        showValuesBox(i, feat);
+
+        const candidate = DEMO.candidates[i];
+        const rawVal = DEMO.raw[candidate][feat];
+        const normVal = DEMO.normed[candidate][feat];
+        const normIdeal = DEMO.normedIdeals[feat];
+        const penaltyFromBreakdown = DEMO.detailed_breakdown[candidate][feat].penalty;
+        const penalty = penaltyFromBreakdown ?? Math.max(0, normIdeal - normVal);
+
+        if (penalty < 0.01) {
+          showMathText(
+            i,
+            `${feat}: ${rawVal} -> norm: ${normVal.toFixed(1)}`,
+            `Penalty = max(0, ${normIdeal.toFixed(1)} - ${normVal.toFixed(1)}) = ${penalty.toFixed(1)}`,
+            'No Penalty - No Fire',
+            0x4ade80,
+            0x4ade80
+          );
+          balls[i] = null;
+          pulseFns[i] = () => { };
+        } else {
+          showMathText(
+            i,
+            `${feat}: ${rawVal} -> norm: ${normVal.toFixed(1)}`,
+            `Penalty = max(0, ${normIdeal.toFixed(1)} - ${normVal.toFixed(1)}) = ${penalty.toFixed(1)}`
+          );
+
+          const ball = makeLaserBall(penalty);
+          ball.x = CENTERS[i];
+          ball.y = BALL_ZONE_Y;
+          fxL.addChild(ball);
+
+          pulseFns[i] = startPulse(ball);
+          balls[i] = ball;
+        }
+
+        await delay(1400);
+      }
+
+      await delay(1000);
+
+      // PHASE B: apply weight and fire one by one
+      for (let i = 0; i < N; i++) {
+        focusCandidate(i);
+        await delay(120);
+        const candidate = DEMO.candidates[i];
+        const rawVal = DEMO.raw[candidate][feat];
+        const normVal = DEMO.normed[candidate][feat];
+        const normIdeal = DEMO.normedIdeals[feat];
+        const penaltyFromBreakdown = DEMO.detailed_breakdown[candidate][feat].penalty;
+        const penalty = penaltyFromBreakdown ?? Math.max(0, normIdeal - normVal);
+        const weightedPenalty = DEMO.detailed_breakdown[candidate][feat].weighted_penalty;
+
+        if (weightedPenalty < 0.01) {
+          showMathText(
+            i,
+            `${feat}: ${rawVal} -> norm: ${normVal.toFixed(1)}`,
+            `Penalty = max(0, ${normIdeal.toFixed(1)} - ${normVal.toFixed(1)}) = ${penalty.toFixed(1)}`,
+            `Weighted = 0.0 x ${w.toFixed(2)} = 0.0`,
+            0x4ade80,
+            0x4ade80
+          );
+          runPenalty[i] += 0;
+          await updateEmos();
+          await delay(400);
+          continue;
+        }
+
+        showMathText(
+          i,
+          `${feat}: ${rawVal} -> norm: ${normVal.toFixed(1)}`,
+          `Penalty = max(0, ${normIdeal.toFixed(1)} - ${normVal.toFixed(1)}) = ${penalty.toFixed(1)}`,
+          `Weighted = ${penalty.toFixed(1)} x ${w.toFixed(2)} = ${weightedPenalty.toFixed(1)}`
+        );
+
+        const targetY = GROUND_Y + platSink[i] - CHAR_H * 0.1;
+        await fireBall(balls[i], pulseFns[i], targetY);
+        flashImpact(CENTERS[i], targetY, weightedPenalty);
+
+        // Keep penalty score sync before redraw/sink
+        runPenalty[i] += weightedPenalty;
+
+        await sinkPlatform(i, (weightedPenalty / 100) * MAX_SINK);
+        await showPenaltyLabel(i, weightedPenalty);
+        await updateEmos();
+        await delay(500);
+      }
+
+      const leader = runPenalty.indexOf(Math.min(...runPenalty));
+      const isLastCriterion = fi === DEMO.features.length - 1;
+      let reactionText;
+      if (fi === 0) {
+        reactionText = `After ${feat} - ${DEMO.candidates[leader]} leads. The contest is just beginning.`;
+      } else if (isLastCriterion) {
+        reactionText = `The analysis is complete. ${DEMO.candidates[leader]} stands above all.`;
+      } else {
+        reactionText = `${DEMO.candidates[leader]} holds the lead after ${feat}. Pressure mounts.`;
+      }
+      setNarrator(reactionText, leader === 0 ? 'impressed' : 'concerned');
+      if (fi < DEMO.features.length - 1) document.getElementById('next-btn').textContent = `Apply: ${DEMO.features[fi + 1]} ->`;
+      await delay(600);
+      if (fi === DEMO.features.length - 1) {
+        scrollToTop();
+        await delay(900);
+      }
+    }
+
+    function showWinner() {
+      clearMathTexts();
+      const wi = DEMO.candidates.indexOf(DEMO.winner);
+      focusCandidate(wi);
+      const sc = DEMO.ranking.find(r => r.product === DEMO.winner).score;
+      for (let i = 0; i < N; i++) {
+        const emo = i === wi ? 'laugh' : 'sad';
+        setEmo(i, emo);
+        currentEmos[i] = emo;
+      }
+      setNarrator(`${DEMO.winner} achieves the lowest penalty of ${sc.toFixed(2)}. The decision is clear.`, 'proud');
+      document.getElementById('winner-name').textContent = DEMO.winner;
+      document.getElementById('winner-score').textContent = `Total Penalty: ${sc.toFixed(2)} (lower = better)`;
+      document.getElementById('winner-reason').textContent = DEMO.explanation;
+      document.getElementById('winner-overlay').classList.add('visible');
+      document.getElementById('next-btn').textContent = '\u2713 Complete';
+    }
+
+    // Ã¢â€â‚¬Ã¢â€â‚¬ RESTART Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    function restartVisualization() {
+      // Reset all state
+      platSink = Array(N).fill(0);
+      runPenalty = Array(N).fill(0);
+      currentStep = 0;
+      animating = false;
+      currentEmos = Array(N).fill('normal');
+      waitingForWinnerReveal = false;
+      cameraX = 0;
+      cameraY = 0;
+      cameraTargetX = 0;
+      cameraTargetY = 0;
+      gameWorld.x = 0;
+      gameWorld.y = 0;
+      scrollToTop();
+      syncHorizontalScrollUI();
+
+      // Clear any lingering fx
+      fxL.removeChildren();
+      clearMathTexts();
+
+      for (let i = 0; i < N; i++) {
+        if (penaltyLabelObjs[i]) {
+          if (penaltyLabelObjs[i].parent === fxL) fxL.removeChild(penaltyLabelObjs[i]);
+          penaltyLabelObjs[i] = null;
+        }
+        if (valueBoxObjs[i]) {
+          if (valueBoxObjs[i].parent === fxL) fxL.removeChild(valueBoxObjs[i]);
+          valueBoxObjs[i] = null;
+        }
+      }
+
+      spawnChars();
+      redraw();
+
+      for (let i = 0; i < N; i++) {
+        setEmo(i, 'normal');
+        currentEmos[i] = 'normal';
+      }
+
+      document.getElementById('winner-overlay').classList.remove('visible');
+      document.getElementById('next-btn').disabled = false;
+      document.getElementById('next-btn').textContent = 'Begin ->';
+      hideBadge();
+      hideIdealBadge();
+      document.getElementById('ideal-badge').classList.remove('visible');
+      updateProgress(0, TOTAL);
+      setNarrator('All candidates present. Press Begin when ready.', 'neutral');
+    }
+
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    // Ã¢â€â‚¬Ã¢â€â‚¬ INIT Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    async function init() {
+      document.getElementById('next-btn').disabled = true;
+      document.getElementById('next-btn').textContent = 'Loading sprites...';
+      const isRealData = DEMO !== DEMO_FALLBACK;
+      if (isRealData) {
+        document.title = `Decision Visualizer - ${DEMO.winner} vs ${DEMO.candidates.filter(c => c !== DEMO.winner).join(' vs ')}`;
+        setNarrator(`Real decision loaded: ${DEMO.candidates.length} candidates, ${DEMO.features.length} criteria. Press Begin when ready.`, 'neutral');
+      }
+      drawBG(); drawPlatforms();
+      syncHorizontalScrollUI();
+      await loadTextures();
+      spawnChars();
+      updateProgress(0, TOTAL);
+      if (!isRealData) {
+        setNarrator('All candidates present. Press Begin when ready.', 'neutral');
+      }
+      document.getElementById('next-btn').disabled = false;
+      document.getElementById('next-btn').textContent = 'Begin ->';
+      hideIdealBadge();
+    }
+
+    init();
+  </script>
 </body>
+
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

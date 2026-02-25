@@ -54,6 +54,21 @@ function calculateDecision(products_data, f_list, rate_list, req_list, high_or_l
     }
   }
 
+  // Build named map of normalized ideal values
+  const normedIdeals = {};
+  for (let i = 0; i < f_list.length; i++) {
+    normedIdeals[f_list[i]] = parseFloat(norm_req_list[i].toFixed(4));
+  }
+
+  // Snapshot normalized values before penalty calculation overwrites d
+  const normedValues = {};
+  for (const p in d) {
+    normedValues[p] = {};
+    for (const f of f_list) {
+      normedValues[p][f] = parseFloat(d[p][f].toFixed(4));
+    }
+  }
+
   const agg_sum = {};
   const detailed_breakdown = {};
 
@@ -104,6 +119,8 @@ function calculateDecision(products_data, f_list, rate_list, req_list, high_or_l
     weights,
     features: f_list,
     directions: high_or_low,
+    normed: normedValues,
+    normedIdeals,
   };
 }
 

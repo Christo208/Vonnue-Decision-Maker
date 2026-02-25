@@ -84,6 +84,7 @@ app.post("/api/calculate", async (req, res) => {
       explanation,
       explanation_source: source,
       explanation_styles: styles,
+      raw: products_data,
     });
   } catch (error) {
     console.error("Calculation error:", error.message);

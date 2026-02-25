@@ -26,6 +26,8 @@ const styleLabels = ['📊 Data-Driven', '📖 Storytelling', '⚖️ Comparativ
 const SCALE_OPTIONS = [
     "Excellent", "Very Good", "Good", "Above Average", "Average", "Below Average", "Poor"
 ];
+const RUNTIME_BUILD_ID = "runtime-source-fix-2026-02-25-1";
+console.log("[DecisionCompanion] Script build:", RUNTIME_BUILD_ID, "URL:", window.location.href);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LOADING SCREEN
@@ -465,6 +467,68 @@ async function runCalculate(products_data, ideals, metadata) {
 // ─────────────────────────────────────────────────────────────────────────────
 // RESULTS DISPLAY (Phase 1 + Phase 1.5 badges)
 // ─────────────────────────────────────────────────────────────────────────────
+// Builds { FeatureName: rawIdealValue } from state.ideals + state.featureNames
+// Used to populate the visualizer's ideals display
+function buildRawIdealsMap(result) {
+    const map = {};
+    state.featureNames.forEach((name, i) => {
+        map[name] = state.ideals[i];
+    });
+    return map;
+}
+
+function openVisualizer(dataJson) {
+    // Remove any prior overlay so we always use the latest payload/runtime.
+    const existingOverlay = document.getElementById('visualizer-overlay');
+    if (existingOverlay) existingOverlay.remove();
+
+    let payload = dataJson;
+    if (typeof dataJson === 'string') {
+        try {
+            payload = JSON.parse(dataJson);
+        } catch (e) {
+            console.error('Visualizer payload parse failed:', e);
+            return;
+        }
+    }
+
+    // Source-of-truth lives on this parent window before iframe bootstraps.
+    window.__VISUALIZER_DATA__ = payload;
+    window.__VISUALIZER_SOURCE__ = {
+        build: RUNTIME_BUILD_ID,
+        url: window.location.href,
+        ts: Date.now(),
+    };
+
+    // Create fullscreen overlay iframe.
+    const overlay = document.createElement('div');
+    overlay.id = 'visualizer-overlay';
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: #0a0a1a; z-index: 9999; display: flex; flex-direction: column;
+    `;
+
+    const closeBar = document.createElement('div');
+    closeBar.style.cssText = `
+        position: absolute; top: 0; right: 0; z-index: 10000; padding: 8px;
+    `;
+    closeBar.innerHTML = `
+        <button onclick="document.getElementById('visualizer-overlay').remove()"
+            style="background:rgba(255,255,255,0.15);border:none;color:white;
+                   padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;">
+            Close
+        </button>
+    `;
+
+    const iframe = document.createElement('iframe');
+    iframe.src = `/visualizer_prototype.html?build=${encodeURIComponent(RUNTIME_BUILD_ID)}&ts=${Date.now()}`;
+    iframe.style.cssText = 'width:100%;height:100%;border:none;flex:1;';
+
+    overlay.appendChild(closeBar);
+    overlay.appendChild(iframe);
+    document.body.appendChild(overlay);
+}
+
 function displayResults(result) {
     const container = document.getElementById('results-container');
 
@@ -549,6 +613,30 @@ function displayResults(result) {
                 </div>
             `).join('')}
         </div>
+    `;
+
+    const vizPayload = JSON.stringify({
+        candidates: result.ranking.map(r => r.product),
+        features: result.features,
+        weights: result.weights,
+        raw: result.raw,
+        normed: result.normed,
+        normedIdeals: result.normedIdeals,
+        ideals: buildRawIdealsMap(result),
+        detailed_breakdown: result.detailed_breakdown,
+        ranking: result.ranking,
+        winner: result.winner,
+        explanation: result.explanation,
+    });
+    window.__pendingVizData__ = vizPayload;
+
+    html += `
+      <div style="margin-top: 24px; text-align: center;">
+        <button onclick="openVisualizer(window.__pendingVizData__)" class="btn-primary" style="font-size:1.1rem; padding: 14px 32px;">
+          🎬 Animate Result
+        </button>
+        <p class="hint" style="margin-top: 8px;">Watch the decision play out step-by-step</p>
+      </div>
     `;
 
     container.innerHTML = html;
