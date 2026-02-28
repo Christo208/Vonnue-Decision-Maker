@@ -9,7 +9,16 @@
 </head>
 
 <body>
-    <div class="container">
+    <div id="tab-bar">
+        <button class="tab-btn active" id="tab-manual-btn" onclick="switchTab('manual')">
+            ✏️ Manual Compare
+        </button>
+        <button class="tab-btn" id="tab-amazon-btn" onclick="switchTab('smart')">
+            🛒 Smart Compare
+        </button>
+    </div>
+
+    <div class="container" id="tab-manual">
         <header>
             <h1>🎯 Decision Companion System</h1>
             <p class="subtitle">Make better decisions with data-driven analysis</p>
@@ -64,7 +73,7 @@
             <p class="hint">The AI has interpreted your review inputs into scores. Verify or override any score before
                 the final calculation.</p>
             <div id="approval-container"></div>
-            <button onclick="confirmApproval()" class="btn-primary">Confirm & Calculate 🚀</button>
+            <button onclick="confirmApproval()" class="btn-primary">Confirm &amp; Calculate 🚀</button>
         </div>
 
         <!-- Step 5: Results -->
@@ -72,6 +81,118 @@
             <h2>🏆 Your Decision Results</h2>
             <div id="results-container"></div>
             <button onclick="resetForm()" class="btn-primary">Start New Decision</button>
+        </div>
+    </div>
+
+    <!-- ── TAB 2: Smart Compare ──────────────────────────────────────────── -->
+    <div id="tab-smart" class="tab-content hidden">
+        <div class="container">
+
+            <!-- Step 0: Query Input + Refinement -->
+            <div id="step-smart-search" class="step active">
+                <h2>🛒 Smart Compare</h2>
+                <p class="hint" style="margin-bottom:20px;">
+                    Search for any product. AI refines your query for better results.
+                </p>
+
+                <div class="form-group">
+                    <label>What are you looking for?</label>
+                    <div style="display:flex;gap:10px;">
+                        <input type="text" id="smart-query-input"
+                            placeholder="e.g. Samsung, bluetooth speakers, laptop..." style="flex:1"
+                            onkeydown="if(event.key==='Enter') refineQuery()" />
+                        <button onclick="refineQuery()" class="btn-primary">Search →</button>
+                    </div>
+                </div>
+
+                <!-- Suggestions panel (shown after Groq responds) -->
+                <div id="smart-suggestions" class="hidden" style="margin-top:20px;">
+                    <p style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">
+                        💡 AI refined your search — pick one or edit the query above:
+                    </p>
+                    <div id="suggestion-chips"></div>
+                </div>
+
+                <!-- Fallback template (shown if AI fails) -->
+                <div id="smart-template" class="hidden" style="margin-top:20px;">
+                    <p style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">
+                        Build your search:
+                    </p>
+                    <div id="template-fields"></div>
+                    <button onclick="buildFromTemplate()" class="btn-secondary" style="margin-top:10px;">
+                        Use This Search →
+                    </button>
+                </div>
+
+                <div id="smart-search-error" class="error-alert hidden"></div>
+            </div>
+
+            <!-- Step 1: Search Results Grid -->
+            <div id="step-smart-results" class="step">
+                <h2>🔍 Search Results</h2>
+                <p class="hint" id="smart-results-subtitle">Select 2–5 products to compare.</p>
+                <div id="smart-result-grid"></div>
+                <div id="smart-url-fallback" style="margin-top:20px;">
+                    <details>
+                        <summary style="cursor:pointer;font-size:0.85rem;color:#64748b;">
+                            ↓ Or paste direct Croma / Reliance Digital URLs instead
+                        </summary>
+                        <div id="manual-url-inputs" style="margin-top:12px;">
+                            <div class="url-input-row">
+                                <label>URL 1</label>
+                                <input type="url" class="smart-url-field" placeholder="https://www.croma.com/..." />
+                            </div>
+                            <div class="url-input-row">
+                                <label>URL 2</label>
+                                <input type="url" class="smart-url-field"
+                                    placeholder="https://www.reliancedigital.in/..." />
+                            </div>
+                            <button onclick="addSmartUrlField()" class="btn-secondary"
+                                style="margin-top:8px;font-size:0.82rem;">+ Add URL</button>
+                        </div>
+                    </details>
+                </div>
+                <div style="margin-top:20px;display:flex;gap:12px;">
+                    <button onclick="showAmazonStep('step-smart-search')" class="btn-secondary">← Back</button>
+                    <button onclick="startSmartScrape()" class="btn-primary">Compare Selected →</button>
+                </div>
+                <div id="smart-scrape-error" class="error-alert hidden"></div>
+            </div>
+
+            <!-- Step 2: Scraped Data Preview -->
+            <div id="step-smart-preview" class="step">
+                <h2>📦 Fetched Products</h2>
+                <p class="hint">Review what was found. AI has pre-filled suggested priorities below.</p>
+                <div id="smart-preview-cards"></div>
+                <div id="smart-failures-block" class="hidden" style="margin-top:16px;"></div>
+                <div style="margin-top:24px;display:flex;gap:12px;">
+                    <button onclick="showAmazonStep('step-smart-results')" class="btn-secondary">← Back</button>
+                    <button onclick="showAmazonStep('step-smart-ideals')" class="btn-primary">Set Priorities →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: AI-Suggested Ideals -->
+            <div id="step-smart-ideals" class="step">
+                <h2>🎯 Set Your Priorities</h2>
+                <p class="hint">
+                    💡 AI suggested these based on the products found. Edit freely before running.
+                </p>
+                <div id="smart-ideals-container"></div>
+                <div style="margin-top:24px;display:flex;gap:12px;">
+                    <button onclick="showAmazonStep('step-smart-preview')" class="btn-secondary">← Back</button>
+                    <button onclick="runSmartCalculation()" class="btn-primary">Run Decision Engine →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Results -->
+            <div id="step-smart-final" class="step">
+                <h2>🏆 Comparison Result</h2>
+                <div id="smart-results-container"></div>
+                <div style="margin-top:20px;">
+                    <button onclick="resetSmart()" class="btn-secondary">← New Comparison</button>
+                </div>
+            </div>
+
         </div>
     </div>
 

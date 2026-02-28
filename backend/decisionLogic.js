@@ -33,10 +33,15 @@ function calculateDecision(products_data, f_list, rate_list, req_list, high_or_l
     min_max[feature] = { min: Math.min(...values), max: Math.max(...values) };
   }
 
+  // Track which features are identical across all products — they carry no info
+  const identicalFeatures = new Set();
+
   for (const feature of f_list) {
     const { min: min_v, max: max_v } = min_max[feature];
     for (const p in d) {
       if (max_v === min_v) {
+        // All products identical on this feature — mark it, normalize to 50
+        identicalFeatures.add(feature);
         d[p][feature] = 50.0;
       } else {
         d[p][feature] = ((d[p][feature] - min_v) / (max_v - min_v)) * 100;
@@ -48,9 +53,13 @@ function calculateDecision(products_data, f_list, rate_list, req_list, high_or_l
   for (let i = 0; i < f_list.length; i++) {
     const { min: min_v, max: max_v } = min_max[f_list[i]];
     if (max_v === min_v) {
+      // Identical feature: set ideal = 50 so penalty is always 0
       norm_req_list.push(50.0);
     } else {
-      norm_req_list.push(((req_list[i] - min_v) / (max_v - min_v)) * 100);
+      // FIX 1: Clamp normalized ideal to [0, 100] so out-of-range ideals
+      // don't produce runaway penalties that make all products look equally bad
+      const raw = ((req_list[i] - min_v) / (max_v - min_v)) * 100;
+      norm_req_list.push(Math.min(100, Math.max(0, raw)));
     }
   }
 
@@ -80,7 +89,11 @@ function calculateDecision(products_data, f_list, rate_list, req_list, high_or_l
       const y = f_list[x];
       let penalty;
 
-      if (high_or_low[x] === "True") {
+      // FIX 2: Identical features (all products same value) contribute zero
+      // penalty — they're uninformative and shouldn't influence the result
+      if (identicalFeatures.has(y)) {
+        penalty = 0;
+      } else if (high_or_low[x] === "True") {
         penalty = Math.max(0, norm_req_list[x] - d[i][y]);
       } else {
         penalty = Math.max(0, d[i][y] - norm_req_list[x]);
@@ -106,7 +119,9 @@ function calculateDecision(products_data, f_list, rate_list, req_list, high_or_l
   const ranking = Object.entries(agg_sum)
     .sort((a, b) => a[1] - b[1])
     .map(([product, score], index) => {
-      if (Math.abs(score - mvp_score) < 0.001) tie.push(product);
+      // FIX 3: Threshold of 1.0 (on 0–100 scale) catches near-identical products
+      // that floating point normalization would never hit with 0.001
+      if (Math.abs(score - mvp_score) < 1.0) tie.push(product);
       return { rank: index + 1, product, score: parseFloat(score.toFixed(4)) };
     });
 
@@ -341,7 +356,13 @@ async function preprocessInputs(products_data, feature_types, f_list, ideals) {
       // Use the midpoint (5) as a numeric ideal — the AI-scored products
       // will naturally cluster relative to each other via normalization.
       // The ideal description is used only to *score* each product's review.
-      scored_ideals[fi] = 10; // Anchor: "perfect match" = score of 10 is ideal
+      // FIX 4: Anchor ideal to the best score actually achieved, not 10.
+      // If the best product scores 7/10, anchoring at 10 unfairly penalizes
+      // everyone. Using the best available score makes the winner penalty=0.
+      const validScores = results
+        .filter(r => r.source !== 'AI_FAIL' && r.score !== null)
+        .map(r => r.score);
+      scored_ideals[fi] = validScores.length > 0 ? Math.max(...validScores) : 10;
       continue;
     }
   }

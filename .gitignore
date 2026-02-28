@@ -2,3 +2,8 @@ node_modules/
 backend/.env 
 "*.docx" 
 "backend/text.txt" 
+backend/.env 
+*.xlsx 
+*.docx 
+docs/*AutoRecovered* 
+~$* 

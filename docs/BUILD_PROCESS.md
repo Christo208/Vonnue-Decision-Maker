@@ -514,9 +514,123 @@ This workflow — Claude designs, Codex implements, Claude reviews — proved mo
 
 **Visualizer Prototype — Complete ✅** Step-by-step animated decision explanation. Pixi.js WebGL renderer. Fireball spritesheets with 5 penalty tiers. Analyst narrator with expression changes. Auto-follow camera. Math equation boxes. Sequential per-candidate evaluation. Hardcoded demo data (Alice/Bob/Charlie). Pending: integration with real `/api/calculate` response data.
 
-**Phase 2 — Planned** Web scraping for automatic product data fetching. Visualizer integration with real API data.
+**Phase 2 — In Progress ⚙️** Reliance Digital search + product scraper working. Smart Compare UI built. Visualizer integration with real API data in progress.
 
 **Phase 3 — Planned** Customer review analysis.
+
+---
+
+## Phase 2: Web Scraping — February 25–28, 2026
+
+### Why Phase 2 Exists
+
+Phase 1 required the user to manually enter every product value — price, RAM, battery — number by number. That is fine for a demo but impractical for a real decision. Phase 2's philosophy: *the more real data the system can fetch automatically, the more useful it becomes.* The user should only need to type a product name.
+
+### Architecture Decisions — February 25, 2026
+
+**10:00 AM — Visualizer integration came first.** Before starting Phase 2 scraping, I had to connect the visualizer to real `/api/calculate` data instead of hardcoded Alice/Bob/Charlie demo values. The issue was a stale runtime context — the frontend was serving old cached assets and falling back to demo mode even when real data was injected. Fix: versioned script includes (`script.js?v=runtime-source-fix-2026-02-25-1`) and cache-busted iframe URLs. After that, the visualizer correctly played the animation for real user inputs.
+
+**9:40 PM — Phase 2 discussion.** I came into this with no web scraping experience at all. First session was purely educational — what is scraping, how do large companies do it, what is the difference between scraping with and without an API key.
+
+**Key architecture decision I made — search-first, not URL-first:**
+
+My original plan was to have users paste Amazon product URLs directly. I rejected this because:
+- It puts research burden on the user
+- Amazon aggressively blocks scraping (bot detection, CAPTCHAs, rate limits)
+- Pasting URLs is not a natural flow
+
+Better design: user types a product name → system searches → system fetches the top results → user sees a data table. No URLs involved.
+
+**Why Reliance Digital instead of Amazon:**
+
+| Option | Decision | Reason |
+|--------|----------|--------|
+| Amazon.in | Rejected | Aggressive bot detection, frequent blocks, legal grey area |
+| Flipkart | Considered | Heavy JavaScript rendering, requires Puppeteer (heavier) |
+| Croma | Attempted, dropped | Scraping structure proved inconsistent across product categories |
+| Reliance Digital | Chosen | Cleaner HTML structure, and a critical discovery detailed below |
+
+**SerpAPI — evaluated and rejected:**
+
+SerpAPI charges per search. I prototyped it, got 401 errors on the first run (free tier exhausted almost immediately), and realized we would hit rate limits constantly during development. Replacing it with a native Reliance Digital search was cleaner and free.
+
+---
+
+### The Key Discovery: Reliance Digital's Native API — February 28, 2026
+
+**This was the most important technical finding of Phase 2.**
+
+I opened Chrome DevTools on the Reliance Digital search results page, went to the Network tab, and filtered by `Fetch/XHR`. Among the analytics and tracking noise, two internal API calls stood out:
+
+- **Search:** `https://www.reliancedigital.in/ext/raven-api/catalog/v1.0/products?q={query}&page_size=12&page_no=1`
+- **Product detail:** `https://www.reliancedigital.in/api/service/application/catalog/v1.0/products/{slug}/`
+
+Both returned clean structured JSON — product names, prices, ratings, and full spec lists. This is significantly better than HTML scraping because:
+- No need to parse brittle HTML layouts that change with redesigns
+- Data is already structured — price is a number, not text buried in a `<span>`
+- The search endpoint handles product discovery — no SerpAPI needed
+
+**I did not invent this approach.** I found it by watching what the website's own frontend does when a user searches. It calls its own backend API. I just replicated those calls from my server.
+
+**The slug issue:** The product detail API requires a URL slug (e.g., `samsung-80-cm-32-inches-hd-smart-led-tv-black-ua32h4550fuxxl-mcxakn-9285125`), not a product ID. The search results return full product page URLs, so slug extraction is: take the URL path, strip the leading `/product/`, use what remains. This was a subtle bug that caused scraping failures until identified.
+
+---
+
+### Scraper Architecture
+
+Two modules built:
+
+**RelianceSearch** — calls the catalog search API, returns up to 12 product page URLs for a given query string.
+
+**RelianceScraper** — given a product page URL:
+1. Extracts the slug from the URL
+2. Calls the product detail API with the slug
+3. Falls back to HTML scraping with Cheerio if the API returns incomplete data
+4. Extracts: name, price, rating, review count, and all available spec fields (up to 50 fields per product)
+
+**Why the fallback to HTML scraping:** The JSON-LD product schema embedded in the page HTML contains name, price, and rating reliably. The spec table in the HTML sometimes has fields the API misses. Using both sources and merging them gives the most complete data.
+
+---
+
+### Smart Compare UI — February 28, 2026
+
+With real scraped data coming in, a new UI challenge appeared: **too many criteria.**
+
+A scraped phone returns 40+ spec fields. Comparing all 40 is meaningless — most specs are identical across products (all have "1 year warranty", all are "Made in India"). Showing all 40 drowns the important differences.
+
+**Solution I designed:** Criteria toggle system.
+
+- Each criteria row has a checkbox. Selected = included in scoring. Deselected = excluded.
+- Rows where all products have identical values are automatically greyed out and pre-deselected. No point comparing what is the same.
+- User can override and re-include any row manually.
+
+**Bug during implementation:** The deselect toggle was using a CSS class (`criteria-row-removed`) that collapsed the entire row including the toggle button itself. Once deselected, the user had no way to re-select. Fix: isolate the visual strike-through to the content cells only, not the button column.
+
+---
+
+### Mistakes Made During Phase 2
+
+| Mistake | Impact | Fix |
+|---------|--------|-----|
+| Chose SerpAPI without checking free tier limits | 401 errors on first test, wasted setup time | Replaced entirely with Reliance native search API |
+| Attempted Croma scraping without verifying structure first | Hours of inconsistent results across categories | Dropped Croma, focused on Reliance Digital only |
+| URL-based scraping (full page URL → Cheerio parse) before discovering JSON API | Slower, more fragile, broke on layout changes | Switched to native JSON API as primary, HTML as fallback |
+| Slug extraction not accounting for query parameters in URL | Malformed slugs, 404 responses from product API | Strip at `?` before extracting slug |
+| All Gemini review-scoring requests fired simultaneously | 429 rate limit on every run with 3+ products | Staggered requests with delay (same fix as Phase 1.5) |
+
+---
+
+### Current State (Updated)
+
+**Phase 1 — Complete ✅** Generic decision system, direction-aware penalty scoring, normalization, weighted ranking, tie detection, 5-step web wizard, AI explanations with 4 styles and offline fallback.
+
+**Phase 1.5 — Complete ✅** 3 input types, preprocessing pipeline, Approval Stage, source badges, confidence indicators, AI failure handling with manual override.
+
+**Visualizer — Complete ✅** Integrated with real `/api/calculate` data. Pixi.js WebGL renderer, fireball spritesheets, analyst narrator, auto-follow camera, 5+ candidate support.
+
+**Phase 2 — In Progress ⚙️** Reliance Digital search and product scraper working. Smart Compare tab with criteria toggle built. TV product rendering confirmed. Remaining: full frontend-to-backend integration for all product categories, AI-suggested ideal values.
+
+**Phase 3 — Planned** Customer review analysis from multiple sources.
 
 ---
 
