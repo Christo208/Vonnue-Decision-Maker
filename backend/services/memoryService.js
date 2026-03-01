@@ -6,7 +6,7 @@
 // Fallback storage: in-memory array (if Firebase not configured)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const MAX_ENTRIES = 20;
+const MAX_ENTRIES = 50;
 const COLLECTION  = 'comparisons';
 
 // ── Firebase init (lazy — only if env vars present) ──────────────────────────

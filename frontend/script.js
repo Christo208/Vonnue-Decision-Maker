@@ -49,11 +49,13 @@ function hideLoading() {
 // STEP 1: SETUP
 // ─────────────────────────────────────────────────────────────────────────────
 function startSetup() {
-  const numProducts = parseInt(document.getElementById('num-products').value);
-  const numFeatures = parseInt(document.getElementById('num-features').value);
+  const rawProducts = document.getElementById('num-products').value;
+  const rawFeatures = document.getElementById('num-features').value;
+  const numProducts = parseInt(rawProducts);
+  const numFeatures = parseInt(rawFeatures);
 
-  if (numProducts < 2) { alert('⚠️ Please enter at least 2 options to compare.'); return; }
-  if (numFeatures < 1) { alert('⚠️ Please enter at least 1 criterion.'); return; }
+  if (rawProducts.includes('.') || isNaN(numProducts) || numProducts < 2) { alert('⚠️ Number of options must be a whole number of at least 2.'); return; }
+  if (rawFeatures.includes('.') || isNaN(numFeatures) || numFeatures < 1) { alert('⚠️ Number of criteria must be a whole number of at least 1.'); return; }
 
   state.numProducts = numProducts;
   state.numFeatures = numFeatures;
@@ -80,8 +82,8 @@ function generateFeaturesForm() {
                     <input type="text" id="feature-name-${i}" placeholder="e.g., Price, Quality" required>
                 </div>
                 <div class="form-group">
-                    <label>Importance (1-5):</label>
-                    <input type="number" id="feature-weight-${i}" min="0.1" step="0.1" value="3" required>
+                    <label>Importance (1–10):</label>
+                    <input type="number" id="feature-weight-${i}" min="1" max="10" step="0.1" value="3" required>
                 </div>
                 <div class="form-group">
                     <label>Better When:</label>
@@ -114,6 +116,23 @@ function updateTypeHint(i) {
     review: 'Enter a written description. AI will convert it to a 1-10 score.',
   };
   hint.textContent = hints[type];
+
+  // Lock direction for scale and review — higher is always better by definition
+  const dirSelect = document.getElementById(`feature-direction-${i}`);
+  if (type === 'scale' || type === 'review') {
+    dirSelect.value = 'True';
+    dirSelect.disabled = true;
+    dirSelect.style.opacity = '0.4';
+    dirSelect.style.cursor = 'not-allowed';
+    dirSelect.title = type === 'scale'
+      ? 'Scale criteria always use Higher is Better (Excellent > Poor)'
+      : 'Review criteria always use Higher is Better (AI scores 1–10)';
+  } else {
+    dirSelect.disabled = false;
+    dirSelect.style.opacity = '1';
+    dirSelect.style.cursor = 'pointer';
+    dirSelect.title = '';
+  }
 }
 
 function goToProducts() {
@@ -130,7 +149,8 @@ function goToProducts() {
 
     if (!name) { alert(`⚠️ Please enter a name for Criterion ${i + 1}`); return; }
     if (state.featureNames.includes(name)) { alert(`⚠️ Criterion name "${name}" already used.`); return; }
-    if (weight <= 0) { alert(`⚠️ Importance for "${name}" must be positive.`); return; }
+    if (isNaN(weight) || weight < 1 || weight > 10) { alert(`⚠️ Importance for "${name}" must be between 1 and 10.`); return; }
+    if (Math.round(weight * 10) !== weight * 10) { alert(`⚠️ Importance for "${name}" allows at most one decimal place (e.g. 3.5).`); return; }
 
     state.featureNames.push(name);
     state.featureWeights.push(weight);
@@ -752,8 +772,58 @@ function cycleExplanation() {
 // NAVIGATION
 // ─────────────────────────────────────────────────────────────────────────────
 function showStep(stepId) {
-  document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
-  document.getElementById(stepId).classList.add('active');
+  // 1. Switch step visibility
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(stepId);
+  if (target) target.classList.add('active');
+
+  // 2. Update stepper dots
+  const stepOrder = ['step-setup', 'step-features', 'step-products', 'step-ideals'];
+  const dotMap = {
+    'step-setup':    'dot-step-setup',
+    'step-features': 'dot-step-features',
+    'step-products': 'dot-step-products',
+    'step-ideals':   'dot-step-ideals',
+  };
+  const currentIdx = stepOrder.indexOf(stepId);
+
+  stepOrder.forEach((sid, i) => {
+    const dot = document.getElementById(dotMap[sid]);
+    if (!dot) return;
+    dot.classList.remove('active', 'completed');
+    if (currentIdx === -1) return; // approval / results — leave dots as-is
+    if (i < currentIdx)  dot.classList.add('completed');
+    if (i === currentIdx) dot.classList.add('active');
+  });
+
+  // 3. Hide stepper on results/approval screens
+  const stepper = document.getElementById('manual-stepper');
+  if (stepper) {
+    const hiddenOn = ['step-approval', 'step-results'];
+    stepper.style.display = hiddenOn.includes(stepId) ? 'none' : '';
+  }
+
+  // 4. Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Navigate back via stepper dot click (only allows going to completed steps)
+function stepperNav(stepId) {
+  const stepOrder = ['step-setup', 'step-features', 'step-products', 'step-ideals'];
+  const dotMap = {
+    'step-setup':    'dot-step-setup',
+    'step-features': 'dot-step-features',
+    'step-products': 'dot-step-products',
+    'step-ideals':   'dot-step-ideals',
+  };
+
+  // Only allow navigation if that dot is already completed or active
+  const dot = document.getElementById(dotMap[stepId]);
+  if (!dot) return;
+  const isReachable = dot.classList.contains('completed') || dot.classList.contains('active');
+  if (!isReachable) return;
+
+  showStep(stepId);
 }
 
 function goBack(stepId) {
@@ -1155,16 +1225,6 @@ function showSmartIdeals() {
 
   const identicalSet = new Set(identicalCriteria || []);
 
-  // Add legend
-  const legend = document.createElement('div');
-  legend.style.cssText = 'display:flex;gap:16px;font-size:0.78rem;color:#64748b;margin-bottom:16px;flex-wrap:wrap;';
-  legend.innerHTML = `
-    <span>🟢 Selected — values differ (meaningful to compare)</span>
-    <span>⬜ Deselected — tap to re-include</span>
-    <span style="opacity:0.5">🔘 Identical across all products — excluded automatically</span>
-  `;
-  container.appendChild(legend);
-
   window.toggleSmartRow = (idx) => {
     const row = document.getElementById('smart-row-' + idx);
     const btn = document.getElementById('smart-toggle-' + idx);
@@ -1176,7 +1236,13 @@ function showSmartIdeals() {
     const reasoning = row.querySelector('.amazon-ideal-reasoning');
     if (inputs) inputs.style.display = isRemoved ? '' : 'none';
     if (reasoning) reasoning.style.display = isRemoved ? '' : 'none';
-    btn.textContent = isRemoved ? '🟢' : '⬜';
+    if (isRemoved) {
+      btn.classList.add('active');
+      btn.textContent = '✓';
+    } else {
+      btn.classList.remove('active');
+      btn.textContent = '';
+    }
     row.style.opacity = isRemoved ? '1' : '0.5';
     row.style.background = isRemoved ? '' : '#f8fafc';
   };
@@ -1195,8 +1261,15 @@ function showSmartIdeals() {
       dirSelect.parentElement.style.display = 'flex';
       if (typeSelect.value === 'scale') {
         idealInput.min = 1; idealInput.max = 10;
+        dirSelect.disabled = true;
+        dirSelect.value = 'higher';
+        dirSelect.style.opacity = '0.5';
+        dirSelect.style.cursor = 'not-allowed';
       } else {
         idealInput.removeAttribute('min'); idealInput.removeAttribute('max');
+        dirSelect.disabled = false;
+        dirSelect.style.opacity = '';
+        dirSelect.style.cursor = '';
       }
     }
   };
@@ -1223,12 +1296,12 @@ function showSmartIdeals() {
 
     row.innerHTML = `
       <div class="amazon-ideal-header">
-        <button class="criteria-toggle-btn" id="smart-toggle-${idx}"
+        <div class="crit-check ${!isIdentical ? 'active' : ''}" id="smart-toggle-${idx}"
           onclick="toggleSmartRow(${idx})"
           title="${isIdentical ? 'All products identical — excluded' : 'Toggle criterion'}"
-          style="font-size:1.1rem;background:none;border:none;cursor:${isIdentical ? 'default' : 'pointer'};padding:0 6px 0 0;">
-          ${isIdentical ? '🔘' : '🟢'}
-        </button>
+          style="cursor:${isIdentical ? 'default' : 'pointer'};opacity:${isIdentical ? '0.45' : '1'};">
+          ${isIdentical ? '' : '✓'}
+        </div>
         <span class="amazon-ideal-name" style="${isIdentical ? 'opacity:0.45' : ''}">${criterion}</span>
         ${isIdentical ? `<span style="font-size:0.75rem;color:#94a3b8;margin-left:8px;">All same: ${sampleVal ?? '—'}</span>` : `
         <select class="criteria-type-select" id="smart-type-${idx}" onchange="handleTypeChange(${idx})">
@@ -1471,9 +1544,33 @@ async function _finishSmartCalculation(activeCriteria, ideals, weights, directio
 }
 
 function showAmazonStep(stepId) {
-  document.querySelectorAll('#tab-smart .step').forEach((s) => s.classList.remove('active'));
-  document.getElementById(stepId).classList.add('active');
+  // 1. Switch step visibility
+  document.querySelectorAll('#tab-smart .step').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(stepId);
+  if (target) target.classList.add('active');
   if (stepId === 'step-smart-ideals') showSmartIdeals();
+
+  // 2. Update smart stepper dots
+  const stepOrder = ['step-smart-search', 'step-smart-results', 'step-smart-preview', 'step-smart-ideals', 'step-smart-final'];
+  const dotMap = {
+    'step-smart-search':  'sdot-search',
+    'step-smart-results': 'sdot-results',
+    'step-smart-preview': 'sdot-preview',
+    'step-smart-ideals':  'sdot-ideals',
+    'step-smart-final':   'sdot-final',
+  };
+  const currentIdx = stepOrder.indexOf(stepId);
+
+  stepOrder.forEach((sid, i) => {
+    const dot = document.getElementById(dotMap[sid]);
+    if (!dot) return;
+    dot.classList.remove('active', 'completed');
+    if (i < currentIdx)  dot.classList.add('completed');
+    if (i === currentIdx) dot.classList.add('active');
+  });
+
+  // 3. Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function resetSmart() {
@@ -1512,6 +1609,11 @@ function switchTab(tab) {
   if (tab === 'manual') {
     document.getElementById('tab-manual').classList.remove('hidden');
     document.getElementById('tab-manual-btn').classList.add('active');
+    // Ensure at least one manual step is active
+    const hasActive = document.querySelector('#tab-manual .step.active');
+    if (!hasActive) {
+      showStep('step-setup');
+    }
   } else if (tab === 'smart') {
     document.getElementById('tab-smart').classList.remove('hidden');
     document.getElementById('tab-amazon-btn').classList.add('active');
@@ -1530,6 +1632,20 @@ function switchTab(tab) {
 // ── Auto-save after every successful comparison ───────────────────────────────
 async function saveToMemory(products, criteria, winner, result, products_data, source, ruled_out = [], images = {}) {
   try {
+    // Check current memory count before saving
+    const listRes = await fetch('/api/memory/list');
+    const listData = await listRes.json();
+    const currentCount = (listData.entries || []).length;
+
+    // If at limit (50), ask for confirmation
+    if (currentCount >= 50) {
+      const confirmed = confirm(
+        'You have 50 saved comparisons — your oldest one will be removed to save this new one. Continue?'
+      );
+      if (!confirmed) return; // User cancelled
+    }
+
+    // Proceed with saving
     await fetch('/api/memory/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1541,29 +1657,50 @@ async function saveToMemory(products, criteria, winner, result, products_data, s
   }
 }
 
+// ── Memory state helper — only ONE state visible at a time ────────────────────
+function setMemoryState(state) {
+  // state: 'loading' | 'empty' | 'list' | 'error'
+  const loadingEl = document.getElementById('memory-loading');
+  const emptyEl   = document.getElementById('memory-empty');
+  const listEl    = document.getElementById('memory-list');
+
+  // Hide all first
+  loadingEl.classList.add('hidden');
+  emptyEl.classList.add('hidden');
+  listEl.style.display = 'none';
+
+  if (state === 'loading') {
+    loadingEl.textContent = 'Loading your comparisons…';
+    loadingEl.classList.remove('hidden');
+  } else if (state === 'empty') {
+    emptyEl.classList.remove('hidden');
+  } else if (state === 'list') {
+    listEl.style.display = '';
+  } else if (state === 'error') {
+    loadingEl.textContent = '❌ Failed to load memory. Is the server running?';
+    loadingEl.classList.remove('hidden');
+  }
+}
+
 // ── Load and render memory list ───────────────────────────────────────────────
 async function loadMemory() {
-  const loadingEl = document.getElementById('memory-loading');
-  const emptyEl = document.getElementById('memory-empty');
   const listEl = document.getElementById('memory-list');
-
-  loadingEl.classList.remove('hidden');
-  emptyEl.classList.add('hidden');
   listEl.innerHTML = '';
+  setMemoryState('loading');
 
   try {
     const res = await fetch('/api/memory/list');
     const data = await res.json();
-    loadingEl.classList.add('hidden');
 
     if (!data.entries || data.entries.length === 0) {
-      emptyEl.classList.remove('hidden');
+      setMemoryState('empty');
       return;
     }
 
+    setMemoryState('list');
     data.entries.forEach(entry => renderMemoryCard(entry));
   } catch (e) {
-    loadingEl.textContent = '❌ Failed to load memory. Is the server running?';
+    setMemoryState('error');
     console.error('[Memory] Load failed:', e.message);
   }
 }
@@ -1669,9 +1806,8 @@ async function deleteMemory(id) {
     await fetch(`/api/memory/${id}`, { method: 'DELETE' });
     const card = document.querySelector(`.memory-card[data-id="${id}"]`);
     if (card) card.remove();
-    // Show empty state if no cards left
     if (document.getElementById('memory-list').children.length === 0) {
-      document.getElementById('memory-empty').classList.remove('hidden');
+      setMemoryState('empty');
     }
   } catch (e) {
     alert('Failed to delete. Try again.');
@@ -1687,7 +1823,7 @@ async function clearAllMemory() {
     await fetch(`/api/memory/${id}`, { method: 'DELETE' });
     card.remove();
   }
-  document.getElementById('memory-empty').classList.remove('hidden');
+  setMemoryState('empty');
 }
 
 // ── Replay result ─────────────────────────────────────────────────────────────

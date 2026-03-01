@@ -2,6 +2,8 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
+// Initialize global fetch for decisionLogic.js to use
+import("node-fetch").then(m => global.fetch = m.default).catch(console.error);
 const {
   calculateDecision,
   generateExplanation,
@@ -33,6 +35,12 @@ app.post("/api/preprocess", async (req, res) => {
       ideals
     );
 
+    // Force scale criteria to "higher is better" — Excellent > Very Good by definition.
+    // Overrides any incorrect direction the frontend may have sent.
+    const corrected_directions = directions.map((dir, i) =>
+      feature_types[i] === 'scale' ? 'higher' : dir
+    );
+
     res.json({
       scored_data,
       scored_ideals,
@@ -41,7 +49,7 @@ app.post("/api/preprocess", async (req, res) => {
       // Pass through for the final /api/calculate call
       features,
       weights_raw,
-      directions,
+      directions: corrected_directions,
     });
   } catch (error) {
     console.error("Preprocess error:", error.message);
@@ -108,33 +116,32 @@ app.post('/api/refine-query', async (req, res) => {
     return res.status(400).json({ error: 'Query too short.' });
   }
 
-  const prompt = `A user wants to compare products online. Their search query is: "${query}"
+  const prompt = `A user wants to search for products on Reliance Digital (reliancedigital.in), an Indian electronics retailer.
 
-This query may be vague, a brand name only, or a category name only.
-Your job is to suggest 3–4 refined, specific search queries that would return
-better product comparison results on an Indian e-commerce site.
+Their raw query is: "${query}"
 
-Rules:
-- Be specific: include category, budget range, or key feature
-- Use Indian context (₹ for prices, Indian market context)
-- If the query mentions a brand: generate queries with that brand + specific products
-- If the query mentions a category: generate queries with budget ranges
-- Keep each suggestion under 60 characters
+Reliance Digital's search works best with SHORT, SPECIFIC queries in this format: [Brand] [Product Type] [Key Spec]
+Examples of queries that work well on Reliance Digital:
+- "Samsung 65 inch 4K TV"
+- "Sony WH-1000XM5 headphones"
+- "iPhone 15 128GB"
+- "Boat Airdopes 141 earbuds"
+- "LG 1.5 ton inverter AC"
 
-Also detect what template fields are needed if the user wants to manually
-specify their search instead.
+Generate 3-4 search suggestions optimized for Reliance Digital:
+- Keep each under 50 characters
+- Use brand names where known
+- Include specific model numbers if mentioned
+- Include capacity/size/spec if relevant
+- Avoid vague words like "best", "good", "latest"
+- Use Indian market context
 
-Output ONLY a raw JSON object. No markdown, no backticks.
-Format:
+Output ONLY raw JSON, no markdown:
 {
-  "suggestions": [
-    "Samsung Galaxy phones under ₹20,000",
-    "Samsung Galaxy S24 series India",
-    "Samsung budget smartphones 2024"
-  ],
+  "suggestions": ["...", "...", "..."],
   "template": {
-    "fields": ["product_type", "budget"],
-    "placeholder": "e.g. Samsung phones under ₹25,000"
+    "fields": ["brand", "product_type", "key_spec"],
+    "placeholder": "e.g. Samsung 65 inch 4K TV"
   }
 }`;
 
@@ -409,24 +416,26 @@ function buildIdealSuggestionPrompt(products_data, criteria) {
     })
     .join('\n');
 
-  return `You are a consumer advisor. Given these products and their values, suggest ideal target values and importance weights for a decision comparison.
+  return `You are a smart consumer advisor helping someone compare products on Reliance Digital India.
 
-Products:
+Here are the products being compared with their actual specs:
 ${dataStr}
 
-For each criterion, return:
-- ideal: the best target value a buyer would want (number only)
-- weight: importance from 1 (low) to 5 (high)
-- direction: "lower" if lower is better (Price, Weight), "higher" if higher is better (Rating, Battery)
-- reasoning: one short sentence
+Your task: for each criterion below, suggest the ideal target value that a typical Indian buyer would want.
 
 Rules:
-- For Price: ideal = lowest price among options or slightly below
-- For Rating: ideal = 4.5 or 5.0
-- For specs with units (e.g. "30 hours"): extract the number only
+- For Price (₹): ideal = the lowest price shown minus 5-10%
+- For Rating: ideal = 4.5
+- For Battery/Capacity/Size specs: ideal = highest value shown
+- For Weight: ideal = lowest value shown
+- weight (1-5): how much does this criterion affect purchase decisions? Price=5, Rating=4, brand-specific specs=2-3
+- direction: "lower" only for Price and Weight, "higher" for everything else
+- reasoning: one sentence, specific to these products
 
-Output ONLY raw JSON. No markdown, no backticks.
-Format: { "CriterionName": { "ideal": 24990, "weight": 4, "direction": "lower", "reasoning": "..." }, ... }`;
+IMPORTANT: ideal must always be a plain number. No units, no text. If a spec has units like "30 hours" or "5000 mAh", extract only the number.
+
+Output ONLY raw JSON, no markdown, no backticks:
+{ "CriterionName": { "ideal": 24990, "weight": 4, "direction": "lower", "reasoning": "..." }, ... }`;
 }
 
 async function getAISuggestions(prompt, criteria) {

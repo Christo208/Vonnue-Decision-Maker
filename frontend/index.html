@@ -19,6 +19,9 @@
         <button class="tab-btn" id="tab-memory-btn" onclick="switchTab('memory')">
             🕐 Memory
         </button>
+        <button class="dark-toggle-btn" id="dark-toggle-btn" onclick="toggleDark()">
+            🌙 Dark
+        </button>
     </div>
 
     <div class="container tab-content" id="tab-manual">
@@ -27,18 +30,45 @@
             <p class="subtitle">Make better decisions with data-driven analysis</p>
         </header>
 
+        <!-- Step Progress Bar -->
+        <nav id="manual-stepper" aria-label="Progress">
+            <div class="stepper-track">
+                <div class="stepper-step active" id="dot-step-setup" onclick="stepperNav('step-setup')">
+                    <div class="stepper-circle">1</div>
+                    <span class="stepper-label">Setup</span>
+                </div>
+                <div class="stepper-line"></div>
+                <div class="stepper-step" id="dot-step-features" onclick="stepperNav('step-features')">
+                    <div class="stepper-circle">2</div>
+                    <span class="stepper-label">Criteria</span>
+                </div>
+                <div class="stepper-line"></div>
+                <div class="stepper-step" id="dot-step-products" onclick="stepperNav('step-products')">
+                    <div class="stepper-circle">3</div>
+                    <span class="stepper-label">Options</span>
+                </div>
+                <div class="stepper-line"></div>
+                <div class="stepper-step" id="dot-step-ideals" onclick="stepperNav('step-ideals')">
+                    <div class="stepper-circle">4</div>
+                    <span class="stepper-label">Ideals</span>
+                </div>
+            </div>
+        </nav>
+
         <!-- Step 1: Setup -->
         <div id="step-setup" class="step active">
             <h2>Step 1: Setup Your Decision</h2>
-            <div class="form-group">
-                <label for="num-products">Number of Options:</label>
-                <input type="number" id="num-products" min="2" value="3" required>
-                <span class="hint">At least 2 options to compare</span>
-            </div>
-            <div class="form-group">
-                <label for="num-features">Number of Criteria:</label>
-                <input type="number" id="num-features" min="1" value="2" required>
-                <span class="hint">At least 1 criterion</span>
+            <div class="inputs-row">
+                <div class="form-group">
+                    <label for="num-products">Number of Options or Products:</label>
+                    <input type="number" id="num-products" min="2" step="1" value="3" required>
+                    <span class="hint">At least 2 options to compare</span>
+                </div>
+                <div class="form-group">
+                    <label for="num-features">Number of Criteria:</label>
+                    <input type="number" id="num-features" min="1" step="1" value="2" required>
+                    <span class="hint">At least 1 criterion</span>
+                </div>
             </div>
             <button onclick="startSetup()" class="btn-primary">Next Step →</button>
         </div>
@@ -94,6 +124,36 @@
     <!-- ── TAB 2: Smart Compare ──────────────────────────────────────────── -->
     <div id="tab-smart" class="tab-content hidden">
         <div class="container">
+
+            <!-- Smart Compare Step Progress Bar -->
+            <nav id="smart-stepper" aria-label="Smart Compare Progress">
+                <div class="stepper-track">
+                    <div class="stepper-step active" id="sdot-search">
+                        <div class="stepper-circle">1</div>
+                        <span class="stepper-label">Search</span>
+                    </div>
+                    <div class="stepper-line"></div>
+                    <div class="stepper-step" id="sdot-results">
+                        <div class="stepper-circle">2</div>
+                        <span class="stepper-label">Results</span>
+                    </div>
+                    <div class="stepper-line"></div>
+                    <div class="stepper-step" id="sdot-preview">
+                        <div class="stepper-circle">3</div>
+                        <span class="stepper-label">Products</span>
+                    </div>
+                    <div class="stepper-line"></div>
+                    <div class="stepper-step" id="sdot-ideals">
+                        <div class="stepper-circle">4</div>
+                        <span class="stepper-label">Priorities</span>
+                    </div>
+                    <div class="stepper-line"></div>
+                    <div class="stepper-step" id="sdot-final">
+                        <div class="stepper-circle">5</div>
+                        <span class="stepper-label">Winner</span>
+                    </div>
+                </div>
+            </nav>
 
             <!-- Step 0: Query Input + Refinement -->
             <div id="step-smart-search" class="step active">
@@ -225,7 +285,7 @@
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
                 <div>
                     <h2 style="margin:0;">🕐 Decision Memory</h2>
-                    <p class="hint" style="margin:4px 0 0;">Your last 20 comparisons — click any to replay.</p>
+                    <p class="hint" style="margin:4px 0 0;">Your last 50 comparisons — click any to replay.</p>
                 </div>
                 <button onclick="clearAllMemory()" class="btn-secondary"
                     style="font-size:0.82rem;padding:8px 14px;color:#ef4444;border-color:#ef4444;">
@@ -260,6 +320,29 @@
     </div>
 
     <script src="script.js?v=runtime-source-fix-2026-02-25-1"></script>
+    <script>
+      // ── Dark Mode ──────────────────────────────────────────────────────────
+      (function () {
+        const btn = document.getElementById('dark-toggle-btn');
+        const saved = localStorage.getItem('dc-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDark = saved ? saved === 'dark' : prefersDark;
+        if (isDark) { document.documentElement.setAttribute('data-theme', 'dark'); btn.textContent = '☀️ Light'; }
+
+        window.toggleDark = function () {
+          const current = document.documentElement.getAttribute('data-theme');
+          if (current === 'dark') {
+            document.documentElement.removeAttribute('data-theme');
+            btn.textContent = '🌙 Dark';
+            localStorage.setItem('dc-theme', 'light');
+          } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            btn.textContent = '☀️ Light';
+            localStorage.setItem('dc-theme', 'dark');
+          }
+        };
+      })();
+    </script>
 </body>
 
 </html>

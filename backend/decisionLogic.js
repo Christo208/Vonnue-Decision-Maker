@@ -205,34 +205,10 @@ function parseScoreResponse(text) {
 async function extractScoreFromText(text, featureName, idealDescription) {
   const prompt = buildScorePrompt(text, featureName, idealDescription);
 
-  // ── Try Gemini first ────────────────────────────────────────────────────────
-  try {
-    const geminiKey = process.env.GEMINI_API_KEY;
-    if (!geminiKey) throw new Error("No Gemini key");
-
-    // gemini-2.0-flash: fast, no thinking tokens, reliable short JSON outputs
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 150, temperature: 0.2 },
-      }),
-    });
-
-    if (!response.ok) throw new Error(`Gemini error: ${response.status}`);
-    const data = await response.json();
-    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-    if (!raw) throw new Error("Empty Gemini response");
-
-    const { score, confidence } = parseScoreResponse(raw);
-    return { score, confidence, source: "gemini" };
-  } catch (geminiErr) {
-    console.log("Gemini score extraction failed:", geminiErr.message);
-  }
-
-  // ── Try Groq second ─────────────────────────────────────────────────────────
+  // ── Groq only — Gemini is reserved for generateExplanation ─────────────────
+  // NOTE: Gemini free tier RPM limit is blown when N products are scored in
+  // rapid succession. Groq handles scoring; Gemini gets a clean window for
+  // the explanation where its quality difference is actually noticeable.
   try {
     const groqKey = process.env.GROQ_API_KEY;
     if (!groqKey) throw new Error("No Groq key");
@@ -262,7 +238,6 @@ async function extractScoreFromText(text, featureName, idealDescription) {
     console.log("Groq score extraction failed:", groqErr.message);
   }
 
-  // ── Both failed ─────────────────────────────────────────────────────────────
   return { score: null, confidence: null, source: "AI_FAIL" };
 }
 
@@ -317,7 +292,11 @@ async function preprocessInputs(products_data, feature_types, f_list, ideals) {
         metadata[product][feature] = { source: "scale", confidence: null };
       }
       // Map ideal scale string too
-      scored_ideals[fi] = SCALE_MAP[ideals[fi]] ?? 5;
+      // Guard: frontend may send a number or numeric string instead of a label string
+      const rawIdeal = ideals[fi];
+      scored_ideals[fi] = (typeof rawIdeal === 'string' && SCALE_MAP[rawIdeal] !== undefined)
+        ? SCALE_MAP[rawIdeal]
+        : (parseFloat(rawIdeal) || 5);
       continue;
     }
 
@@ -383,13 +362,17 @@ async function generateExplanation(result, f_list, raw_data) {
     const geminiKey = process.env.GEMINI_API_KEY;
     if (!geminiKey) throw new Error("No Gemini key");
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 260, temperature: 0.6 },
+        generationConfig: {
+          maxOutputTokens: 1024,
+          temperature: 0.6,
+          thinkingConfig: { thinkingBudget: 0 },
+        },
       }),
     });
 
@@ -397,7 +380,8 @@ async function generateExplanation(result, f_list, raw_data) {
     const data = await response.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
     if (!text) throw new Error("Empty Gemini response");
-    if (!isDetailedExplanation(text)) throw new Error("Gemini response too short");
+    if (!isDetailedExplanation(text)) console.log("Gemini explanation short but accepted:", text.length, "chars");
+    if (text.length < 30) throw new Error("Gemini response too short");
 
     return { explanation: text, source: "gemini" };
   } catch (geminiError) {
@@ -442,7 +426,6 @@ async function generateExplanation(result, f_list, raw_data) {
 
   return { explanation: fallback, source: "fallback" };
 }
-
 function isDetailedExplanation(text) {
   const words = text.split(/\s+/).filter(Boolean).length;
   const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0).length;
@@ -481,9 +464,10 @@ Criteria weights: ${weightSummary}.
 Actual values entered by user:
 ${breakdownText}
 
-Write 4-5 plain sentences explaining WHY ${winner} won using the actual values above.
+Write exactly 4-5 sentences explaining WHY ${winner} won using the actual values above.
 Do NOT mention "penalty", "normalized", "weighted points", or any math jargon.
-Speak simply — like explaining to a friend. Example: "${winner} had the best Price at X and its Quality was Y."`;
+Do NOT write just one sentence. Do NOT use an example format. Write a full paragraph.
+Speak simply — like explaining to a friend.`;
 }
 
 // ── buildWeightSummary (kept for reference) ───────────────────────────────────
