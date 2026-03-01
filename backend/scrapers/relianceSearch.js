@@ -98,7 +98,7 @@ function mapItem(item) {
  * @param {number} [options.pageNo=1]     — page number
  * @returns {Promise<Array>}   — array of product objects
  */
-async function searchReliance(query, { pageSize = 12, pageNo = 1 } = {}) {
+async function searchReliance(query, { pageSize = 20, pageNo = 1 } = {}) {
     if (!query || typeof query !== 'string' || !query.trim()) {
         throw new Error('[RelianceSearch] query must be a non-empty string');
     }

@@ -1098,3 +1098,177 @@ button {
     pointer-events: none;
     padding: 10px 14px !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PHASE 2.5 — DECISION MEMORY STYLES
+   Paste at the END of styles.css
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Memory card */
+.memory-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+
+.memory-card:hover {
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Card header row */
+.memory-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 12px;
+}
+
+/* Title — heading style, clickable to rename */
+.memory-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    flex: 1;
+    line-height: 1.3;
+}
+
+.memory-title:hover {
+    color: #667eea;
+    text-decoration: underline dotted;
+}
+
+/* Date */
+.memory-date {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    margin-top: 2px;
+}
+
+/* Winner line */
+.memory-winner {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #059669;
+    margin-bottom: 10px;
+}
+
+/* Meta row */
+.memory-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.memory-badge {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+}
+
+.memory-badge-smart {
+    background: #ede9fe;
+    color: #7c3aed;
+}
+
+.memory-badge-manual {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.memory-criteria,
+.memory-products {
+    font-size: 0.78rem;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+/* Action buttons */
+.memory-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.memory-btn-view {
+    font-size: 0.85rem !important;
+    padding: 8px 16px !important;
+}
+
+.memory-btn-animate {
+    font-size: 0.85rem !important;
+    padding: 8px 16px !important;
+    background: #7c3aed !important;
+}
+
+.memory-btn-animate:hover {
+    background: #6d28d9 !important;
+}
+
+.memory-btn-delete {
+    font-size: 0.85rem !important;
+    padding: 8px 12px !important;
+    color: #ef4444 !important;
+    border-color: #ef4444 !important;
+    margin-left: auto;
+}
+
+.memory-btn-delete:hover {
+    background: #fef2f2 !important;
+}
+
+/* Tab bar — third tab support */
+#tab-bar {
+    display: flex;
+    gap: 0;
+}
+
+#tab-memory-btn {
+    /* inherits tab-btn styles */
+}
+
+/* Tab visibility — only one tab shows at a time */
+.tab-content.hidden {
+    display: none !important;
+}
+
+/* ── Details Panel ── */
+.det-toggle-btn {
+  margin-left: auto;
+  background: none;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  color: #64748b;
+  transition: background 0.15s;
+}
+.det-toggle-btn:hover { background: #f1f5f9; }
+.det-panel { display: none; padding: 12px 0 4px; }
+.det-panel.open { display: block; }
+.det-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.82rem; margin-bottom: 10px;
+}
+.det-table th, .det-table td {
+  padding: 6px 10px; border: 1px solid #e2e8f0; text-align: left;
+}
+.det-table th { background: #f8fafc; font-weight: 600; color: #475569; }
+.det-best { color: #16a34a; font-weight: 700; }
+.det-me { background: #eff6ff; }
+.det-ruledout-title { font-size: 0.82rem; font-weight: 600; color: #64748b; margin: 12px 0 6px; }
+.det-tip { font-size: 0.78rem; color: #94a3b8; font-style: italic; margin-top: 6px; }

@@ -16,9 +16,12 @@
         <button class="tab-btn" id="tab-amazon-btn" onclick="switchTab('smart')">
             🛒 Smart Compare
         </button>
+        <button class="tab-btn" id="tab-memory-btn" onclick="switchTab('memory')">
+            🕐 Memory
+        </button>
     </div>
 
-    <div class="container" id="tab-manual">
+    <div class="container tab-content" id="tab-manual">
         <header>
             <h1>🎯 Decision Companion System</h1>
             <p class="subtitle">Make better decisions with data-driven analysis</p>
@@ -59,7 +62,11 @@
 
         <!-- Step 4: Ideal Values -->
         <div id="step-ideals" class="step">
-            <h2>Step 4: Define Your Ideal Values</h2>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+                <h2 style="margin:0;">Step 4: Define Your Ideal Values</h2>
+                <button class="det-toggle-btn" onclick="var p=document.getElementById('manual-products-ref-panel');p.classList.toggle('open');this.textContent=p.classList.contains('open')?'▲ Hide Products':'📦 View Products'" style="margin-top:4px;white-space:nowrap;">📦 View Products</button>
+            </div>
+            <div id="manual-products-ref-panel" class="det-panel" style="margin-bottom:16px;"></div>
             <p class="hint">For <strong>Review</strong> criteria, enter a short target description (e.g. "Healthy and
                 tasty").</p>
             <div id="ideals-container"></div>
@@ -173,7 +180,11 @@
 
             <!-- Step 3: AI-Suggested Ideals -->
             <div id="step-smart-ideals" class="step">
-                <h2>🎯 Set Your Priorities</h2>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+                    <h2 style="margin:0;">🎯 Set Your Priorities</h2>
+                    <button class="det-toggle-btn" onclick="var p=document.getElementById('products-ref-panel');p.classList.toggle('open');this.textContent=p.classList.contains('open')?'▲ Hide Products':'📦 View Products'" style="margin-top:4px;white-space:nowrap;">📦 View Products</button>
+                </div>
+                <div id="products-ref-panel" class="det-panel" style="margin-bottom:16px;"></div>
                 <p class="hint">
                     💡 AI suggested these based on the products found. Edit freely before running.
                 </p>
@@ -192,6 +203,50 @@
                     <button onclick="resetSmart()" class="btn-secondary">← New Comparison</button>
                 </div>
             </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+     PHASE 2.5 — DECISION MEMORY
+     
+     CHANGE 1: Replace the existing tab-bar div with this:
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+     CHANGE 2: Add this entire block AFTER the closing </div> of tab-smart
+     (look for the comment "Loading Overlay" — paste just before it)
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+    <!-- ── TAB 3: Decision Memory ──────────────────────────────────────────── -->
+    <div id="tab-memory" class="tab-content hidden">
+        <div class="container" style="max-width:860px;">
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+                <div>
+                    <h2 style="margin:0;">🕐 Decision Memory</h2>
+                    <p class="hint" style="margin:4px 0 0;">Your last 20 comparisons — click any to replay.</p>
+                </div>
+                <button onclick="clearAllMemory()" class="btn-secondary"
+                    style="font-size:0.82rem;padding:8px 14px;color:#ef4444;border-color:#ef4444;">
+                    🗑 Clear All
+                </button>
+            </div>
+
+            <!-- Loading state -->
+            <div id="memory-loading" style="text-align:center;padding:40px;color:#94a3b8;">
+                Loading your comparisons…
+            </div>
+
+            <!-- Empty state -->
+            <div id="memory-empty" class="hidden" style="text-align:center;padding:60px 20px;">
+                <div style="font-size:3rem;margin-bottom:16px;">🧠</div>
+                <h3 style="color:#64748b;margin-bottom:8px;">No comparisons yet</h3>
+                <p style="color:#94a3b8;">Complete a comparison and it will appear here automatically.</p>
+            </div>
+
+            <!-- Cards list -->
+            <div id="memory-list"></div>
 
         </div>
     </div>

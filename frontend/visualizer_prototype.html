@@ -319,7 +319,7 @@
       line-height: 1;
     }
 
-        #scroll-controls button:hover {
+    #scroll-controls button:hover {
       background: rgba(102, 126, 234, 0.55);
     }
 
@@ -379,7 +379,7 @@
     </div>
   </div>
 
-    <div id="scroll-controls">
+  <div id="scroll-controls">
     <button id="scroll-left-btn" onclick="manualScrollX(120)" aria-label="Scroll left">&#8592;</button>
     <button id="scroll-up-btn" onclick="manualScroll(-140)" aria-label="Scroll up">&#8593;</button>
     <button id="scroll-top-btn" onclick="scrollToTop()" aria-label="Scroll home">&#8962;</button>
@@ -512,7 +512,7 @@
       console.warn('[Visualizer] loadInjectedData() called. Parent script may be stale/cached.');
     }
 
-        const SPRITES = {
+    const SPRITES = {
       char1: { laugh: 'sprites/char1/char_laugh.png', smile1: 'sprites/char1/char_smile1.png', smirk: 'sprites/char1/char_smirk.png', normal: 'sprites/char1/char_normal.png', surprised: 'sprites/char1/char_surprised.png', sad: 'sprites/char1/char_sad.png' },
       char2: { laugh: 'sprites/char2/char2_laugh.png', smile1: 'sprites/char2/char2_smile1.png', smirk: 'sprites/char2/char2_smirk.png', normal: 'sprites/char2/char2_normal.png', surprised: 'sprites/char2/char2_surprised.png', sad: 'sprites/char2/char2_sad.png' },
       char3: { laugh: 'sprites/char3/char3_laugh.png', smile1: 'sprites/char3/char3_smile1.png', smirk: 'sprites/char3/char3_smirk.png', normal: 'sprites/char3/char3_normal.png', surprised: 'sprites/char3/char3_surprised.png', sad: 'sprites/char3/char3_sad.png' },
@@ -563,7 +563,7 @@
     app.view.style.width = '100%'; app.view.style.height = '100%';
 
     // Ã¢â€â‚¬Ã¢â€â‚¬ LAYOUT Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
-        const VISIBLE_SLOTS = Math.min(Math.max(N, 1), 4);
+    const VISIBLE_SLOTS = Math.min(Math.max(N, 1), 4);
     const SLOT_W = W / VISIBLE_SLOTS;
     const WORLD_W = SLOT_W * N;
     const GROUND_Y = H * 0.78;       // where platforms START (top of platform)
@@ -588,6 +588,7 @@
     const charSprites = Array(N).fill(null);
     const charTex = Array.from({ length: N }, () => ({}));
     const charOrigH = Array(N).fill(0);
+    const productTextures = Array(N).fill(null);  // holds loaded product image texture, or null
     let cameraX = 0;
     let cameraY = 0;
     let cameraTargetX = 0;
@@ -607,7 +608,7 @@
     gameWorld.addChild(charL);
     gameWorld.addChild(fxL);
 
-        app.ticker.add(() => {
+    app.ticker.add(() => {
       if (Math.abs(gameWorld.x - cameraTargetX) > 0.5) {
         gameWorld.x += (cameraTargetX - gameWorld.x) * 0.08;
       } else {
@@ -708,13 +709,37 @@
         }
       }
 
+      // Load product images for Smart Compare candidates
+      if (DEMO.images) {
+        for (let i = 0; i < N; i++) {
+          const imgUrl = DEMO.images[DEMO.candidates[i]] || (function () {
+            if (!DEMO.images) return null;
+            const candidateWords = DEMO.candidates[i].toLowerCase().split(/[\s\-]+/);
+            let bestKey = null, bestScore = 0;
+            for (const key of Object.keys(DEMO.images)) {
+              const keyLower = key.toLowerCase();
+              const matches = candidateWords.filter(w => w.length > 2 && keyLower.includes(w)).length;
+              if (matches > bestScore) { bestScore = matches; bestKey = key; }
+            }
+            return bestScore >= 2 ? DEMO.images[bestKey] : null;
+          })();
+          if (imgUrl) {
+            all.push(
+              PIXI.Assets.load(imgUrl)
+                .then(function (t) { productTextures[i] = t; })
+                .catch(function () { /* no product image — will use char sprite */ })
+            );
+          }
+        }
+      }
+
       await Promise.all(all);
     }
 
     function spawnChars() {
       charL.removeChildren();
       for (let i = 0; i < N; i++) {
-        const tex = charTex[i]['normal'] || PIXI.Texture.WHITE;
+        const tex = productTextures[i] || charTex[i]['normal'] || PIXI.Texture.WHITE;
         const sp = new PIXI.Sprite(tex);
         sp.anchor.set(0.5, 1.0);
         // Always use stored original height Ã¢â‚¬â€ safe on restart when textures are cached
@@ -728,7 +753,11 @@
       }
     }
 
-    function setEmo(i, emo) { const t = charTex[i][emo]; if (t && charSprites[i]) charSprites[i].texture = t; }
+    function setEmo(i, emo) {
+      if (productTextures[i]) return;  // product image — no emotion swap, keep static
+      const t = charTex[i][emo];
+      if (t && charSprites[i]) charSprites[i].texture = t;
+    }
 
     function updateFloatingElements() {
       for (let i = 0; i < N; i++) {
@@ -761,7 +790,7 @@
       cameraTargetY = Math.min(cameraTargetY, 0);
     }
 
-        function clampCameraX(x) {
+    function clampCameraX(x) {
       const minX = Math.min(0, W - WORLD_W);
       if (x < minX) return minX;
       if (x > 0) return 0;
@@ -1326,7 +1355,7 @@
       clearMathTexts();
 
       const feat = DEMO.features[fi], w = DEMO.weights[fi];
-                  const narrations = DEMO.features.map((f, idx) => {
+      const narrations = DEMO.features.map((f, idx) => {
         if (idx === 0) return `Criterion 1 - ${feat}. Weight: ${Math.round(w * 100)}%. The most critical factor. I evaluate each candidate in turn.`;
         if (idx === DEMO.features.length - 1) return `Criterion ${idx + 1} - ${feat}. Weight: ${Math.round(w * 100)}%. The final criterion. This seals the verdict.`;
         return `Criterion ${idx + 1} - ${feat}. Weight: ${Math.round(w * 100)}%. Another dimension to weigh.`;
@@ -1549,7 +1578,3 @@
 </body>
 
 </html>
-
-
-
-

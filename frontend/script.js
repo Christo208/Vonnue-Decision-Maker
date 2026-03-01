@@ -223,6 +223,27 @@ function generateIdealsForm() {
   const container = document.getElementById('ideals-container');
   container.innerHTML = '';
 
+  // Populate View Products reference panel
+  const refPanel = document.getElementById('manual-products-ref-panel');
+  if (refPanel && state.products && state.featureNames) {
+    const productNames = Object.keys(state.products);
+    refPanel.innerHTML = `
+      <div class="det-table-wrap">
+        <table class="det-table">
+          <thead><tr>
+            <th>Criterion</th>
+            ${productNames.map(n => `<th>${n}</th>`).join('')}
+          </tr></thead>
+          <tbody>
+            ${state.featureNames.map(feat => `<tr>
+              <td>${feat}</td>
+              ${productNames.map(n => `<td>${state.products[n]?.[feat] ?? '—'}</td>`).join('')}
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
   state.featureNames.forEach((feature, idx) => {
     const type = state.featureTypes[idx];
     const idealDiv = document.createElement('div');
@@ -456,6 +477,14 @@ async function runCalculate(products_data, ideals, metadata) {
     const result = await response.json();
     hideLoading();
     displayResults(result);
+    saveToMemory(
+      Object.keys(products_data),
+      state.featureNames,
+      result.winner,
+      result,
+      products_data,
+      'manual'
+    );
     showStep('step-results');
 
   } catch (error) {
@@ -479,6 +508,7 @@ function buildRawIdealsMap(result) {
 
 function openVisualizer(dataJson) {
   // Remove any prior overlay so we always use the latest payload/runtime.
+  console.log('[openVisualizer] vizImages test, smartState results:', smartState?.searchResults?.length);
   const existingOverlay = document.getElementById('visualizer-overlay');
   if (existingOverlay) existingOverlay.remove();
 
@@ -493,7 +523,14 @@ function openVisualizer(dataJson) {
   }
 
   // Source-of-truth lives on this parent window before iframe bootstraps.
-  window.__VISUALIZER_DATA__ = payload;
+  // Attach product images if this is a Smart Compare
+  const vizImages = {};
+  if (typeof smartState !== 'undefined' && smartState.searchResults && Array.isArray(smartState.searchResults)) {
+    smartState.searchResults.forEach(function (p) {
+      if (p.title && p.thumbnail) vizImages[p.title] = p.thumbnail;
+    });
+  }
+  window.__VISUALIZER_DATA__ = Object.assign({}, payload, { images: vizImages });
   window.__VISUALIZER_SOURCE__ = {
     build: RUNTIME_BUILD_ID,
     url: window.location.href,
@@ -527,6 +564,62 @@ function openVisualizer(dataJson) {
   overlay.appendChild(closeBar);
   overlay.appendChild(iframe);
   document.body.appendChild(overlay);
+}
+
+function renderDetailsRow(candidateName, productsData, activeCriteria, ruledOut, images, rawIdeals = []) {
+  const allCandidates = Object.keys(productsData);
+  // find highest weight criterion
+  const weights = (state.weights || []);
+  const maxWeight = weights.length ? Math.max(...weights) : null;
+
+  // build criteria table rows
+  const crRows = activeCriteria.map((crit, ci) => {
+    const vals = allCandidates.map(c => productsData[c]?.[crit]);
+    const numVals = vals.map(v => parseFloat(String(v).replace(/[^0-9.]/g, '')));
+    const hasNums = numVals.some(v => !isNaN(v));
+    let bestIdx = -1;
+    if (hasNums) {
+      const dir = (state.directions || [])[ci];
+      const best = dir === 'lower' ? Math.min(...numVals.filter(v=>!isNaN(v))) : Math.max(...numVals.filter(v=>!isNaN(v)));
+      bestIdx = numVals.findIndex(v => v === best);
+    }
+    const isTopWeight = maxWeight !== null && weights[ci] === maxWeight;
+    return `<tr>
+      <td>${crit}${isTopWeight ? ' <span title="Highest weight">★</span>' : ''}</td>
+      ${allCandidates.map((c, ci2) => {
+        const v = productsData[c]?.[crit] ?? '—';
+        const isBest = ci2 === bestIdx;
+        const isMe = c === candidateName;
+        return `<td class="${isBest ? 'det-best' : ''}${isMe ? ' det-me' : ''}">${v}${isBest ? ' ✓' : ''}</td>`;
+      }).join('')}
+      <td>${rawIdeals[ci] ?? (state.ideals || [])[ci] ?? '—'}</td>
+    </tr>`;
+  }).join('');
+
+  // ruled out rows
+  const roRows = (ruledOut || []).map(spec => {
+    const count = allCandidates.filter(c => productsData[c]?.[spec] != null).length;
+    return `<tr><td>${spec}</td><td>Only ${count} of ${allCandidates.length} products had this</td></tr>`;
+  }).join('');
+
+  return `
+    <div>
+      <table class="det-table">
+        <thead><tr>
+          <th>Criterion</th>
+          ${allCandidates.map(c => `<th${c===candidateName?' class="det-me"':''}>${c}</th>`).join('')}
+          <th>Ideal</th>
+        </tr></thead>
+        <tbody>${crRows}</tbody>
+      </table>
+      ${roRows ? `
+        <div class="det-ruledout-title">Ruled Out 🚫</div>
+        <table class="det-table">
+          <thead><tr><th>Criterion</th><th>Reason</th></tr></thead>
+          <tbody>${roRows}</tbody>
+        </table>
+        <p class="det-tip">💡 Want to include these? Add them manually above.</p>` : ''}
+    </div>`;
 }
 
 function displayResults(result) {
@@ -569,7 +662,10 @@ function displayResults(result) {
     `;
 
   html += `
-        <h3>📊 Complete Ranking</h3>
+        <h3 style="display:flex;align-items:center;gap:12px;">📊 Complete Ranking
+          <button class="det-toggle-btn" onclick="var p=document.getElementById('full-det-panel');p.classList.toggle('open');this.textContent=p.classList.contains('open')?'▲ Hide':'📋 Comparison Table'">📋 Comparison Table</button>
+        </h3>
+        <div id="full-det-panel" class="det-panel">${renderDetailsRow('', smartState.scrapeResult?.products_data || state.products || {}, state.featureNames || [], smartState.ruledOut || [], {}, smartState.pendingCalc?.ideals || state.ideals || [])}</div>
         <ul class="ranking-list">
             ${result.ranking.map(item => `
                 <li>
@@ -685,13 +781,7 @@ let smartState = {
   scrapeResult: null,
 };
 
-// -- Tab switching --------------------------------------------------------------
-function switchTab(tab) {
-  document.getElementById('tab-manual').classList.toggle('hidden', tab !== 'manual');
-  document.getElementById('tab-smart').classList.toggle('hidden', tab !== 'smart');
-  document.getElementById('tab-manual-btn').classList.toggle('active', tab === 'manual');
-  document.getElementById('tab-amazon-btn').classList.toggle('active', tab === 'smart');
-}
+// -- Tab switching function has been replaced -----------------------------------
 
 // -- Step 0: Query Refinement ---------------------------------------------------
 async function refineQuery() {
@@ -821,7 +911,7 @@ async function runSearch(query) {
 function renderSearchResults(results, query) {
   const grid = document.getElementById('smart-result-grid');
   const subtitle = document.getElementById('smart-results-subtitle');
-  subtitle.textContent = `Results for "${query}" � select 2�5 to compare.`;
+  subtitle.textContent = `Results for "${query}" � select 2�8 to compare.`;
   grid.innerHTML = '';
 
   if (!results.length) {
@@ -913,6 +1003,7 @@ async function startSmartScrape() {
     }
 
     smartState.scrapeResult = data;
+    smartState.ruledOut = data.ruled_out || [];
     renderSmartPreview(data);
     showAmazonStep('step-smart-preview');
   } catch (e) {
@@ -1026,6 +1117,29 @@ function showSmartIdeals() {
   const { criteria, criteriaTypes, suggestions, identicalCriteria } = smartState.scrapeResult || {};
   const container = document.getElementById('smart-ideals-container');
   container.innerHTML = '';
+
+  // Populate the View Products reference panel
+  const refPanel = document.getElementById('products-ref-panel');
+  if (refPanel && smartState.scrapeResult?.products_data) {
+    const pd = smartState.scrapeResult.products_data;
+    const productNames = Object.keys(pd);
+    const allCriteria = smartState.scrapeResult.criteria || [];
+    refPanel.innerHTML = `
+      <div class="det-table-wrap">
+        <table class="det-table">
+          <thead><tr>
+            <th>Criterion</th>
+            ${productNames.map(n => `<th>${n}</th>`).join('')}
+          </tr></thead>
+          <tbody>
+            ${allCriteria.map(crit => `<tr>
+              <td>${crit}</td>
+              ${productNames.map(n => `<td>${pd[n]?.[crit] ?? '—'}</td>`).join('')}
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
 
   if (!criteria || criteria.length === 0) {
     container.innerHTML = `
@@ -1334,6 +1448,9 @@ async function _finishSmartCalculation(activeCriteria, ideals, weights, directio
     state.featureNames = activeCriteria;
     state.ideals = ideals.map(v => typeof v === 'string' ? 10 : v);
     displayResults(result);
+    const _saveImages = {};
+    (smartState.searchResults || []).forEach(p => { if (p.title && p.thumbnail) _saveImages[p.title] = p.thumbnail; });
+    saveToMemory(Object.keys(products_data), activeCriteria, result.winner, result, products_data, 'smart', smartState.ruledOut || [], _saveImages);
 
     smartContainer.id = 'smart-results-container';
     main.id = 'results-container';
@@ -1373,3 +1490,266 @@ function resetSmart() {
   switchTab('smart');
   showAmazonStep('step-smart-search');
 }
+
+// ═════════════════════════════════════════════════════════════════════════════
+// PHASE 2.5 — DECISION MEMORY
+// Paste this entire block at the END of script.js (before the last line)
+// ═════════════════════════════════════════════════════════════════════════════
+
+// ── Tab switching fix (replaces existing switchTab function) ─────────────────
+function switchTab(tab) {
+  // Hide all tab contents
+  document.getElementById('tab-manual').classList.add('hidden');
+  document.getElementById('tab-smart').classList.add('hidden');
+  document.getElementById('tab-memory').classList.add('hidden');
+
+  // Deactivate all tab buttons
+  document.getElementById('tab-manual-btn').classList.remove('active');
+  document.getElementById('tab-amazon-btn').classList.remove('active');
+  document.getElementById('tab-memory-btn').classList.remove('active');
+
+  // Show selected tab
+  if (tab === 'manual') {
+    document.getElementById('tab-manual').classList.remove('hidden');
+    document.getElementById('tab-manual-btn').classList.add('active');
+  } else if (tab === 'smart') {
+    document.getElementById('tab-smart').classList.remove('hidden');
+    document.getElementById('tab-amazon-btn').classList.add('active');
+    // Ensure at least one smart step is active
+    const hasActive = document.querySelector('#tab-smart .step.active');
+    if (!hasActive) {
+      document.getElementById('step-smart-search').classList.add('active');
+    }
+  } else if (tab === 'memory') {
+    document.getElementById('tab-memory').classList.remove('hidden');
+    document.getElementById('tab-memory-btn').classList.add('active');
+    loadMemory(); // Refresh list every time tab is opened
+  }
+}
+
+// ── Auto-save after every successful comparison ───────────────────────────────
+async function saveToMemory(products, criteria, winner, result, products_data, source, ruled_out = [], images = {}) {
+  try {
+    await fetch('/api/memory/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ products, criteria, winner, result, products_data, source, ruled_out, images }),
+    });
+    console.log('[Memory] Auto-saved comparison');
+  } catch (e) {
+    console.warn('[Memory] Auto-save failed (non-blocking):', e.message);
+  }
+}
+
+// ── Load and render memory list ───────────────────────────────────────────────
+async function loadMemory() {
+  const loadingEl = document.getElementById('memory-loading');
+  const emptyEl = document.getElementById('memory-empty');
+  const listEl = document.getElementById('memory-list');
+
+  loadingEl.classList.remove('hidden');
+  emptyEl.classList.add('hidden');
+  listEl.innerHTML = '';
+
+  try {
+    const res = await fetch('/api/memory/list');
+    const data = await res.json();
+    loadingEl.classList.add('hidden');
+
+    if (!data.entries || data.entries.length === 0) {
+      emptyEl.classList.remove('hidden');
+      return;
+    }
+
+    data.entries.forEach(entry => renderMemoryCard(entry));
+  } catch (e) {
+    loadingEl.textContent = '❌ Failed to load memory. Is the server running?';
+    console.error('[Memory] Load failed:', e.message);
+  }
+}
+
+// ── Render a single memory card ───────────────────────────────────────────────
+function renderMemoryCard(entry) {
+  const listEl = document.getElementById('memory-list');
+
+  const card = document.createElement('div');
+  card.className = 'memory-card';
+  card.dataset.id = entry.id;
+
+  const date = new Date(entry.timestamp).toLocaleDateString('en-IN', {
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+
+  const sourceBadge = entry.source === 'smart'
+    ? '<span class="memory-badge memory-badge-smart">🛒 Smart</span>'
+    : '<span class="memory-badge memory-badge-manual">✏️ Manual</span>';
+
+  const winnerText = entry.winner
+    ? `<div class="memory-winner">🏆 ${entry.winner}</div>`
+    : `<div class="memory-winner" style="color:#94a3b8;">🤝 Tie</div>`;
+
+  card.innerHTML = `
+    <div class="memory-card-header">
+      <h3 class="memory-title" data-id="${entry.id}" title="Click to rename">${entry.title}</h3>
+      <span class="memory-date">${date}</span>
+    </div>
+    ${winnerText}
+    <div class="memory-meta">
+      ${sourceBadge}
+      <span class="memory-criteria">${entry.criteriaCount} criteria</span>
+      <span class="memory-products">${(entry.products || []).length} products</span>
+    </div>
+    <div class="memory-actions">
+      <button class="btn-primary memory-btn-view" onclick="replayMemory('${entry.id}')">
+        View Result →
+      </button>
+      <button class="btn-primary memory-btn-animate" onclick="animateMemory('${entry.id}')">
+        🎬 Animate
+      </button>
+      <button class="btn-secondary memory-btn-delete" onclick="deleteMemory('${entry.id}')">
+        🗑
+      </button>
+    </div>
+  `;
+
+  // Inline rename on title click
+  const titleEl = card.querySelector('.memory-title');
+  titleEl.style.cursor = 'pointer';
+  titleEl.addEventListener('click', () => startRename(entry.id, titleEl));
+
+  listEl.appendChild(card);
+}
+
+// ── Inline rename ─────────────────────────────────────────────────────────────
+function startRename(id, titleEl) {
+  const current = titleEl.textContent;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = current;
+  input.className = 'memory-rename-input';
+  input.style.cssText = 'width:100%;font-size:1rem;font-weight:700;padding:4px 8px;border:2px solid #667eea;border-radius:6px;';
+
+  titleEl.replaceWith(input);
+  input.focus();
+  input.select();
+
+  const save = async () => {
+    const newTitle = input.value.trim() || current;
+    // Restore title element
+    const newTitleEl = document.createElement('h3');
+    newTitleEl.className = 'memory-title';
+    newTitleEl.dataset.id = id;
+    newTitleEl.title = 'Click to rename';
+    newTitleEl.textContent = newTitle;
+    newTitleEl.style.cursor = 'pointer';
+    newTitleEl.addEventListener('click', () => startRename(id, newTitleEl));
+    input.replaceWith(newTitleEl);
+
+    if (newTitle !== current) {
+      await fetch(`/api/memory/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTitle }),
+      });
+    }
+  };
+
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') input.blur();
+    if (e.key === 'Escape') { input.value = current; input.blur(); }
+  });
+}
+
+// ── Delete ────────────────────────────────────────────────────────────────────
+async function deleteMemory(id) {
+  if (!confirm('Delete this comparison?')) return;
+  try {
+    await fetch(`/api/memory/${id}`, { method: 'DELETE' });
+    const card = document.querySelector(`.memory-card[data-id="${id}"]`);
+    if (card) card.remove();
+    // Show empty state if no cards left
+    if (document.getElementById('memory-list').children.length === 0) {
+      document.getElementById('memory-empty').classList.remove('hidden');
+    }
+  } catch (e) {
+    alert('Failed to delete. Try again.');
+  }
+}
+
+// ── Clear all ─────────────────────────────────────────────────────────────────
+async function clearAllMemory() {
+  if (!confirm('Delete ALL saved comparisons? This cannot be undone.')) return;
+  const cards = document.querySelectorAll('.memory-card');
+  for (const card of cards) {
+    const id = card.dataset.id;
+    await fetch(`/api/memory/${id}`, { method: 'DELETE' });
+    card.remove();
+  }
+  document.getElementById('memory-empty').classList.remove('hidden');
+}
+
+// ── Replay result ─────────────────────────────────────────────────────────────
+function replayMemory(id) {
+  _loadMemoryEntry(id, (entry) => {
+    // Switch to smart tab and show results step
+    switchTab('smart');
+
+    // Feed saved data into smartState so the result renders correctly
+    smartState.scrapeResult = {
+      products: entry.products.map(name => ({ name, shortName: name, source: entry.source })),
+      products_data: entry.products_data,
+      criteria: entry.criteria,
+    };
+
+    // Set feature names for the breakdown renderer
+    state.featureNames = entry.criteria;
+    state.ideals = entry.criteria.map(() => 10);
+
+    // Render result
+    const smartContainer = document.getElementById('smart-results-container');
+    const main = document.getElementById('results-container');
+    main.id = '__hidden';
+    smartContainer.id = 'results-container';
+    displayResults(entry.result);
+    smartContainer.id = 'smart-results-container';
+    main.id = 'results-container';
+
+    showAmazonStep('step-smart-final');
+  });
+}
+
+// ── Animate from memory ───────────────────────────────────────────────────────
+function animateMemory(id) {
+  _loadMemoryEntry(id, (entry) => {
+    const vizPayload = JSON.stringify({
+      candidates: entry.result.ranking.map(r => r.product),
+      features: entry.result.features,
+      weights: entry.result.weights,
+      raw: entry.products_data,
+      normed: entry.result.normed,
+      normedIdeals: entry.result.normedIdeals,
+      ideals: {},
+      detailed_breakdown: entry.result.detailed_breakdown,
+      ranking: entry.result.ranking,
+      winner: entry.result.winner,
+      explanation: '',
+    });
+    openVisualizer(vizPayload);
+  });
+}
+
+// ── Helper: fetch one entry by id from the list ───────────────────────────────
+async function _loadMemoryEntry(id, callback) {
+  try {
+    const res = await fetch('/api/memory/list');
+    const data = await res.json();
+    const entry = data.entries.find(e => e.id === id);
+    if (!entry) { alert('Could not find this comparison.'); return; }
+    callback(entry);
+  } catch (e) {
+    alert('Failed to load comparison.');
+  }
+}
+

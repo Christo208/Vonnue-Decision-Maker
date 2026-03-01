@@ -96,6 +96,7 @@ app.post("/api/calculate", async (req, res) => {
 // PHASE 2 — Query Refinement, Search, Scrape
 // ─────────────────────────────────────────────────────────────────────────────
 const { scrapeProducts } = require('./scrapers/index');
+const { saveComparison, listComparisons, deleteComparison, renameComparison } = require('./services/memoryService');
 const { searchReliance } = require('./scrapers/relianceSearch');
 
 // ── 1. Query Refinement ───────────────────────────────────────────────────────
@@ -274,8 +275,8 @@ app.post('/api/search', async (req, res) => {
 app.post('/api/scrape', async (req, res) => {
   const { urls, seedData = [] } = req.body;
 
-  if (!Array.isArray(urls) || urls.length < 2 || urls.length > 5) {
-    return res.status(400).json({ error: 'Provide between 2 and 5 product URLs.' });
+  if (!Array.isArray(urls) || urls.length < 2 || urls.length > 8) {
+    return res.status(400).json({ error: 'Provide between 2 and 8 product URLs.' });
   }
 
   const scrapeResults = await scrapeProducts(urls);
@@ -329,8 +330,12 @@ app.post('/api/scrape', async (req, res) => {
       }
     }
   }
+  const threshold = Math.max(2, Math.floor(succeeded.length * 0.5));
+  const ruled_out = Object.entries(specKeyCounts)
+    .filter(([_, count]) => count < threshold && !JUNK_SPEC_KEYS.has(_))
+    .map(([key]) => key);
   const commonSpecs = Object.entries(specKeyCounts)
-    .filter(([_, count]) => count >= Math.max(2, Math.floor(succeeded.length * 0.5)))
+    .filter(([_, count]) => count >= threshold)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 20)
     .map(([key]) => key);
@@ -389,6 +394,7 @@ app.post('/api/scrape', async (req, res) => {
     products_data,
     suggestions,
     identicalCriteria: [...identicalCriteria],
+    ruled_out,
     failures: failed.map((f) => ({ url: f.url, reason: f.error })),
   });
 });
@@ -481,6 +487,68 @@ async function getAISuggestions(prompt, criteria) {
 
   return fallback;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PHASE 2.5 — Decision Memory Routes
+// Add this block AFTER the existing scrape route in server.js
+// Also add this near the top with other requires:
+//   const { saveComparison, listComparisons, deleteComparison, renameComparison } = require('./services/memoryService');
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Save a comparison ─────────────────────────────────────────────────────────
+app.post('/api/memory/save', async (req, res) => {
+  try {
+    const { products, criteria, winner, result, products_data, source } = req.body;
+    if (!products || !result) {
+      return res.status(400).json({ error: 'products and result are required' });
+    }
+    const saved = await saveComparison({ products, criteria, winner, result, products_data, source });
+    console.log(`[Memory] Saved: "${saved.title}"`);
+    res.json({ success: true, entry: saved });
+  } catch (e) {
+    console.error('[/api/memory/save]', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ── List all comparisons ──────────────────────────────────────────────────────
+app.get('/api/memory/list', async (req, res) => {
+  try {
+    const entries = await listComparisons();
+    res.json({ entries });
+  } catch (e) {
+    console.error('[/api/memory/list]', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ── Delete a comparison ───────────────────────────────────────────────────────
+app.delete('/api/memory/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ok = await deleteComparison(id);
+    if (!ok) return res.status(404).json({ error: 'Entry not found' });
+    res.json({ success: true });
+  } catch (e) {
+    console.error('[/api/memory/:id DELETE]', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ── Rename a comparison ───────────────────────────────────────────────────────
+app.patch('/api/memory/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title } = req.body;
+    if (!title) return res.status(400).json({ error: 'title required' });
+    const ok = await renameComparison(id, title);
+    if (!ok) return res.status(404).json({ error: 'Entry not found' });
+    res.json({ success: true });
+  } catch (e) {
+    console.error('[/api/memory/:id PATCH]', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
