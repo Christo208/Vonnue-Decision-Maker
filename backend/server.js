@@ -17,6 +17,10 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../frontend")));
 
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/preprocess
 // Phase 1.5: Converts scale strings and review texts → numeric scores via AI.
