@@ -15,6 +15,10 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+
+console.log('Frontend path:', path.join(__dirname, '../frontend'));
+console.log('__dirname:', __dirname);
+
 app.use(express.static(path.join(__dirname, "../frontend")));
 
 app.get('/', (req, res) => {
