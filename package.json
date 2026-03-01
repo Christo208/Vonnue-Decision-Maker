@@ -2,6 +2,7 @@
   "name": "vonnue-decision-maker",
   "version": "1.0.0",
   "scripts": {
-    "start": "node backend/server.js"
+    "install": "cd backend && npm install",
+    "start": "cd backend && node server.js"
   }
 }
