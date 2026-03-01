@@ -4,5 +4,5 @@ builder = "nixpacks"
 [deploy]
 startCommand = "node backend/server.js"
 
-[build.environment]
+[variables]
 NODE_VERSION = "20"
