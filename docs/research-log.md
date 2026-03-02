@@ -10,14 +10,15 @@
 
 | Sl.No | Date and Time | Heading |
 |-------|--------------|----------|
-| 1. | 14 Feb, 5:30 pm | Prompt 1 |
+| **DAY 1 : Contemplating E-mail  (1hr)** | | |
+| 1. | 14 Feb, 5:30 pm | [Prompt 1](#Prompt-1) |
 | 2. | 14 Feb, 5:32 pm | [Response 1](#response-1) |
 | 3. | 14 Feb, 5:45 pm | [Prompt 2](#prompt-2) |
 | 4. | 14 Feb,5:55pm | [Response 2](#response-to-prompt-2) |
-| **[DAY 2 : Initial Ideas are discussed (2hr)]** | | |
+| **DAY 2 : Initial Ideas are discussed (2hr)** | | |
 | 5. | 15 Feb,6:30pm | [Prompt 3 : Initial ideas](#prompt-3-initial-ideas) |
 | 6. | 15 Feb,7:30pm | [Response 3: Ai Reviews my idea](#response-3-ai-reviews-my-idea) |
-| **[DAY 3 : Improving Algorithm (3hr)]** | | |
+| **DAY 3 : Improving Algorithm (3hr)** | | |
 | 7. | 16 Feb, 10:00 am | [Prompt 4: Implemented Normalization Logic](#prompt-4-implemented-normalization-logic) |
 | 8. | 16 Feb, 10:45 am | [Response 4: Edge cases and No React](#response-4-edge-cases-and-no-react) |
 | 9. | 16 Feb, 10:55 am | [Prompt 5 :My comments edge cases](#prompt-5-response-to-edge-cases) |
@@ -30,7 +31,7 @@
 | 16. | 16 Feb, 7:30 pm | [Response 8 : Basic Frontend hosted, Summarized by ChatGPT](#response-8-basic-frontend-hosted-summarized-by-chatgpt) |
 | 17. | 16 Feb, 7:35 pm | [Prompt 9 : Doubts about git -commit](#prompt-9-doubts-about-git--commit) |
 | 18. | 16 Feb, 7:45 pm | [Response 9 : Git vs GitHub](#response-9-git-vs-github) |
-| **[DAY 4 : Testing , New Feature (2hr)]** | | |
+| **DAY 4 : Testing , New Feature (2hr)** | | |
 | 19. | 17 Feb, 1:00am | [Prompt 10 : Give me Test Cases](#prompt-10-give-me-test-cases) |
 | 20. | 17 Feb, 1:05am | [Response 10 : Generated 10 Test case](#response-10-generated-10-test-case) |
 | 21. | 17 Feb, 1:45am | [Prompt 11 : Manually Ran 10 Cases](#prompt-11-manually-ran-10-cases) |
@@ -48,7 +49,7 @@
 | 33. | 17 Feb, 6:50 pm | [Response 17 : GroQ + Gemini + Fallback](#response-17-groq-gemini-fallback) |
 | 34. | 17 Feb, 7:00 pm | [Prompt 18 : Working server.js of another project](#prompt-18-working-server.js-of-another-project) |
 | 35. | 17 Feb, 7:10 pm | [Response 18 : New Feature is Implemented](#response-18-new-feature-is-implemented) |
-| **[DAY 5 : Improving Ai NLP Explanation (2hr)]** | | |
+| **DAY 5 : Improving Ai NLP Explanation (2hr)** | | |
 | 36. | 18 Feb, 9:10 pm | [Prompt 19 : Improve current feature](#prompt-19-improve-current-feature) |
 | 37. | 18 Feb, 9:15 pm | [Response 19 : Discussed variable explanation idea](#response-19-discussed-variable-explanation-idea) |
 | 38. | 18 Feb, 9:20 pm | [Prompt 20 : Doubts clarified](#prompt-20-doubts-clarified) |
@@ -65,7 +66,7 @@
 | 49. | 18 Feb, 10:45 pm | [Antigravity Prompt 27 : Distance Matrix Concept](#antigravity-prompt-27-distance-matrix-concept) |
 | 50. | 18 Feb, 10:50 pm | [Response 27 : New Concept Explained](#response-27-new-concept-explained) |
 | 51. | 18 Feb, 11:00 pm | [Antigravity Prompt 28 : Choosing Two General Features](#antigravity-prompt-28-choosing-two-general-features) |
-| **[DAY 6 : Review Feature (2hr)]** | | |
+| **DAY 6 : Review Feature (2hr)** | | |
 | 52. | 21 Feb, 10:00 am | [Response 28 : Cleaned Prompt](#response-28-cleaned-prompt) |
 | 53. | 21 Feb, 10:05 am | [Antigravity Prompt 29 to Claude : Pass Prompt](#antigravity-prompt-29-to-claude-pass-prompt) |
 | 54. | 21 Feb, 10:20 am | [Antigravity Prompt 29 to Claude : Six Concerns](#antigravity-prompt-29-to-claude-six-concerns) |
@@ -78,7 +79,7 @@
 | 61. | 21 Feb, 11:10 am | [Claude Prompt 35 : Utilize Gemini API](#claude-prompt-35-utilize-gemini-api) |
 | 62. | 21 Feb, 11:20 am | [Claude Prompt 36 : Better Explanation](#claude-prompt-35-utilize-gemini-api) |
 | 63. | 21 Feb, 11:30 am | [Prompt 37 : Response 36 To codex](#prompt-37-response-36-to-codex) |
-| **[DAY 7 : Git + Visualization Prototype (6hr)]** | | |
+| **DAY 7 : Git + Visualization Prototype (6hr)** | | |
 | 64. | 22 Feb, 9:00 pm | [Prompt 38 : Core Concerns](#prompt-38-core-concerns) |
 | 65. | 22 Feb, 9:10 pm | [Prompt 39 : Can't type commit messages](#prompt-39-cant-type-commit-messages) |
 | 66. | 22 Feb, 9:20 pm | [Prompt 39 : COMMIT_EDITMSG](#prompt-39-commit_editmsg) |
@@ -101,9 +102,9 @@
 | 83. | 22 Feb, 00:45 am | [Prompt 55 : Photoshop layers issue](#prompt-55-photoshop-layers-issue) |
 | 84. | 22 Feb, 00:50 am | [Prompt 56 : Downloaded zip file](#prompt-56-downloaded-zip-file) |
 | 85. | 22 Feb, 00:55 am | [Prompt 57 : Doubts about Photopea](#prompt-57-doubts-about-photopea) |
-| 86. | 22 Feb, 01:05 am | Prompt 58 : Found Expressions |
-| 87. | 22 Feb, 01:10 am | Prompt 59 : Any options to automate Manual work |
-| 88. | 22 Feb, 01:15 am | Prompt 60 : Background? |
+| 86. | 22 Feb, 01:05 am | [Prompt 58 : Found Expressions](#Prompt-58) |
+| 87. | 22 Feb, 01:10 am | [Prompt 59 : Any options to automateManual work](#prompt-59)  |
+| 88. | 22 Feb, 01:15 am | [Prompt 60 : Background?](#prompt-60) |
 | 89. | 22 Feb, 01:30 am | [Prompt 61 : 10 expressions downloaded](#prompt-61-10-expressions-downloaded) |
 | 90. | 22 Feb, 01:35 am | [Prompt 62 : My path](#prompt-62-my-path) |
 | 91. | 22 Feb, 02:00 am | [Prompt 63 : Commands for char 2](#prompt-63-commands-for-char-2) |
@@ -126,7 +127,7 @@
 | 108. | 22 Feb, 03:45 am | [Codex Prompt 80 : Fix Watch again button](#codex-prompt-80-fix-watch-again-button) |
 | 109. | 22 Feb, 03:50 am | [Codex Prompt 81 : Fix timing of facial change](#codex-prompt-81-fix-timing-of-facial-change) |
 | 110. | 22 Feb, 04:00 am | [Prompt 82 : Upload today's work to git](#prompt-82-upload-todays-work-to-git) |
-| **[DAY 8 : Improving Visualization (3hr)]** | | |
+| **DAY 8 : Improving Visualization (3hr)** | | |
 | 111. | 23rd Feb, 10:00 pm | [Prompt 83 : A new Idea](#prompt-83-a-new-idea) |
 | 112. | 23rd Feb, 10:40 pm | [Prompt 84 : Clarifying Doubts](#prompt-84-clarifying-doubts) |
 | 113. | 23rd Feb, 10:55 pm | [Prompt 85 : Token-less changes.md](#prompt-85-token-less-changesmd) |
@@ -141,7 +142,7 @@
 | 122. | 24th Feb, 12:55 am | [Prompt 94 : Errors shown](#prompt-94-errors-shown) |
 | 123. | 24th Feb, 01:00 am | [Prompt 95 : Clarifying Ambiguity](#prompt-95-clarifying-ambiguity) |
 | 124. | 24th Feb, 01:10 am | [Codex Prompt 96 : Fixing Errors](#codex-prompt-96-fixing-errors) |
-| **[DAY 9 : Improving Layout (1hr)]** | | |
+| **DAY 9 : Improving Layout (1hr)** | | |
 | 125. | 24th Feb, 07:30 pm | [Prompt 97 : New Changes](#prompt-97-new-changes) |
 | 126. | 24th Feb, 07:35 pm | [Codex Prompt 98 : New Changes](#codex-prompt-98-new-changes) |
 | 127. | 24th Feb, 07:50 pm | [Prompt 99 : New Changes Required](#prompt-99-new-changes-required) |
@@ -184,7 +185,7 @@
 | 163. | 25th Feb 10:10 pm | [Prompt 134 : Clarifying doubts](#prompt-134-clarifying-doubts) |
 | 164. | 25th Feb 10:20 pm | [Prompt 135 : Giving Online DFDs](#prompt-135-giving-online-dfds) |
 | 165. | 25th Feb 10:26 pm | [Prompt 136 : Genearting pdf](#prompt-136-genearting-pdf) |
-| **[DAY 11 : Started Web scraping Works (5hr)]** | | |
+| **DAY 11 : Started Web scraping Works (5hr)** | | |
 | 166. | 27th Feb 9:20 am | [Prompt 137 : Fresh Ideas](#prompt-137-fresh-ideas) |
 | 167. | 27th Feb 9:50 am | [Prompt 138 : New Targets](#prompt-138-new-targets) |
 | 168. | 27th Feb 10:00 am | [Prompt 139 : Update Antigravity](#prompt-139-update-antigravity) |
@@ -206,7 +207,7 @@
 | 184. | 27th Feb 11:40 pm | [Prompt 155 : Re-generate generalized scraper](#prompt-155-re-generate-generalized-scraper) |
 | 185. | 27th Feb 12:00 am | [Prompt 156 : Analyzed the changes](#prompt-156-analyzed-the-changes) |
 | 186. | 27th Feb 12:10 am | [Prompt 157 : Sharing Context](#prompt-157-sharing-context) |
-| **[DAY 11 : (5hr)]** | | |
+| **DAY 12 : Completed Web Scrapping (10+hr)** | | |
 | 187. | 28th Feb, 9:30 am | [Prompt 158 : Errors in console and Terminals](#prompt-158-errors-in-console-and-terminals) |
 | 188. | 28th Feb, 9:45 am | [Prompt 159 : Prioritizing Challenges](#prompt-159-prioritizing-challenges) |
 | 189. | 28th Feb, 9:55 am | [Prompt 160 : Clarifying Misunderstandings](#prompt-160-clarifying-misunderstandings) |
@@ -263,12 +264,171 @@
 | 240. | 28th Feb, 03:53 pm | [Prompt 211 : TV Rendered](#prompt-211-tv-rendered) |
 | 241. | 28th Feb, 07:02 pm | [Prompt 212 : Improving decisionlogic.js](#prompt-212-improving-decisionlogicjs) |
 | 242. | 28th Feb, 07:14 pm | [Prompt 213 : Learning new changes](#prompt-213-learning-new-changes) |
-| 243. |  |  |
-| 244. |  |  |
-| 245. |  |  |
-| 246. |  |  |
+| **Final Day 13 : Firebase, Ui , Hosting (hr)** | | |
+| 243. | 1 Mar, 4:31 am | [Prompt 214 : hii](#prompt-214-hii) |
+| 244. | 1 Mar, 4:32 am | [Prompt 215 : Firebase project upload + next stage](#prompt-215-firebase-project-upload--next-stage) |
+| 245. | 1 Mar, 4:35 am | [Prompt 216 : Phase 2.5 implementation plan request](#prompt-216-phase-25-implementation-plan-request) |
+| 246. | 1 Mar, 4:38 am | [Prompt 217 : VS Code chatbot + agentic AI question](#prompt-217-vs-code-chatbot--agentic-ai-question) |
+| 247. | 1 Mar, 4:40 am | [Prompt 218 : Firebase console — where to register web app](#prompt-218-firebase-console--where-to-register-web-app) |
+| 248. | 1 Mar, 4:42 am | [Prompt 219 : Is it safe to paste Firebase keys](#prompt-219-is-it-safe-to-paste-firebase-keys) |
+| 249. | 1 Mar, 4:44 am | [Prompt 220 : .gitignore contents check](#prompt-220-gitignore-contents-check) |
+| 250. | 1 Mar, 4:45 am | [Prompt 221 : .env vars added confirmation](#prompt-221-env-vars-added-confirmation) |
+| 251. | 1 Mar, 4:47 am | [Prompt 222 : Firestore ready — what to do next](#prompt-222-firestore-ready--what-to-do-next) |
+| 252. | 1 Mar, 4:50 am | [Prompt 223 : Firebase config pasted (keys masked)](#prompt-223-firebase-config-pasted-keys-masked) |
+| 253. | 1 Mar, 4:52 am | [Prompt 224 : .env screenshot confirmation](#prompt-224-env-screenshot-confirmation) |
+| 254. | 1 Mar, 5:10 am | [Prompt 225 : npm install firebase success](#prompt-225-npm-install-firebase-success) |
+| 255. | 1 Mar, 5:20 am | [Prompt 226 : All changes applied — memory list working](#prompt-226-all-changes-applied--memory-list-working) |
+| 256. | 1 Mar, 5:25 am | [Prompt 227 : Tab switching bug still there + manual not saved](#prompt-227-tab-switching-bug-still-there--manual-not-saved) |
+| 257. | 1 Mar, 5:30 am | [Prompt 228 : quick_3.md applied — console verification](#prompt-228-quick_3md-applied--console-verification) |
+| 258. | 1 Mar, 5:35 am | [Prompt 229 : Tab switching images — still persisting](#prompt-229-tab-switching-images--still-persisting) |
+| 259. | 1 Mar, 5:40 am | [Prompt 230 : quick_4.md applied — tab fix confirmed](#prompt-230-quick_4md-applied--tab-fix-confirmed) |
+| 260. | 1 Mar, 5:45 am | [Prompt 231 : Scraper showing less fields — why](#prompt-231-scraper-showing-less-fields--why) |
+| 261. | 1 Mar, 5:50 am | [Prompt 232 : So they are two different things?](#prompt-232-so-they-are-two-different-things) |
+| 262. | 1 Mar, 5:55 am | [Prompt 233 : Trolley speaker comparison — 11 criteria confirmed](#prompt-233-trolley-speaker-comparison--11-criteria-confirmed) |
+| 263. | 1 Mar, 6:00 am | [Prompt 234 : Phase 2.6 — two tasks, create implementation plans](#prompt-234-phase-26--two-tasks-create-implementation-plans) |
+| 264. | 1 Mar, 6:05 am | [Prompt 235 : Feedback on plans + tab bug images](#prompt-235-feedback-on-plans--tab-bug-images) |
+| 265. | 1 Mar, 6:10 am | [Prompt 236 : Wrong file uploaded — BUILD_PROCESS](#prompt-236-wrong-file-uploaded--build_process) |
+| 266. | 1 Mar, 6:12 am | [Prompt 237 : research-log.md — table structure + final prompts](#prompt-237-research-logmd--table-structure--final-prompts) |
+| 267. | 1 Mar, 6:18 am | [Prompt 239 : CRITICAL ERROR — Antigravity correction](#prompt-239-critical-error--antigravity-correction) |
+| 268. | 1 Mar, 6:20 am | [Prompt 239 : Context switch — CONTEXT_SWITCH pasted to new chat](#prompt-239--context-switch--context_switch-pasted-to-new-chat) |
+| 269. | 1 Mar, 6:22 am | [Prompt 240 : Challenging avatar assumption — sprites not placeholders](#prompt-240--challenging-avatar-assumption--sprites-not-placeholders) |
+| 270. | 1 Mar, 6:35 am | [Prompt 241 : Uploaded visualizer + openVisualizer + sprite task description](#prompt-241--uploaded-visualizer--openvisualizer--sprite-task-description) |
+| 271. | 1 Mar, 7:05 am | [Prompt 242 : Antigravity applied — 2 of 3 images rendering, 1 missing](#prompt-242--antigravity-applied--2-of-3-images-rendering-1-missing) |
+| 272. | 1 Mar, 7:10 am | [Prompt 243 : Console debug — images map empty {}](#prompt-243--console-debug--images-map-empty-) |
+| 273. | 1 Mar, 7:14 am | [Prompt 244 : p.name → p.title fix applied — still undefined](#prompt-244--pname--ptitle-fix-applied--still-undefined) |
+| 274. | 1 Mar, 7:18 am | [Prompt 245 : openVisualizer function pasted for inspection](#prompt-245--openvisualizer-function-pasted-for-inspection) |
+| 275. | 1 Mar, 7:22 am | [Prompt 246 : DEMO.images confirmed present — candidate key mismatch](#prompt-246--demoimages-confirmed-present--candidate-key-mismatch) |
+| 276. | 1 Mar, 7:28 am | [Prompt 247 : iframe null error — visualizer closed before console run](#prompt-247--iframe-null-error--visualizer-closed-before-console-run) |
+| 277. | 1 Mar, 7:35 am | [Prompt 248 : What should i do next](#prompt-248--what-should-i-do-next) |
+| 278. | 1 Mar, 7:42 am | [Prompt 249 : Fuzzy score debug output pasted](#prompt-249--fuzzy-score-debug-output-pasted) |
+| 279. | 1 Mar, 7:48 am | [Prompt 250 : Images are rendered — moving to Task 2](#prompt-250--images-are-rendered--moving-to-task-2) |
+| 280. | 1 Mar, 7:50 am | [Prompt 251 : Task 2 scope request — what do you need](#prompt-251--task-2-scope-request--what-do-you-need) |
+| 281. | 1 Mar, 8:05 am | [Prompt 252 : Uploaded server.js scrape route + memoryService + index.html + script.js](#prompt-252--uploaded-serverjs-scrape-route--memoryservice--indexhtml--scriptjs) |
+| 282. | 1 Mar, 8:22 am | [Prompt 253 : create 3fixes.md](#prompt-253--create-3fixesmd) |
+| 283. | 1 Mar, 8:28 am | [Prompt 254 : 3fixes done — buttons clickable but no details rendered](#prompt-254--3fixes-done--buttons-clickable-but-no-details-rendered) |
+| 284. | 1 Mar, 8:35 am | [Prompt 255 : renderDetailsRow console output — HTML correct but invisible](#prompt-255--renderdetailsrow-console-output--html-correct-but-invisible) |
+| 285. | 1 Mar, 8:42 am | [Prompt 256 : Manual compare table missing, 5 identical buttons issue](#prompt-256--manual-compare-table-missing-5-identical-buttons-issue) |
+| 286. | 1 Mar, 8:48 am | [Prompt 257 : state.products shape confirmed — manual working](#prompt-257--stateproducts-shape-confirmed--manual-working) |
+| 287. | 1 Mar, 8:55 am | [Prompt 258 : why did comparision table in result not showing table with ideal](#prompt-258--why-did-comparision-table-in-result-not-showing-table-with-ideal) |
+| 288. | 1 Mar, 9:02 am | [Prompt 259 : View Products button request — Set Your Priorities step](#prompt-259--view-products-button-request--set-your-priorities-step) |
+| 289. | 1 Mar, 9:10 am | [Prompt 260 : Same View Products for manual compare ideals step](#prompt-260--same-view-products-for-manual-compare-ideals-step) |
+| 290. | 1 Mar, 9:18 am | [Prompt 261 : What follows this — git push + next ideas](#prompt-261--what-follows-this--git-push--next-ideas) |
+| 291. | 1 Mar, 9:22 am | [Prompt 262 : Git commit pushed — what was 2.5 and 2.6](#prompt-262--git-commit-pushed--what-was-25-and-26) |
+| 292. | 1 Mar, 9:28 am | [Prompt 263 : Newphase.md request — detailed build journal for 2.5 and 2.6](#prompt-263--newphasemd-request--detailed-build-journal-for-25-and-26) |
+| 293. | 1 Mar, 9:38 am | [Prompt 264 : Give me a prompt for the new chat](#prompt-264--give-me-a-prompt-for-the-new-chat) |
+| 294. | 1 Mar, 9:42 am | [Prompt 265 : I need a better context switch prompt](#prompt-265--i-need-a-better-context-switch-prompt) |
+| 295. | 1 Mar, 9:48 am | [Prompt 266 : Understand BUILD_PROCESS and research-log — quick summary](#prompt-266--understand-build_process-and-research-log--quick-summary) |
+| 296. | 1 Mar, 4:23 pm | [Prompt 268 : Context switch — CONTEXT_SWITCH_2 pasted to new chat](#prompt-268--context-switch--context_switch_2-pasted-to-new-chat) |
+| 297. | 1 Mar, 4:26 pm | [Prompt 269 : Scale bug report — Aaron/Cijo false tie](#prompt-269--scale-bug-report--aaroncijo-false-tie) |
+| 298. | 1 Mar, 4:31 pm | [Prompt 270 : decisionLogic.js uploaded for inspection](#prompt-270--decisionlogicjs-uploaded-for-inspection) |
+| 299. | 1 Mar, 4:35 pm | [Prompt 271 : create final_fix_1.md — no variable renames](#prompt-271--create-final_fix_1md--no-variable-renames) |
+| 300. | 1 Mar, 4:40 pm | [Prompt 272 : Direction concern — lower is better edge case](#prompt-272--direction-concern--lower-is-better-edge-case) |
+| 301. | 1 Mar, 4:44 pm | [Prompt 273 : 3-way tie confirmed — both passed as lower](#prompt-273--3-way-tie-confirmed--both-passed-as-lower) |
+| 302. | 1 Mar, 4:49 pm | [Prompt 274 : /api/calculate route pasted for inspection](#prompt-274--apicalculate-route-pasted-for-inspection) |
+| 303. | 1 Mar, 4:52 pm | [Prompt 275 : server.js uploaded](#prompt-275--serverjs-uploaded) |
+| 304. | 1 Mar, 4:58 pm | [Prompt 276 : Antigravity confirmation — fix applied message](#prompt-276--antigravity-confirmation--fix-applied-message) |
+| 305. | 1 Mar, 5:02 pm | [Prompt 277 : Gemini 429 error — Groq explanation working, Cijo wins](#prompt-277--gemini-429-error--groq-explanation-working-cijo-wins) |
+| 306. | 1 Mar, 5:08 pm | [Prompt 278 : Gemini dashboard screenshot — not quota exhausted](#prompt-278--gemini-dashboard-screenshot--not-quota-exhausted) |
+| 307. | 1 Mar, 5:12 pm | [Prompt 279 : Root cause identified — too many rapid Gemini calls](#prompt-279--root-cause-identified--too-many-rapid-gemini-calls) |
+| 308. | 1 Mar, 5:16 pm | [Prompt 280 : final_fix_2.md — Groq-only review scoring Option B](#prompt-280--final_fix_2md--groq-only-review-scoring-option-b) |
+| 309. | 1 Mar, 5:20 pm | [Prompt 281 : Uploaded working Gemini server from another project](#prompt-281--uploaded-working-gemini-server-from-another-project) |
+| 310. | 1 Mar, 5:24 pm | [Prompt 282 : final_fix_3.md — node-fetch + model string](#prompt-282--final_fix_3md--node-fetch--model-string) |
+| 311. | 1 Mar, 5:28 pm | [Prompt 283 : fetch is not a function error](#prompt-283--fetch-is-not-a-function-error) |
+| 312. | 1 Mar, 5:31 pm | [Prompt 284 : Still fetch is not a function after fix](#prompt-284--still-fetch-is-not-a-function-after-fix) |
+| 313. | 1 Mar, 5:34 pm | [Prompt 285 : ARE WE HALLUCINATING — frustration](#prompt-285--are-we-hallucinating--frustration) |
+| 314. | 1 Mar, 5:38 pm | [Prompt 286 : global.fetch fix — Gemini short response 94 chars](#prompt-286--globalfetch-fix--gemini-short-response-94-chars) |
+| 315. | 1 Mar, 5:42 pm | [Prompt 287 : Gemini working — why is it short](#prompt-287--gemini-working--why-is-it-short) |
+| 316. | 1 Mar, 5:46 pm | [Prompt 288 : buildPrompt function pasted for inspection](#prompt-288--buildprompt-function-pasted-for-inspection) |
+| 317. | 1 Mar, 5:50 pm | [Prompt 289 : generateExplanation pasted — RETURN NEW FUNCTION](#prompt-289--generateexplanation-pasted--return-new-function) |
+| 318. | 1 Mar, 5:55 pm | [Prompt 290 : Gemini explanation working — full paragraph rendered](#prompt-290--gemini-explanation-working--full-paragraph-rendered) |
+| 319. | 1 Mar, 6:02 pm | [Prompt 291 : Input form restrictions — 3 requirements](#prompt-291--input-form-restrictions--3-requirements) |
+| 320. | 1 Mar, 6:06 pm | [Prompt 292 : script.js uploaded](#prompt-292--scriptjs-uploaded) |
+| 321. | 1 Mar, 6:18 pm | [Prompt 293 : index.html uploaded — weight decimal bypass issue](#prompt-293--indexhtml-uploaded--weight-decimal-bypass-issue) |
+| 322. | 1 Mar, 6:24 pm | [Prompt 294 : Weight one decimal fix worked — options still decimal](#prompt-294--weight-one-decimal-fix-worked--options-still-decimal) |
+| 323. | 1 Mar, 6:28 pm | [Prompt 295 : parseInt strips decimal before check — raw string fix](#prompt-295--parseint-strips-decimal-before-check--raw-string-fix) |
+| 324. | 1 Mar, 6:35 pm | [Prompt 296 : Form validation good — what's next](#prompt-296--form-validation-good--whats-next) |
+| 325. | 1 Mar, 6:40 pm | [Prompt 297 : UI discussion — Figma vs Lovable vs Claude](#prompt-297--ui-discussion--figma-vs-lovable-vs-claude) |
+| 326. | 1 Mar, 8:48 pm | [Prompt 298 : 3 screenshots uploaded — setup, smart, memory tabs](#prompt-298--3-screenshots-uploaded--setup-smart-memory-tabs) |
+| 327. | 1 Mar, 8:55 pm | [Prompt 299 : styles.css uploaded for full rewrite](#prompt-299--stylescss-uploaded-for-full-rewrite) |
+| 328. | 1 Mar, 9:10 pm | [Prompt 300 : About to exhaust — create Implementation Plan + Context Switch](#prompt-300--about-to-exhaust--create-implementation-plan--context-switch) |
+| 329. | 2 Mar, 12:00 am | [Prompt 302 : Context switch — CONTEXT_SWITCH_3 + files uploaded — 4 questions](#prompt-302--context-switch--context_switch_3--files-uploaded--4-questions) |
+| 330. | 2 Mar, 12:15 am | [Prompt 303 : Dark mode issues — unselected cards, winner badge, loading overlay](#prompt-303--dark-mode-issues--unselected-cards-winner-badge-loading-overlay) |
+| 331. | 2 Mar, 12:22 am | [Prompt 304 : Selected cards look fine — confirm dark mode fix](#prompt-304--selected-cards-look-fine--confirm-dark-mode-fix) |
+| 332. | 2 Mar, 12:35 am | [Prompt 305 : Stepper suggestion — 1→2→3→4 navbar with code snippet](#prompt-305--stepper-suggestion--1234-navbar-with-code-snippet) |
+| 333. | 2 Mar, 12:40 am | [Prompt 306 : Good navbar 1→2→3→4 — next improvement](#prompt-306--good-navbar-1234--next-improvement) |
+| 334. | 2 Mar, 12:50 am | [Prompt 307 : itch.io reference — full spanning bar + sticky stepper + round corners](#prompt-307--itchio-reference--full-spanning-bar--sticky-stepper--round-corners) |
+| 335. | 2 Mar, 1:00 am | [Prompt 308 : Tab rectangle not smooth — manual compare sharp corner](#prompt-308--tab-rectangle-not-smooth--manual-compare-sharp-corner) |
+| 336. | 2 Mar, 1:05 am | [Prompt 309 : Full spanning Nav-bar clarification](#prompt-309--full-spanning-nav-bar-clarification) |
+| 337. | 2 Mar, 1:12 am | [Prompt 310 : Setup input offset — Number of Options misaligned](#prompt-310--setup-input-offset--number-of-options-misaligned) |
+| 338. | 2 Mar, 1:20 am | [Prompt 311 : Memory tab state bug — all 3 states visible](#prompt-311--memory-tab-state-bug--all-3-states-visible) |
+| 339. | 2 Mar, 1:28 am | [Prompt 312 : Issue still there after Haiku fix](#prompt-312--issue-still-there-after-haiku-fix) |
+| 340. | 2 Mar, 1:32 am | [Prompt 313 : Give Haiku unrestricted access to diagnose](#prompt-313--give-haiku-unrestricted-access-to-diagnose) |
+| 341. | 2 Mar, 1:38 am | [Prompt 314 : Haiku finds .hidden class missing — is Haiku right](#prompt-314--haiku-finds-hidden-class-missing--is-haiku-right) |
+| 342. | 2 Mar, 1:45 am | [Prompt 315 : After smart comparison manual tab blank](#prompt-315--after-smart-comparison-manual-tab-blank) |
+| 343. | 2 Mar, 1:50 am | [Prompt 316 : 21st comparison — who decided 20](#prompt-316--21st-comparison--who-decided-20) |
+| 344. | 2 Mar, 1:55 am | [Prompt 317 : UI is ready — what's next](#prompt-317--ui-is-ready--whats-next) |
+| 345. | 2 Mar, 2:00 am | [Prompt 318 : Direction lock Smart Compare tab](#prompt-318--direction-lock-smart-compare-tab) |
+| 346. | 2 Mar, 2:05 am | [Prompt 319 : Direction lock fixed — vercel?](#prompt-319--direction-lock-fixed--vercel) |
+| 347. | 2 Mar, 2:10 am | [Prompt 320 : server.js uploaded — Railway deployment discussion](#prompt-320--serverjs-uploaded--railway-deployment-discussion) |
+| 348. | 2 Mar, 2:15 am | [Prompt 321 : Git commit and push to GitHub](#prompt-321--git-commit-and-push-to-github) |
+| 349. | 2 Mar, 2:18 am | [Prompt 322 : GitHub repo creation — configuration settings](#prompt-322--github-repo-creation--configuration-settings) |
+| 350. | 2 Mar, 2:22 am | [Prompt 323 : .env already gitignored — confirmed safe](#prompt-323--env-already-gitignored--confirmed-safe) |
+| 351. | 2 Mar, 2:25 am | [Prompt 324 : git push rejected — fetch first error](#prompt-324--git-push-rejected--fetch-first-error) |
+| 352. | 2 Mar, 2:27 am | [Prompt 325 : Force push success — 363 objects 42.5MB](#prompt-325--force-push-success--363-objects-425mb) |
+| 353. | 2 Mar, 2:30 am | [Prompt 326 : Railway install & authorize screenshot](#prompt-326--railway-install--authorize-screenshot) |
+| 354. | 2 Mar, 2:35 am | [Prompt 327 : Build failed — Railpack cannot determine app](#prompt-327--build-failed--railpack-cannot-determine-app) |
+| 355. | 2 Mar, 2:38 am | [Prompt 328 : Build log — Railpack sees only folders no package.json](#prompt-328--build-log--railpack-sees-only-folders-no-packagejson) |
+| 356. | 2 Mar, 2:40 am | [Prompt 329 : Railway Settings — searching Root Directory](#prompt-329--railway-settings--searching-root-directory) |
+| 357. | 2 Mar, 2:42 am | [Prompt 330 : Source section — Add Root Directory found](#prompt-330--source-section--add-root-directory-found) |
+| 358. | 2 Mar, 2:45 am | [Prompt 331 : App online — where is the link](#prompt-331--app-online--where-is-the-link) |
+| 359. | 2 Mar, 2:47 am | [Prompt 332 : Cannot GET / error](#prompt-332--cannot-get--error) |
+| 360. | 2 Mar, 2:50 am | [Prompt 333 : Debug logs — frontend path /frontend wrong](#prompt-333--debug-logs--frontend-path-frontend-wrong) |
+| 361. | 2 Mar, 2:53 am | [Prompt 334 : Root package.json fix — Not Found still](#prompt-334--root-packagejson-fix--not-found-still) |
+| 362. | 2 Mar, 2:58 am | [Prompt 335 : REALLY THINK — list all possible reasons ranked](#prompt-335--really-think--list-all-possible-reasons-ranked) |
+| 363. | 2 Mar, 3:02 am | [Prompt 336 : Cannot find module dotenv — new crash](#prompt-336--cannot-find-module-dotenv--new-crash) |
+| 364. | 2 Mar, 3:05 am | [Prompt 337 : Firebase working — is it fallback](#prompt-337--firebase-working--is-it-fallback) |
+| 365. | 2 Mar, 3:08 am | [Prompt 338 : 5 variables set — still Firebase fallback in logs](#prompt-338--5-variables-set--still-firebase-fallback-in-logs) |
+| 366. | 2 Mar, 3:12 am | [Prompt 339 : Redeployment failed — secret FIREBASE_API_KEY not found](#prompt-339--redeployment-failed--secret-firebase_api_key-not-found) |
+| 367. | 2 Mar, 3:15 am | [Prompt 340 : Raw editor variables pasted — still failing](#prompt-340--raw-editor-variables-pasted--still-failing) |
+| 368. | 2 Mar, 3:18 am | [Prompt 341 : railway.toml nixpacks — are you confident](#prompt-341--railwaytoml-nixpacks--are-you-confident) |
+| 369. | 2 Mar, 3:22 am | [Prompt 342 : Deployed then crashed — File is not defined Node 18](#prompt-342--deployed-then-crashed--file-is-not-defined-node-18) |
+| 370. | 2 Mar, 3:25 am | [Prompt 343 : Should I paste to Haiku directly](#prompt-343--should-i-paste-to-haiku-directly) |
+| 371. | 2 Mar, 3:28 am | [Prompt 344 : NIXPACKS_NODE_VERSION = 20 fix](#prompt-344--nixpacks_node_version--20-fix) |
+| 372. | 2 Mar, 3:35 am | [Prompt 345 : Everything working — Firebase + Gemini + scraping live](#prompt-345--everything-working--firebase--gemini--scraping-live) |
+| 373. | 2 Mar, 3:40 am | [Prompt 346 : Groq 401 space in key — everything seems in order](#prompt-346--groq-401-space-in-key--everything-seems-in-order) |
+| 374. | 2 Mar, 3:45 am | [Prompt 347 : Do real developers do this — Instagram Snapchat](#prompt-347--do-real-developers-do-this--instagram-snapchat) |
+| 375. | 2 Mar, 3:48 am | [Prompt 348 : Could we have done this in 5 mins](#prompt-348--could-we-have-done-this-in-5-mins) |
+| 376. | 2 Mar, 3:50 am | [Prompt 349 : Why didnt you tell me about docker](#prompt-349--why-didnt-you-tell-me-about-docker) |
+| 377. | 2 Mar, 3:58 am | [Prompt 353 : What should I have asked to get the docker point](#prompt-353--what-should-i-have-asked-to-get-the-docker-point) |
+| 378. | — | [Copilot Haiku Prompt 378 : Scale Ideal Mapping Bug Fix](#copilot-haiku-prompt-378--scale-ideal-mapping-bug-fix) |
+| 379. | — | [Copilot Haiku Prompt 379 : Scale Ideal Mapping + Direction Override Fix (server.js)](#copilot-haiku-prompt-379--scale-ideal-mapping-direction-override-fix-serverjs) |
+| 380. | — | [Copilot Haiku Prompt 380 : Groq-only Review Scoring — Gemini Freed for Explanation](#copilot-haiku-prompt-380--groq-only-review-scoring-gemini-freed-for-explanation) |
+| 381. | — | [Copilot Haiku Prompt 381 : Gemini node-fetch Import + Model String Fix (decisionLogic.js)](#copilot-haiku-prompt-381--gemini-node-fetch-import-model-string-fix-decisionlogicjs) |
+| 382. | — | [Copilot Haiku Prompt 382 : Gemini Length Threshold — Lower Word Count + Raise maxOutputTokens](#copilot-haiku-prompt-382--gemini-length-threshold-lower-word-count-raise-maxoutputtokens) |
+| 383. | — | [Copilot Haiku Prompt 383 : Remove Example Sentence from Gemini buildPrompt](#copilot-haiku-prompt-383--remove-example-sentence-from-gemini-buildprompt) |
+| 384. | — | [Copilot Haiku Prompt 384 : Gemini Length Threshold Fix — Retry](#copilot-haiku-prompt-384--gemini-length-threshold-fix-retry) |
+| 385. | — | [Copilot Haiku Prompt 385 : Remove Example Sentence from buildPrompt — Retry](#copilot-haiku-prompt-385--remove-example-sentence-from-buildprompt-retry) |
+| 386. | — | [Copilot Haiku Prompt 386 : showStep() Replaced with Stepper-Aware Version](#copilot-haiku-prompt-386--showstep-replaced-with-stepper-aware-version) |
+| 387. | — | [Copilot Haiku Prompt 387 : Dark Mode Pass 1 — CSS Variables + Hardcoded Background Overrides](#copilot-haiku-prompt-387--dark-mode-pass-1-css-variables-hardcoded-background-overrides) |
+| 388. | — | [Copilot Haiku Prompt 388 : Dark Mode Pass 2 — Cards, Loading Overlay, Badges](#copilot-haiku-prompt-388--dark-mode-pass-2-cards-loading-overlay-badges) |
+| 389. | — | [Copilot Haiku Prompt 389 : Step Progress Navbar — Manual Compare (HTML + CSS + JS)](#copilot-haiku-prompt-389--step-progress-navbar-manual-compare-html-css-js) |
+| 390. | — | [Copilot Haiku Prompt 390 : Smart Compare Stepper Nav (5-Step)](#copilot-haiku-prompt-390--smart-compare-stepper-nav-5-step) |
+| 391. | — | [Copilot Haiku Prompt 391 : Mobile Navbar Tab Collapse — Responsive CSS Fix](#copilot-haiku-prompt-391--mobile-navbar-tab-collapse-responsive-css-fix) |
+| 392. | — | [Copilot Haiku Prompt 392 : Setup Step Input Width Fix — Grid Layout Replace](#copilot-haiku-prompt-392--setup-step-input-width-fix-grid-layout-replace) |
+| 393. | — | [Copilot Haiku Prompt 393 : Memory Tab State Bug Fix — deleteMemory + clearAllMemory (partial fix)](#copilot-haiku-prompt-393--memory-tab-state-bug-fix-deletememory-clearallmemory-partial-fix) |
+| 394. | — | [Copilot Haiku Prompt 394 : Memory Tab setMemoryState() — Atomic State Manager (first send)](#copilot-haiku-prompt-394--memory-tab-setmemorystate-atomic-state-manager-first-send) |
+| 395. | — | [Copilot Haiku Prompt 395 : Memory Tab setMemoryState() — Resend After Partial Apply](#copilot-haiku-prompt-395--memory-tab-setmemorystate-resend-after-partial-apply) |
+| 396. | — | [Copilot Haiku Prompt 396 : Memory Tab All 3 States Visible Simultaneously — Root Cause Investigation](#copilot-haiku-prompt-396--memory-tab-all-3-states-visible-simultaneously-root-cause-investigation) |
+| 397. | — | [Copilot Haiku Prompt 397 : Memory Entry Limit Raised to 50 + Confirm Dialog Before Overwrite](#copilot-haiku-prompt-397--memory-entry-limit-raised-to-50-confirm-dialog-before-overwrite) |
+| 398. | — | [Copilot Haiku Prompt 398 : Scale Direction Lock in handleTypeChange — Disable Direction Select](#copilot-haiku-prompt-398--scale-direction-lock-in-handletypechange-disable-direction-select) |
+| 399. | — | [Copilot Haiku Prompt 399 : Search Result Card Selection Redesign — Left Border + Checkmark Badge](#copilot-haiku-prompt-399--search-result-card-selection-redesign-left-border-checkmark-badge) |
+| 400. | — | [Copilot Haiku Prompt 400 : Full-Stack Architecture using Mermaind](#copilot-haiku-prompt-399--search-result-card-selection-redesign-left-border-checkmark-badge) |
 
-[Prompt No.1 :]{.mark} Dear Candidate, Congratulations on being shortlisted from the programming test conducted at your college. As the next step in our evaluation process, we would like you to complete a take-home assignment. This round is intentionally different from a traditional coding test. You are allowed to use any resources - AI tools (ChatGPT, Copilot, etc.), Google, Stack Overflow, documentation, books, or any other reference material. We are not only evaluating the final solution. As our CEO puts it: "We want to see how you build." This assignment is designed to evaluate: 1. How clearly you document your thinking 2. How you approach ambiguous problems 3. Your system design and architectural decisions 4. How you leverage tools (including AI) 5. Your transparency in the build process Problem Statement: Design and build a "Decision Companion System" that helps a user make better decisions. The system should assist a user in evaluating options for a real-world decision of their choice. Your system must work without relying entirely on an AI model. If AI is used, clearly justify its role and limitations. Examples (you are NOT limited to these): \* Choosing a laptop under a budget \* Selecting the best candidate for a job role \* Deciding where to travel within constraints \* Picking an investment strategy \* Choosing a tech stack for a startup Core Expectations: Your system must: \* Accept multiple options \* Accept criteria (which may have different weights or importance) \* Process and evaluate options against criteria \* Provide a ranked recommendation \* Explain why a particular recommendation was made Beyond this, the design is up to you.  You may choose: \* CLI / Web App / API / Desktop tool \* Any programming language \* Any framework \* Simple or advanced logic You define the depth. We are more interested in your thinking than feature count. Constraints \* The system should not be a static hard coded comparison. \* The user should be able to change inputs and get different outcomes. \* Your logic should be explainable (not a black box).  Deliverables Please submit a Git repository containing: 1. Source Code \* Clean, readable, and structured \* Meaningful commit history  2. README.md Include:
+
+
+# Prompt No.1 :
+
+ Dear Candidate, Congratulations on being shortlisted from the programming test conducted at your college. As the next step in our evaluation process, we would like you to complete a take-home assignment. This round is intentionally different from a traditional coding test. You are allowed to use any resources - AI tools (ChatGPT, Copilot, etc.), Google, Stack Overflow, documentation, books, or any other reference material. We are not only evaluating the final solution. As our CEO puts it: "We want to see how you build." This assignment is designed to evaluate: 1. How clearly you document your thinking 2. How you approach ambiguous problems 3. Your system design and architectural decisions 4. How you leverage tools (including AI) 5. Your transparency in the build process Problem Statement: Design and build a "Decision Companion System" that helps a user make better decisions. The system should assist a user in evaluating options for a real-world decision of their choice. Your system must work without relying entirely on an AI model. If AI is used, clearly justify its role and limitations. Examples (you are NOT limited to these): \* Choosing a laptop under a budget \* Selecting the best candidate for a job role \* Deciding where to travel within constraints \* Picking an investment strategy \* Choosing a tech stack for a startup Core Expectations: Your system must: \* Accept multiple options \* Accept criteria (which may have different weights or importance) \* Process and evaluate options against criteria \* Provide a ranked recommendation \* Explain why a particular recommendation was made Beyond this, the design is up to you.  You may choose: \* CLI / Web App / API / Desktop tool \* Any programming language \* Any framework \* Simple or advanced logic You define the depth. We are more interested in your thinking than feature count. Constraints \* The system should not be a static hard coded comparison. \* The user should be able to change inputs and get different outcomes. \* Your logic should be explainable (not a black box).  Deliverables Please submit a Git repository containing: 1. Source Code \* Clean, readable, and structured \* Meaningful commit history  2. README.md Include:
 
 \* Your understanding of the problem \* Assumptions made \* Why you structured the solution the way you did \* Design decisions and trade-offs \* Edge cases considered \* How to run the project \* What you would improve with more time
 
@@ -9853,19 +10013,19 @@ Is in downloded folder? now what
 
 Do the groups have names like \"happy\", \"sad\", \"neutral\" etc? Yes there are named folders
 
-Prompt 58 : Found Expressions
+# Prompt 58 : Found Expressions
 
 Expression sweat Sad Angry 2 Angry 1 Smirk Surprised Normal Laugh Smile 3 Smile 2 Smile 1
 
 Other than maybe angry all other\'s most probably is useful
 
-Prompt 59 : Any options to automate Manual work
+# Prompt 59 : Any options to automate Manual work
 
 Ohh this is the manual work , hmmm
 
 So n expression for m character , mxn downloads?? any easy way my friend
 
-Prompt 60 : Background?
+# Prompt 60 : Background?
 
 Its fine i will download..
 
@@ -18390,3 +18550,2434 @@ If you can change it without affecting visualization , or anything implement the
 # Prompt 213 : Learning new changes
 
 What was the issue there? why di dyou chnge it
+
+---
+
+# Prompt 214 : hii
+
+hii
+
+---
+
+# Prompt 215 : Firebase project upload + next stage
+
+Hosting and UI fixes can be last right?
+
+So next stage?
+
+I just uploaded a basic firebase project.. does this make some things easier for us
+
+```javascript
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "<there is a key>"
+    authDomain: "....",
+    projectId: "..",
+    storageBucket: "...",
+    messagingSenderId: "...",
+    appId: "1:...."
+  };
+```
+
+---
+
+# Prompt 216 : Phase 2.5 implementation plan request
+
+Let's call this Phase 2.5
+
+Create an implementation plan 
+* Our objectives
+* How we integrate in Ui
+* How we integrate in Backend
+* Name it..
+* DFD (intial stage)
+* Desired output...
+
+---
+
+# Prompt 217 : VS Code chatbot + agentic AI question
+
+*[Uploaded screenshot of VS Code with secondary sidebar open showing GitHub Copilot chat with Claude Haiku 4.5, GPT-4.1, GPT-4o, GPT-5 mini, Raptor mini models]*
+
+This chat has been comapcted, and is out of free messages ; let's move to a new chat
+
+I opened VS Code,  accidentaly toggled secondary side bar ; saw a chatbot support.. what is that
+As seen in 1772319836429_image.png; it has many models ; I think it supports agentic Ai..
+
+What is agentic Ai.. they have provisions to set up AI agents and so on??
+
+---
+
+# Prompt 218 : Firebase console — where to register web app
+
+*[Uploaded screenshot of Firebase Firestore Database ready — "Your database is ready to go. Just add data."]*
+
+where
+2. Register your Web App
+Go back to Project Overview (top left) → you'll see "+ Add app" on the screen → click it → click the `</>` icon (Web) → nickname: `vonnue-web` → click Register app → you'll see the `firebaseConfig` object with all the keys → copy it somewhere
+
+---
+
+# Prompt 219 : Is it safe to paste Firebase keys
+
+```javascript
+const firebaseConfig = {
+  apiKey: "is-it safe-to paste-the-key-i-can-replace-it",
+  authDomain: "vonnue-decision-maker.firebaseapp.com",
+  projectId: "vonnue-decision-maker",
+  storageBucket: "vonnue-decision-maker.firebasestorage.app",
+  messagingSenderId: "68829493368",
+  appId: ""is-it safe-to paste-the-key-i-can-replace-it"",
+  measurementId: ""is-it safe-to paste-the-key-i-can-replace-it""
+};
+```
+
+---
+
+# Prompt 220 : .gitignore contents check
+
+```ignore
+node_modules/ 
+backend/.env 
+"*.docx" 
+"backend/text.txt" 
+backend/.env 
+*.xlsx 
+*.docx 
+docs/*AutoRecovered* 
+~$* 
+```
+
+contents in core folder
+
+---
+
+# Prompt 221 : .env vars added confirmation
+
+*[Uploaded screenshot showing .env file with FIREBASE_API_KEY=AIzaSy..., FIREBASE_PROJECT_ID=von..., FIREBASE_APP_ID=1:68829...]*
+
+I did
+
+---
+
+# Prompt 222 : Firestore ready — what to do next
+
+*[Uploaded screenshot of Firebase Project Overview — "Vonnue-decision-maker, Hello, Cj, Welcome to your Firebase project!"]*
+
+What to do
+
+---
+
+# Prompt 223 : Firebase config pasted (keys masked)
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "is-it safe-to paste-the-key-i-can-replace-it",
+  authDomain: "vonnue-decision-maker.firebaseapp.com",
+  projectId: "vonnue-decision-maker",
+  storageBucket: "vonnue-decision-maker.firebasestorage.app",
+  messagingSenderId: "68829493368",
+  appId: ""is-it safe-to paste-the-key-i-can-replace-it"",
+  measurementId: ""is-it safe-to paste-the-key-i-can-replace-it""
+};
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+---
+
+# Prompt 224 : .env screenshot confirmation
+
+*[Uploaded screenshot of .env file with Firebase credentials partially visible]*
+
+I did
+
+---
+
+# Prompt 225 : npm install firebase success
+
+D:\Vonnue\decision-companion\backend>npm install firebase
+added 85 packages, and audited 218 packages in 47s
+42 packages are looking for funding
+  run `npm fund` for details
+1 high severity vulnerability
+To address all issues, run:
+  npm audit fix
+Run `npm audit` for details.
+D:\Vonnue\decision-companion\backend>
+
+Next Instructions :
+
+Create backend/services , paste atleast // backend/services/memoryService.js , so add this file in services
+
+memorystyles.css append at the end of the file styles.css
+
+The other 3 are instructions to replcae and copy paste and add , DO YOU THINK Gemini-3.1-pro in fast conversation can accomplish it
+
+---
+
+# Prompt 226 : All changes applied — memory list working
+
+Memory list: 
+1. {entries: Array(2)}
+   entries: Array(2)
+      0: {id: 'VnDBnGrpAAS1TxkWWouG', criteria: Array(2), source: 'smart', title: 'Sony SA-D40M2 Home vs Zebronics Thump 800', products: Array(2), …}
+      1: {id: 'shTg1wgq3A8nboo23mSI', criteriaCount: 4, source: 'smart', winner: 'Apple Watch Series 10', timestamp: '2026-02-28T21:50:26.230Z', …}
+
+DELETE BUTTON WORKS
+
+!!Have not coded to include manual comparisions?
+
+ALSO THE PREVIOUS ISSUE PERSISTS
+Tab switching bug — I can see it clearly in image 2. Both tabs are rendering simultaneously, stacked on top of each other. The `hidden` class isn't being toggled correctly. We fix this as part of Phase 2.5 since we're touching `index.html` anyway.
+
+end of manual compariosn and smart comaparison are two different button by the way
+one is start new comparison ; other is start new decison
+
+!! Manaul decision are not rendered
+
+---
+
+# Prompt 227 : Tab switching bug still there + manual not saved
+
+*[Uploaded 2 screenshots showing Memory tab and Smart Compare tab both rendering Manual Compare content simultaneously below them]*
+
+No .. It must be 1 true at a time think about it
+
+---
+
+# Prompt 228 : quick_3.md applied — console verification
+
+#I COPY PSTED quick3.md, gemini said this
+I have completed all the requested quick fixes!
+
+#click Manual-Compare
+VM223:1 manual hidden: false
+VM223:2 smart hidden: true
+VM223:3 memory hidden: true
+
+#click Smart-Compare
+VM229:1 manual hidden: true
+VM229:2 smart hidden: false
+VM229:3 memory hidden: true
+
+#click Memory
+VM236:1 manual hidden: true
+VM236:2 smart hidden: true
+VM236:3 memory hidden: false
+
+[Memory] Auto-saved comparison
+Manual is saved..
+
+---
+
+# Prompt 229 : Tab switching images — still persisting
+
+*[Uploaded screenshot of Memory tab active but Manual Compare content still visible below]*
+
+SEE THE RED PORTION IS REMOVED CODE
+
+Its done by Gemini 3.1 Pro (low) in fast mode , Antigravity
+
+---
+
+# Prompt 230 : quick_4.md applied — tab fix confirmed
+
+*[Uploaded screenshot showing 3 tabs working correctly, Memory tab with cards]*
+
+I think we fixed that but look:
+
+[terminal output showing JSON-LD found for boAt and Sony speakers]
+
+Why are their less fields?
+
+---
+
+# Prompt 231 : Scraper showing less fields — why
+
+so they are two different things?
+
+---
+
+# Prompt 232 : So they are two different things?
+
+[terminal showing GIZmore trolley speaker vs Zebronics — 11 criteria matched]
+
+You were right , 11 criterias for 2 trolley speaker iguess
+
+---
+
+# Prompt 233 : Trolley speaker comparison — 11 criteria confirmed
+
+No.. 
+Vercel ; github will be last after final Ui
+
+2 Different Tasks
+
+Task 1 :
+I have a small quick animation improvement.. 
+
+See in case of smart debug , instead of characters; why not the products image itself ; i mean we already have the image right
+
+Create implementation plan 1 :
+* Include your understanding
+* How hard it is
+* What files do you need
+* DFD
+* use of this feature
+
+Task 2 : 
+I often would want to see the details that i used to compare (both manual and smart) after final results and ranking is published
+
+Create Implementation plan2 :
+* What do you understand, its uses
+* Any files?
+* DFSs
+* How will it look (ASCII graph would be good)
+* How hard it is
+* When you see in memory.. can you see details as well ; including image ; selected , deseleccted and common-ruled out criteria
+
+---
+
+# Prompt 234 : Phase 2.6 — two tasks, create implementation plans
+
+*[Uploaded 2 screenshots showing tab UI and feedback on plans]*
+
+How I interpret :
+[detailed feedback on Phase 2.5 plan — objectives, auto-title, data shape, animation button, DFD approval, UI integration, memory card heading, view result behaviour]
+
+HERE IS WHAT YOU NEED TO DO THOU.. I HAVE ONLY USED Firebase once.. so give step by step instructions , okay.. We first have to do something in their site right? so?
+
+---
+
+# Prompt 235 : Feedback on plans + tab bug images
+
+*[Uploaded BUILD_PROCESS.md accidentally]*
+
+What was the issue there? why di dyou chnge it
+
+This is the latest prompt entered in the research log 
+
+If  you understand tell me the table structure and final few prompts
+
+---
+
+# Prompt 236 : Wrong file uploaded — BUILD_PROCESS
+
+*[Uploaded research-log.md — correct file]*
+
+No im sos sorry ughhhhhhhhh I meant to upload research.log
+
+---
+
+# Prompt 237 : research-log.md — table structure + final prompts
+
+This chat has been comapcted, and is out of free messages ; let's move to a new chat
+
+#Detailed Context Switch
+
+* Include File Structure
+* Include what we try to do
+* What is accomplished
+* Implementation plan of Phase 2.6 (Major corrections required)
+* Data flow (key details , so that claude can understand)
+* What each files do
+
+#Also clear doubts
+I opened VS Code,  accidentaly toggled secondary side bar ; saw a chatbot support.. what is that
+As seen in image; it has many models ; I think it supports agentic Ai..
+
+What is agentic Ai.. they have provisions to set up AI agents and so on??
+
+---
+
+---
+
+# Prompt 239 : Context switch — CONTEXT_SWITCH pasted to new chat
+
+*[Uploaded CONTEXT_SWITCH (1).md — 246 lines, full project context including file structure, completed phases, Phase 2.6 plan, API endpoints, workflow note]*
+
+---
+
+# Prompt 240 : Challenging avatar assumption — sprites not placeholders
+
+You havent seen my files but how are you sure of this?
+
+Locate the letter-circle avatar rendering
+Do you mean like a default what-app profile pic if that's what you mean then you are way of
+
+---
+
+# Prompt 241 : Uploaded visualizer + openVisualizer + sprite task description
+
+*[Uploaded visualizer_prototype.html, BUILD_PROCESS.md, file tree showing sprites/char1-5/fireballs/wise folders]*
+
+*[Pasted openVisualizer() function from script.js]*
+
+We are using sprites ; avatars who make sense ,have emotions ; they are not placeholders ; they make generic sense
+
+#YOUR TASK (I wrote it as apython code)
+if ( user chooses smart compare ):
+* say n product ;
+* say n-k images available ; k=0 to n
+* for n-k images replace instead of avatars :
+          1) i.e instead of generic-emotion-full dynamic avatar , specific-emotion-nullset-static-image-of actual product
+* for k unavailable images ; 1) replace it with generic-emotion-full dynamic avatar
+
+else (i.e manual) :
+* ignore , just existing must work
+
+WHAT HAS BEEN PROVIDED :
+
+a. buildprocess.md to have a better understanding of what's going on
+b. visualizer_prototype.html -> to see what's happening
+c. Tree is pasted for more clarity
+d. As you asked openvisulazer() function
+
+Create a new implemetation plan
+
+---
+
+# Prompt 242 : Antigravity applied — 2 of 3 images rendering, 1 missing
+
+*[Uploaded screenshot showing visualizer with 2 product images rendered and 1 still showing anime sprite — HP Victus showing sprite, Acer Nitro Lite and Acer Nitro V showing product photos]*
+
+*[Pasted console logs showing script build, scrape debug, memory save, openVisualizer viz test with 12 results, visualizer using injected data for Array(2)]*
+
+I compared 3 fridges earlier ; 3 images was rendered
+He for 3 laps 1 is missing..
+
+---
+
+# Prompt 243 : Console debug — images map empty {}
+
+console.log(JSON.stringify(window.__VISUALIZER_DATA__?.images))
+VM374:1 {}
+
+console.log(JSON.stringify(smartState.searchResults?.[0]))
+VM378:1 {"title":"iFFALCON 101.6 cm (40 inch) 2K FHD Google TV, 40S55, Black","price":"₹15,650","priceNum":15650,"source":"Reliance Digital","link":"https://www.reliancedigital.in/product/iffalcon-1016-cm-40-inch-2k-fhd-google-tv-40s55-black-mfp3pp-9426424","thumbnail":"https://cdn.jiostore.online/v2/jmd-asp/jdprod/wrkr/products/pictures/item/free/original/iffalcon/494623995/0/VmICC6vqZm-MrddZfrMvH-iFFALCON-40-2K-40S55-494623995-i-1-1200Wx1200H.jpeg","rating":null,"reviews":null}
+
+ANY HELP?
+
+---
+
+# Prompt 244 : p.name → p.title fix applied — still undefined
+
+console.log(JSON.stringify(window.__VISUALIZER_DATA__?.images))
+VM760:1 undefined
+undefined
+console.log(JSON.stringify(smartState.searchResults?.[0]))
+VM764:1 {"title":"OPPO K14x 5G 128 GB, 4 GB RAM, Prism Violet, Mobile Phone",...,"thumbnail":"https://cdn.jiostore.online/..."}
+
+no i dont think that 1 line fixed it
+
+---
+
+# Prompt 245 : openVisualizer function pasted for inspection
+
+*[Pasted full openVisualizer() function showing Object.assign with vizImages already applied — code looked correct]*
+
+---
+
+# Prompt 246 : DEMO.images confirmed present — candidate key mismatch
+
+*[Pasted full DEMO.images JSON — 12 entries with full product titles as keys]*
+
+*[Console logs showing visualizer using injected data for Array(2)]*
+
+*[Ran candidate match check — showed false for both candidates with shortened names vs full title keys]*
+
+candidates: ["Samsung Crystal 4K Ultra HD Smart LED TV 43","Samsung HD Smart LED TV 32"]
+0 '| match:' false '| candidate:' 'Samsung Crystal 4K Ultra HD Smart LED TV 43'
+1 '| match:' false '| candidate:' 'Samsung HD Smart LED TV 32'
+
+---
+
+# Prompt 247 : iframe null error — visualizer closed before console run
+
+*[Multiple attempts at iframe.contentWindow giving null — overlay was closed each time before running command]*
+
+What should i do next
+
+---
+
+# Prompt 248 : What should i do next
+
+What should i do next
+
+---
+
+# Prompt 249 : Fuzzy score debug output pasted
+
+*[Ran fuzzy word overlap debug — showed matching scores for each image key against candidate 0]*
+
+*[Results showed scores of 3-5 for correct matches, confirming fuzzy approach would work]*
+
+---
+
+# Prompt 250 : Images are rendered — moving to Task 2
+
+Images are rendered ; good job
+
+Moving to implementation task 2
+
+Just repond ; what is it that you want to accomplish + Tell me files or functions required
+
+---
+
+# Prompt 251 : Task 2 scope request — what do you need
+
+Just repond ; what is it that you want to accomplish + Tell me files or functions required
+
+---
+
+# Prompt 252 : Uploaded server.js scrape route + memoryService + index.html + script.js
+
+*[Uploaded full script.js (~1400 lines), full index.html]*
+
+*[Pasted /api/scrape route from server.js]*
+
+*[Pasted saveComparison() from memoryService.js]*
+
+*[Uploaded 2 screenshots — one showing results page with Complete Ranking and Detailed Breakdown, one showing ranking list with #1 Aaron ∧ 37.50 pts format]*
+
+Next to .div-ranking-list there is a spot.. maybe we can add a eye nutton or a dropdown arrow or something; As seen in Screenshot 2026-03-01 121037.png ; next to text
+
+Here is what you asked :
+/api/scrape
+
+frontend/script.js  .. i have uploaded full file
+frontend/index.html .. uploaded entire file
+
+!!Critical Do you have everything you need 
+Create a minimial token implementaion plane revised.md ; just include how it looks as an ascii drawing ; key points
+
+---
+
+# Prompt 253 : create 3fixes.md
+
+create 3fixes.md (just that file)
+
+---
+
+# Prompt 254 : 3fixes done — buttons clickable but no details rendered
+
+*[Uploaded screenshot showing Complete Ranking with clickable ▲ Hide buttons, det-panel.open div showing 684×16 height but no visible content, DOM showing det-panel inside det-panel nesting]*
+
+*[Pasted console logs confirming smart compare ran successfully, memory saved]*
+
+Perfect! I've successfully implemented Task 2...
+
+No details are rendered
+1772349442580_image.png ; button are clickable ; I guess divs are appearing
+
+---
+
+# Prompt 255 : renderDetailsRow console output — HTML correct but invisible
+
+*[Pasted full renderDetailsRow console output — showed correct HTML with table, criteria rows, ruled-out section, all data present]*
+
+---
+
+# Prompt 256 : Manual compare table missing, 5 identical buttons issue
+
+*[Uploaded screenshot showing 3 identical tables (one per ranking row) for Manual Compare — all showing same Cijo/Aaron/Bijo data]*
+
+I observe that the comparision table is not shown in Manual comaprison but its shown in smart compare
+
+Also if all 5 products show same table; why having 5 buttons
+Remove that ; instead add "Product comparison table"next to comparision table
+
+Also I am intrigued ? Why did we limit smart comaparision to just 5  comparision; 
+
+if options>5 will the table not render?
+
+---
+
+# Prompt 257 : state.products shape confirmed — manual working
+
+*[Pasted console output — state.products = {"Aaron":{"Marks":45,"Performance":8},"Bijo":{"Marks":47,"Performance":9},"Cijo":{"Marks":50,"Performance":8}}]*
+
+*[Screenshot showing manual compare with per-row tables — all 3 rows showing same full comparison table]*
+
+What is happening ?
+
+---
+
+# Prompt 258 : why did comparision table in result not showing table with ideal
+
+why did comparision table in result not showing table with ideal.. Di you mix up something
+
+---
+
+# Prompt 259 : View Products button request — Set Your Priorities step
+
+*[Uploaded screenshot of Set Your Priorities step with green box highlighting empty top-right corner]*
+
+Same thing in manual comparision ; when we enter ideal ; "View Product"
+
+---
+
+# Prompt 260 : Same View Products for manual compare ideals step
+
+Same thing in manual comaprision ; when we enter ideal ; "View Product"
+
+---
+
+# Prompt 261 : What follows this — git push + next ideas
+
+What follows this..? what about a git-push? or any new ideas to be implemented..
+
+---
+
+# Prompt 262 : Git commit pushed — what was 2.5 and 2.6
+
+Phase 2 complete: Reliance Digital scraper, Smart Compare UI, visualizer integration
+27 files changed, 24937 insertions(+), 736 deletions(-)
+  master  
+06f8ee0   |  
+
+What was 2.5 and 2.6
+
+---
+
+# Prompt 263 : Newphase.md request — detailed build journal for 2.5 and 2.6
+
+Newphase.md  ; give very detailed build process of these 2.5 and 2.6.. Include good details, my mistakes, what could have been done, our minor frontend html chnages; image integration in visualization , table view while entering ideal , also in result table
+
+what we could have done else
+
+Also I used a new tool , Copilot agent in VS Code , it's haiku model especially , very good
+
+#Critical Another claude chat will return complete buildprocess, you just create new changes.md with best context you have
+
+---
+
+# Prompt 264 : Give me a prompt for the new chat
+
+Give me a prompt for the new chat, i uploaded build process and newphase.md
+
+---
+
+# Prompt 265 : I need a better context switch prompt
+
+I need a better context switch prompt
+
+* Include basic details
+* Next tasks
+* File structure
+* Workflow , Antigravity , copilot available
+* If you want we can add CONTEXT_SWITCH (1).md
+10.69 KB •246 lines•Formatting may be inconsistent from source as well
+
+---
+
+# Prompt 266 : Understand BUILD_PROCESS and research-log — quick summary
+
+*[Uploaded research-log.md and BUILD_PROCESS.md]*
+
+Understand these 2 FILES
+
+#Tell me the table structure in research-log ; 
+# What's you role in build process
+
+A quick response is fine (quick / brief summmary )
+
+---
+
+---
+
+# Prompt 268 : Context switch — CONTEXT_SWITCH_2 pasted to new chat
+
+*[Uploaded CONTEXT_SWITCH_2.md — full project context including file structure, completed phases, known issues, API endpoints, workflow note]*
+
+Good with context ..
+
+Shall we start .. 
+
+which files do you want
+frontend/script.js and backend/server.js
+
+do you want full files
+
+---
+
+# Prompt 269 : Scale bug report — Aaron/Cijo false tie
+
+🏆 Your Decision Results
+🤝 Tie Detected
+The following options are equally optimal:
+* Aaron
+* Cijo
+💡 Why This Result?
+🔄 📊 Data-Driven
+Aaron and Cijo were chosen because they both did exceptionally well in the Tech area, meeting the ideal with a score of 10. They also performed very well in Communication, with Aaron scoring 9 and Cijo scoring 10, both of which meet the ideal. Since Tech is considered more important, accounting for 63% of the decision, their perfect scores in this area gave them a strong advantage. Bijo, on the other hand, didn't quite meet the ideal in Tech, scoring 9, which put him at a disadvantage. Overall, Aaron and Cijo's strong performance in both areas, especially in the more important Tech area, made them the top choices.
+⚡ Groq
+📊 Complete Ranking▲ Hide
+[table pasted]
+🔍 Detailed Breakdown
+Aaron (Total: 0.00 points)
+Tech: NumericPenalty: 0.00 × Weight: 62.5% = 0.00 pts
+Communication: ScalePenalty: 0.00 × Weight: 37.5% = 0.00 pts
+Bijo (Total: 62.50 points)
+[...]
+Cijo (Total: 0.00 points)
+[...]
+🎬 Animate Result
+
+!!CRTICAL WRONG ERROR .. it must be Cijo right, why is it tied?
+
+---
+
+# Prompt 270 : decisionLogic.js uploaded for inspection
+
+*[Uploaded full decisionLogic.js — 685 lines including SCALE_MAP, calculateDecision, preprocessInputs, extractScoreFromText, generateExplanation, build4Styles, all helper functions]*
+
+dont changes any variables that recieve and variable sthat send data.. if we do will will mess up consequent files
+
+create a final_fix_1.d
+
+---
+
+# Prompt 271 : create final_fix_1.md — no variable renames
+
+*[Same message as above — CJ typed "final_fix_1.d" meaning final_fix_1.md]*
+
+dont changes any variables that recieve and variable sthat send data.. if we do will will mess up consequent files
+
+create a final_fix_1.d
+
+---
+
+# Prompt 272 : Direction concern — lower is better edge case
+
+I think I made a mistake, see the directions are critical.. they can alter penalty
+
+If lower is better
+10 - ideal ; 10 , 9 will be treated as equal, so 9 may not have penalty
+
+---
+
+# Prompt 273 : 3-way tie confirmed — both passed as lower
+
+🤝 Tie Detected
+The following options are equally optimal:
+* Aaron
+* Bijo
+* Cijo
+[explanation pasted]
+
+Previous i/p but i guess i passed both as lower
+
+---
+
+# Prompt 274 : /api/calculate route pasted for inspection
+
+*[Pasted /api/calculate route from server.js — showing it receives directions but no feature_types]*
+
+---
+
+# Prompt 275 : server.js uploaded
+
+*[Uploaded full server.js]*
+
+I'll apply this fix to the `preprocessInputs` function in decisionLogic.js. Let me first read the file to locate the exact code block.
+[...Antigravity confirmation message pasted by mistake...]
+
+I'll apply this fix to the `preprocessInputs` function : are you sure server.js has this
+
+---
+
+# Prompt 276 : Antigravity confirmation — fix applied message
+
+*[CJ pasted Antigravity's success message confirming fix was applied to decisionLogic.js:320]*
+
+---
+
+# Prompt 277 : Gemini 429 error — Groq explanation working, Cijo wins
+
+[Terminal output pasted]
+Server running at http://localhost:3000
+Gemini explanation failed: Gemini API error: 429
+[Memory] Firebase connected ✅
+[Memory] Saved to Firebase: x7mVci9BkWFLvA9fM5B6
+[Memory] Saved: "Aaron vs Bijo vs Cijo (04:46 pm)"
+
+[Result showing Cijo winning with correct penalties — scale fix confirmed working]
+
+Here I think Gemini API error occurs trying to genrate explanations in the 💡 Why This Result?
+As seen in 1772363969165_image.png; grok does it
+
+---
+
+# Prompt 278 : Gemini dashboard screenshot — not quota exhausted
+
+*[Uploaded Google AI Studio dashboard screenshot showing 429 TooManyRequests errors but recent 100% success rate spike on Mar 1]*
+
+See inorder to run out of quota one first has to use them ; Its my dashboard..
+
+My assumption is that we are sending too much request at once..
+
+YOUR TASK TO DIAGNOISE THIS ISSUE
+
+#I have no problem in making gemini second option ; but i have never seen gemini explanantions
+
+---
+
+# Prompt 279 : Root cause identified — too many rapid Gemini calls
+
+Score reviews  5  Gemini × 5 in ~1 sec  THIS IS THE PROBLEM I THINK
+
+* Either istead of 5 calls make it 1 batch 
+* Or remove gemini entirely.. Because the free tier wont support it (or comment it entirely and mention wont work for free tier)
+
+Explanation  1  Gemini
+But gemini never explanins why is that?
+
+---
+
+# Prompt 280 : final_fix_2.md — Groq-only review scoring Option B
+
+*[Claude presented Option A (batch) and Option B (Groq-only scoring, Gemini freed for explanation)]*
+
+`final_fix_2.md` for Option B
+
+---
+
+# Prompt 281 : Uploaded working Gemini server from another project
+
+*[Uploaded visual_python_gemini_working_server.js — a different Node.js project where Gemini works correctly, using `const fetch = require('node-fetch')` at top level and model `gemini-2.5-flash`]*
+
+Gemini endpoint is unreachable from your environment. 
+
+This also runs in node; a different projects gemini explanation generator.. 
+in terminal I say node server.js ; it works
+
+We are giving up by ignorance not by factual truth
+
+---
+
+# Prompt 282 : final_fix_3.md — node-fetch + model string
+
+*[Claude identified that decisionLogic.js had no fetch import — used native fetch instead of node-fetch]*
+
+The fix for `final_fix_3.md`:
+1. Add `const fetch = require('node-fetch');` at the top of `decisionLogic.js`
+2. Change model to `gemini-2.5-flash`
+
+but remember this project we run in terminal by typing npm run dev ; i believe its irrelevant as both are same node... just mentioning 
+
+but yes you may do it
+
+---
+
+# Prompt 283 : fetch is not a function error
+
+[nodemon] starting `node server.js`
+[dotenv@17.3.1] injecting env (6) from .env
+Server running at http://localhost:3000
+Gemini explanation failed: fetch is not a function
+Groq explanation failed: fetch is not a function
+[Memory] Firebase connected ✅
+
+---
+
+# Prompt 284 : Still fetch is not a function after fix
+
+[Same error output repeated after attempted fix with `_nf.default || _nf` pattern]
+
+Are we hallucinating what is sooooooooo difficult
+
+---
+
+# Prompt 285 : ARE WE HALLUCINATING — frustration
+
+Are we hallucinating what is sooooooooo difficult
+
+---
+
+# Prompt 286 : global.fetch fix — Gemini short response 94 chars
+
+*[global.fetch = fetch added to server.js — Groq also stopped failing]*
+
+Gemini explanation short but accepted: 94 chars
+
+💡 Why This Result?
+🔄 📖 Storytelling
+Cijo is the standout choice. It nails your target on Performance (9). Bijo couldn't quite keep up...
+🤖 Gemini
+
+See
+
+---
+
+# Prompt 287 : Gemini working — why is it short
+
+Claude won because its strong performance in the most important area, Tech, outweighed Aaron's advantage...
+🤖 Gemini
+
+See I told you.. Its gemini's explanation..
+
+Why is it short ; cant it be big?
+
+---
+
+# Prompt 288 : buildPrompt function pasted for inspection
+
+*[Pasted buildPrompt() function — Claude identified the example sentence at the end was being copied literally by Gemini]*
+
+---
+
+# Prompt 289 : generateExplanation pasted — RETURN NEW FUNCTION
+
+*[Pasted full generateExplanation() function]*
+
+*[Claude proposed: remove example from prompt, switch to gemini-2.5-flash, add thinkingConfig: {thinkingBudget: 0} inside generationConfig, maxOutputTokens: 1024]*
+
+RETRURN NEW FUNCTION WITH THE APPLIED CHANGES
+
+---
+
+# Prompt 290 : Gemini explanation working — full paragraph rendered
+
+Claude won because its strong performance in the most important area, Tech, outweighed Aaron's advantage in Communication. Tech was considered much more important for this decision, making up 63% of the overall criteria. Claude hit the ideal mark for Tech with a 13, while Aaron was a bit lower at 12. Even though Aaron was better at Communication, that area was less important at 38%, and Claude's score of 10 was still decent. Overall, Claude's excellent score in the highly valued Tech category gave it the edge.
+🤖 Gemini
+
+See
+
+---
+
+# Prompt 291 : Input form restrictions — 3 requirements
+
+Input form restrictions
+
+1. Options >2 (positive whole numbers)
+2. Importance : from 1-10 (decimal upto single digit is fine ; No -ve indexing)
+3. Disable "Better When" for Scale , i.e There is Higher , its greyed out you cant change ; If its logical apply that for review as well
+
+---
+
+# Prompt 292 : script.js uploaded
+
+*[Uploaded full script.js — ~1756 lines]*
+
+---
+
+# Prompt 293 : index.html uploaded — weight decimal bypass issue
+
+*[Uploaded full index.html]*
+
+I can still type weight = 0.6 but alarm is shown I can get away with it
+still i can type 3.5555 ; that passes
+
+Is there no Ui mechanism to stricty enter  integers from 2
+
+---
+
+# Prompt 294 : Weight one decimal fix worked — options still decimal
+
+*[Math.round(weight*10) check applied and working]*
+
+2. Weight `3.5555` passes — `step="0.1"` doesn't block typed values, only spinner increments. Fix in `goToProducts` in `script.js`:
+
+This worked
+
+no of options can be decimal values
+
+---
+
+# Prompt 295 : parseInt strips decimal before check — raw string fix
+
+*[Claude identified parseInt("3.6") = 3 passes Number.isInteger — fix: check raw string for "." before parseInt]*
+
+---
+
+# Prompt 296 : Form validation good — what's next
+
+Okay Form validation seems good ; what's next
+
+---
+
+# Prompt 297 : UI discussion — Figma vs Lovable vs Claude
+
+why do you say its you ; what about figma , lovable ..
+
+---
+
+# Prompt 298 : 3 screenshots uploaded — setup, smart, memory tabs
+
+*[Uploaded 3 screenshots: Step 1 setup screen, Smart Compare tab, Memory tab]*
+
+*[Observations: 800px card on wide screen wastes ~35% each side, tabs disconnected from card, full-width stacked inputs, memory tab showing loading + empty + cards simultaneously]*
+
+Image 1: 1772381955747_image.png is what opens when we click localhost-link, As you can see there is 3 tabs ; Manual is selected now
+Image 2: 1772382041689_image.png ; I switched tabs to Smart Compare
+Image 3: 1772382084431_image.png ; that's the Memory Tab
+
+This is the front-Three pages
+Now How do you improve ui
+
+What are the improvements that you can see : 
+Lot of space is vacant.. Any ideas?
+
+Also how are we going to work...
+Antigravity takes a lot of time
+I am using Haiku of copiolot .. It would be better to use it wisely ; it can exhaust
+
+---
+
+# Prompt 299 : styles.css uploaded for full rewrite
+
+*[Uploaded styles.css — 1274 lines, original file with duplicated sections and 800px container]*
+
+Here's the file
+
+---
+
+# Prompt 300 : About to exhaust — create Implementation Plan + Context Switch
+
+Ok you are about to be exhausted
+
+So Create 2 Things
+
+1. Implementation Plan
+2. Detailed Context Switch : Containing info about about our plan , git , file structure ..
+
+---
+
+---
+
+# Prompt 302 : Context switch — CONTEXT_SWITCH_3 + files uploaded — 4 questions
+
+*[Uploaded script.js, styles.css, IMPLEMENTATION_PLAN.md, CONTEXT_SWITCH_3.md, index.html — full project context for Session 4]*
+
+1. Do you understand what is happening?
+2. Do you need other files
+3. What I should do to make the ui better; whats my role
+4. If its simple to implement dark theme do it
+
+---
+
+# Prompt 303 : Dark mode issues — unselected cards, winner badge, loading overlay
+
+*[Uploaded 3 screenshots: Image 1 — fetched products dark mode with blue highlight on selected card; Image 2 — search results showing white unselected cards in dark mode; Image 3 — winner card with broken ? icon and Data-Driven badge; Image 4 — loading overlay with white card]*
+
+There is some issue here
+
+1. Unselected Product is not good
+2. Also winner div and datastyle button must suite dark theme button
+3. Same with loading page
+
+---
+
+# Prompt 304 : Selected cards look fine — confirm dark mode fix
+
+*[Uploaded screenshot showing selected cards (purple/accent tint) looking correct, unselected cards (white) still broken]*
+
+Are you aware that when you select them its fine
+
+If yes i will do dark mode fix ?
+
+---
+
+# Prompt 305 : Stepper suggestion — 1→2→3→4 navbar with code snippet
+
+*[Uploaded screenshot of Manual Compare step 1 setup screen in light mode]*
+
+*[Pasted showStep() code snippet with stepper dots logic — dotsMap, stepOrder, classList active]*
+
+I have a suggestion 
+
+function showStep(stepId) {
+    // 1. Switch visibility
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(stepId);
+    if (target) target.classList.add('active');
+    // 2. Update the visual Stepper dots
+    const dotsMap = {
+        'step-setup': 'dot-step-setup',
+        'step-features': 'dot-step-features',
+        'step-products': 'dot-step-products',
+        'step-ideals': 'dot-step-ideals'
+    };
+    
+    // Reset dots
+    document.querySelectorAll('.step-dot').forEach(dot => dot.classList.remove('active'));
+    
+    // Light up dots up to the current step
+    const stepOrder = ['step-setup', 'step-features', 'step-products', 'step-ideals'];
+    const currentIdx = stepOrder.indexOf(stepId);
+    if (currentIdx !== -1) {
+        for(let i=0; i<=currentIdx; i++) {
+            const dotId = dotsMap[stepOrder[i]];
+            document.getElementById(dotId).classList.add('active');
+        }
+    }
+    // 3. Scroll to top for better UX
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+They are trying some 1 -> 2 ->  3-> 4
+
+I am suggesting  A side bar or a nav bar with 1 -> 2 -> 3-> 4
+
+share your thoughts first no need of any code or anything
+
+When clicked back , no.s should retrace back
+
+What happens memoery is clcicked?
+
+---
+
+# Prompt 306 : Good navbar 1→2→3→4 — next improvement
+
+So a good Navbar
+1->2-3->4
+
+next improvement right
+
+---
+
+# Prompt 307 : itch.io reference — full spanning bar + sticky stepper + round corners
+
+*[Uploaded screenshot of itch.io homepage showing full-width sticky navbar with red underline active tab]*
+
+See itchi website ; THERE IS A BAR containing them.. That dosent exist in our website
+I would like a bar 
+
+Also pulling out stepper is fine.. could you make it not dissapear as we scroll down
+
+Or round all corners equally and accept the card is just a card below the tabs
+
+---
+
+# Prompt 308 : Tab rectangle not smooth — manual compare sharp corner
+
+*[Uploaded 2 screenshots: Image 1 — Manual Compare tab zoomed showing flat rectangle tab; Image 2 — DevTools showing div#tab-manual.container.tab-content 1100×623]*
+
+The tab is a rectangel ; it must be smooth
+
+What i mean is i dont want to see body there 
+tell me what you understood
+
+---
+
+# Prompt 309 : Full spanning Nav-bar clarification
+
+No i have no problem against body ; its just that I want a full spaning Nav - bar
+
+---
+
+# Prompt 310 : Setup input offset — Number of Options misaligned
+
+*[Uploaded screenshot showing Step 1 setup with Number of Options input at ~50% width and Number of Criteria full width — mismatched, red annotation on left side]*
+
+1772390730978_image.png ; some offset in Number of Options :
+
+---
+
+# Prompt 311 : Memory tab state bug — all 3 states visible
+
+*[Uploaded screenshot showing Memory tab with all 3 states simultaneously: "Loading your comparisons…" text, "No comparisons yet" empty state, AND actual memory cards all visible at once]*
+
+State management issue of Decision Memory
+
+---
+
+# Prompt 312 : Issue still there after Haiku fix
+
+*[Pasted Haiku's confirmation message claiming it fixed deleteMemory() and clearAllMemory() with setMemoryState]*
+
+I'll fix the Memory tab state bug by ensuring the loading spinner is hidden when showing the empty state.
+✅ Memory tab state bug fixed in script.js:1766-1770:
+Changes applied:
+1. deleteMemory() — Now hides `memory-loading` spinner when showing empty state after deleting last card
+2. clearAllMemory() — Now hides `memory-loading` spinner when showing empty state after clearing all memories
+Both functions now properly manage the UI state transitions, preventing the loading spinner from lingering when no cards remain.
+
+But no change
+
+---
+
+# Prompt 313 : Give Haiku unrestricted access to diagnose
+
+Heyy
+
+"Give claude haiku ; which is in my IDE a prompt describing the issue ; it has full access to files maybe it can see more clearly the issue"
+
+---
+
+# Prompt 314 : Haiku finds .hidden class missing — is Haiku right
+
+*[Pasted Haiku's diagnosis: .hidden class has no CSS definition — classList.add('hidden') was silently doing nothing]*
+
+I'll investigate the Memory tab visibility bug by examining the HTML structure, CSS, and JavaScript interactions.
+Found the root cause! The `.hidden` class has no CSS definition.
+In script.js:1642-1650, setMemoryState() uses classList.add('hidden') and classList.remove('hidden') to hide/show the memory divs, but there's no `.hidden { display: none; }` rule in the stylesheet. The empty state does have `class="hidden"` in HTML, so it starts hidden, but then the CSS rule doesn't exist to actually apply the hiding.
+I need to add a global `.hidden` CSS rule. Let me add it early in the stylesheet:
+
+Is haiku right
+
+---
+
+# Prompt 315 : After smart comparison manual tab blank
+
+*[Uploaded screenshot showing Manual Compare tab completely blank — only header "Decision Companion System" visible, no step content, after having done a Smart Compare]*
+
+After a smart comparison we cant do a manual comparision
+
+---
+
+# Prompt 316 : 21st comparison — who decided 20
+
+What will happen at 21st comparison
+
+who decided 20?
+
+---
+
+# Prompt 317 : UI is ready — what's next
+
+Ui is ready ; not flashy but not dirty .. what's next
+
+---
+
+# Prompt 318 : Direction lock Smart Compare tab
+
+Direction lock — Smart Compare tab — `handleTypeChange(idx)` in `script.js` still doesn't disable direction for scale/review type. This is a logic bug, not UI
+
+do this; do you need any file ; if yes just say the problem to haiku
+
+---
+
+# Prompt 319 : Direction lock fixed — vercel?
+
+✅ Scale direction select now disabled in script.js:1254-1277:
+Updated handleTypeChange() logic:
+* 'scale': Direction select is disabled, value locked to `'higher'`, with opacity: 0.5 and cursor: not-allowed styling
+* 'numeric': Direction select is re-enabled, opacity and cursor styles removed
+* 'review': Unchanged (parent remains hidden)
+For scale criteria, the direction is now fixed to "higher" (since higher scale values are always better) and the select visually appears disabled to prevent user interaction.
+
+vercel ?
+
+---
+
+# Prompt 320 : server.js uploaded — Railway deployment discussion
+
+*[Uploaded backend/server.js — 664 lines]*
+
+My priority order given your deadline:
+1. Selection icon fix — 5 minutes, visual impact
+2. Remove Croma from UI — 5 minutes, stops confusion
+server.js is uploaded
+
+Good quries will help haiku to solve it ; it has full access
+
+---
+
+# Prompt 321 : Git commit and push to GitHub
+
+*[Haiku ran git add . and git commit — session summary commit]*
+
+---
+
+# Prompt 322 : GitHub repo creation — configuration settings
+
+*[Uploaded screenshot of GitHub new repository page — Owner: Christo208, name: Vonnue Decision Maker → Vonnue-Decision-Maker, visibility Public, README off, .gitignore No .gitignore, No license]*
+
+now how do you push to github ; but this mail is full 15Gb+ so no more incoming mails come to that mail
+
+---
+
+# Prompt 323 : .env already gitignored — confirmed safe
+
+*[Haiku confirmed backend/.env not tracked by git — already in .gitignore]*
+
+```ignore
+node_modules/ 
+backend/.env 
+"*.docx" 
+"backend/text.txt" 
+backend/.env 
+*.xlsx 
+*.docx 
+docs/*AutoRecovered* 
+~$* 
+
+```
+
+I have a gitignore in root directory
+
+---
+
+# Prompt 324 : git push rejected — fetch first error
+
+PS D:\Vonnue\decision-companion> git remote add origin https://github.com/Christo208/Vonnue-Decision-Maker.git
+>> git branch -M main
+>> git push -u origin main
+To https://github.com/Christo208/Vonnue-Decision-Maker.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/Christo208/Vonnue-Decision-Maker.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+PS D:\Vonnue\decision-companion>
+
+---
+
+# Prompt 325 : Force push success — 363 objects 42.5MB
+
+PS D:\Vonnue\decision-companion> git push -u origin main --force
+Enumerating objects: 363, done.
+Counting objects: 100% (363/363), done.
+Delta compression using up to 12 threads
+Compressing objects: 100% (360/360), done.
+Writing objects: 100% (363/363), 42.50 MiB | 4.88 MiB/s, done.
+Total 363 (delta 56), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (56/56), done.
+To https://github.com/Christo208/Vonnue-Decision-Maker.git
+ + cac43ed...2680810 main -> main (forced update)
+branch 'main' set up to track 'origin/main'.
+PS D:\Vonnue\decision-companion>
+
+---
+
+# Prompt 326 : Railway install & authorize screenshot
+
+*[Uploaded GitHub Apps Railway install page — Only select repositories → Christo208/Vonnue-Decision-Maker selected — permissions: Read metadata, Read+write actions/code/deployments, Read email]*
+
+Is this what you are looking
+
+---
+
+# Prompt 327 : Build failed — Railpack cannot determine app
+
+*[Uploaded Railway dashboard showing "Build failed 3 minutes ago" notification — also showing project cheerful-possibility, service Vonnue-Decision-Maker]*
+
+Build failed!
+This is awkward. One of your builds failed to leave the wheelhouse. Details:
+Project: cheerful-possibility
+Service: Vonnue-Decision-Maker
+Environment: production
+View build logs
+
+---
+
+# Prompt 328 : Build log — Railpack sees only folders no package.json
+
+*[Pasted full build log: Railpack 0.17.2, ⚠ Script start.sh not found, ✖ Railpack could not determine how to build, app contents shows only backend/ docs/ frontend/ tests/ .gitignore at root]*
+
+---
+
+# Prompt 329 : Railway Settings — searching Root Directory
+
+*[Uploaded Railway Settings panel screenshot — search box typed "Root Directory" showing "No settings matching your search"]*
+
+---
+
+# Prompt 330 : Source section — Add Root Directory found
+
+*[Pasted full Settings page text: Source Repo Christo208/Vonnue-Decision-Maker, "Add Root Directory" link visible, Branch: main, Networking, Scale, Build, Deploy sections]*
+
+Source
+Source Repo
+Christo208/Vonnue-Decision-Maker
+Disconnect
+Add Root Directory (used for build and deploy steps. Docs↗)
+[...]
+
+---
+
+# Prompt 331 : App online — where is the link
+
+Ok its online ; where do  i find the link
+
+---
+
+# Prompt 332 : Cannot GET / error
+
+vonnue-decision-maker-production.up.railway.app
+
+
+```
+Cannot GET 
+```
+
+---
+
+# Prompt 333 : Debug logs — frontend path /frontend wrong
+
+*[Pasted Railway deploy logs showing: Frontend path: /frontend, __dirname: /app, Error: ENOENT: no such file or directory, stat '/frontend/index.html']*
+
+---
+
+# Prompt 334 : Root package.json fix — Not Found still
+
+*[Haiku created root package.json with "start": "node backend/server.js" — but deploy logs still show node server.js not node backend/server.js, __dirname still /app]*
+
+Perfect! ✅ Done. I've created a root-level package.json with the correct Railway configuration:
+[...]
+
+vonnue-decision-maker-production.up.railway.app/:1  GET https://vonnue-decision-maker-production.up.railway.app/ 404 (Not Found)
+
+```
+Not Found
+```
+
+Deploy Logs :
+Starting Container
+Frontend path: /frontend
+__dirname: /app
+[...]
+Error: ENOENT: no such file or directory, stat '/frontend/index.html'
+
+I WANT YOU TO REALLY THINK ABOUT THIS...NEXT TIME
+
+List out all possible reasons for this
+
+Rank them
+
+For the first ranked cause
+
+Suggest 3 solution ranked based on correctness
+
+Watch out yourself
+
+---
+
+# Prompt 335 : Really think — list all possible reasons ranked
+
+*[Same as above — CJ's instruction to reason carefully before responding]*
+
+---
+
+# Prompt 336 : Cannot find module dotenv — new crash
+
+*[Pasted Railway deploy log after clearing Root Directory: Error: Cannot find module 'dotenv', __dirname: /app/backend, node backend/server.js now running correctly but node_modules not installed]*
+
+---
+
+# Prompt 337 : Firebase working — is it fallback
+
+but how is firebase then working.. ohhhhhhhhhhhhh maybe its fall-back.. hold on i will confirm like brower - fallback 
+
+Server running at http://localhost:3000
+Starting Container
+Groq score extraction failed: No Groq key
+Groq score extraction failed: No Groq key
+Groq score extraction failed: No Groq key
+Gemini explanation failed: No Gemini key
+Groq explanation failed: No Groq key
+[Memory] Firebase not configured — using in-memory fallback
+[Memory] Firebase not configured — using in-memory fallback
+[Memory] Saved to in-memory fallback: local_1772397685402
+[Memory] Saved: "Aaron vs Bijo vs Cijo (08:41 pm)"
+[Memory] Firebase not configured — using in-memory fallback
+[Memory] Firebase not configured — using in-memory fallback
+[Memory] Firebase not configured — using in-memory fallback
+
+What 
+[Memory] Firebase not configured — using in-memory fallback
+[Memory] Firebase not configured — using in-memory fallback
+[Memory] Firebase not configured — using in-memory fallback
+
+What is happening
+
+---
+
+# Prompt 338 : 5 variables set — still Firebase fallback in logs
+
+*[Uploaded 2 screenshots: Image 1 — Railway logs showing all "No Groq key" and Firebase fallback errors; Image 2 — Railway Variables panel showing 5 variables: FIREBASE_API_KEY, FIREBASE_APP_ID, FIREBASE_PROJECT_ID, GEMINI_API_KEY, GROQ_API_KEY all set]*
+
+no they are recent..
+
+---
+
+# Prompt 339 : Redeployment failed — secret FIREBASE_API_KEY not found
+
+*[Pasted Railway build log: ERROR: failed to build: failed to solve: secret FIREBASE_API_KEY: not found — Railpack 0.17.2 detected Node, npm install step failing]*
+
+Redeployement failed
+
+[full build log pasted]
+
+---
+
+# Prompt 340 : Raw editor variables pasted — still failing
+
+*[Pasted raw .env variable values from Railway Raw Editor — FIREBASE_API_KEY, FIREBASE_APP_ID, FIREBASE_PROJECT_ID, GEMINI_API_KEY, GROQ_API_KEY all with actual values shown truncated]*
+
+FIREBASE_API_KEY ="AIzaSy..."
+ FIREBASE_APP_ID="1:688..." 
+FIREBASE_PROJECT_ID="vonnue-decision-maker" 
+GEMINI_API_KEY="AIzaSyD-1R2_v8afnqIQ..." 
+GROQ_API_KEY ="gsk_4ucymGvy6elkTfft1ZklWGdyb3F... "
+
+I also clicked update variables
+
+[build log still showing: ERROR: failed to build: failed to solve: secret FIREBASE_API_KEY: not found]
+
+2 changes saved then i redeployed
+
+---
+
+# Prompt 341 : railway.toml nixpacks — are you confident
+
+*[Claude suggested railway.toml with builder = "nixpacks"]*
+
+are yoy confident
+
+---
+
+# Prompt 342 : Deployed then crashed — File is not defined Node 18
+
+*[Pasted Railway deploy logs after nixpacks switch: Frontend path: /app/frontend, __dirname: /app/backend — path correct! But ReferenceError: File is not defined at undici/lib/web/webidl/index.js:534, Node.js v18.20.5]*
+
+✅ Done! Created and pushed railway.toml:
+[...]
+
+Deployed Then crashed ohhh 
+Will this ever be solved
+
+---
+
+# Prompt 343 : Should I paste to Haiku directly
+
+*[Claude diagnosed Node 18 vs node-fetch v3 incompatibility]*
+
+Should i paste this to haiku directly and ask it to analyse
+
+---
+
+# Prompt 344 : NIXPACKS_NODE_VERSION = 20 fix
+
+*[Multiple attempts to set Node 20 via railway.toml [build.environment], package.json engines field — all ignored, still Node 18]*
+
+*[Claude identified NIXPACKS_NODE_VERSION as the correct Railway variable name]*
+
+---
+
+# Prompt 345 : Everything working — Firebase + Gemini + scraping live
+
+*[Pasted Railway logs showing: Frontend path: /app/frontend, __dirname: /app/backend, Server running at http://localhost:3000, Firebase connected ✅, Loaded 5 entries from Firebase, Saved to Firebase, Gemini explanation working — "Aaron won because his strong character..."]*
+
+Seems much improvement 
+
+Whoooaa
+💡 Why This Result?
+🔄 📊 Data-Driven
+Aaron won because his strong character was more important in the decision. Character was given a much higher importance of 57% compared to Marks at 43%. While Bijo had perfect marks, Aaron's perfect character score outweighed Bijo's slightly lower character and higher marks. The model valued Aaron's excellent character more, leading him to be the chosen one.
+🤖 Gemini
+
+Look who explained
+
+401.. is the last bug
+
+---
+
+# Prompt 346 : Groq 401 space in key — everything seems in order
+
+*[Pasted full working Railway logs: Samsung TV scraping 3 products, all specs extracted 39-40 fields, Firebase saving "Samsung HD Smart vs Samsung Crystal 4K", no errors]*
+
+Everything SEEMS in order
+
+---
+
+# Prompt 347 : Do real developers do this — Instagram Snapchat
+
+Can i ask you something; does real developers do this; Like big companies like instagram snapchat
+
+---
+
+# Prompt 348 : Could we have done this in 5 mins
+
+Could we have done this in 5mis?
+
+who decided 20?
+
+---
+
+# Prompt 349 : Why didnt you tell me about docker
+
+Why didnt you tell me about docker?
+
+---
+
+# Prompt 353 : What should I have asked to get the docker point
+
+What should have I asked you inorder to get that docker point from you... 
+
+Its like you repond to my promts...
+I dont know what docker is .. but maybe  !!critical  dont say its on mee , think and answer
+
+---
+
+*End of Session 4 — continue in prompt_s5.md after next chat*
+
+---
+
+# Copilot Haiku Prompt 378 : Scale Ideal Mapping Bug Fix
+
+# final_fix_1.md — Scale Ideal Mapping Bug
+
+## File: `backend/decisionLogic.js`
+
+## Root Cause
+
+In `preprocessInputs`, the ideal value for `scale`-type criteria is mapped via:
+```js
+scored_ideals[fi] = SCALE_MAP[ideals[fi]] ?? 5;
+```
+
+The frontend sends the scale ideal as a **number** (e.g. `10`) or **numeric string** (e.g. `"10"`), not the label string `"Excellent"`. So `SCALE_MAP[10]` returns `undefined`, and the fallback `5` is used instead.
+
+In `calculateDecision`, ideal `5` normalizes to `((5 - 9) / (10 - 9)) * 100 = -400`, clamped to `0`.
+
+With ideal at `0`, ALL products with direction "higher is better" get penalty `max(0, 0 - normalizedValue) = 0` — so the entire criterion becomes meaningless. This caused Aaron and Cijo to tie falsely, when Cijo should have won outright.
+
+---
+
+## Fix
+
+**Function:** `preprocessInputs`
+**Location:** The `scale` block, around line 320
+
+### FIND (exact string):
+```js
+      // Map ideal scale string too
+      scored_ideals[fi] = SCALE_MAP[ideals[fi]] ?? 5;
+```
+
+### REPLACE WITH:
+```js
+      // Map ideal scale string too
+      // Guard: frontend may send a number or numeric string instead of a label string
+      const rawIdeal = ideals[fi];
+      scored_ideals[fi] = (typeof rawIdeal === 'string' && SCALE_MAP[rawIdeal] !== undefined)
+        ? SCALE_MAP[rawIdeal]
+        : (parseFloat(rawIdeal) || 5);
+```
+
+---
+
+## What this does
+
+| Frontend sends | Before fix | After fix |
+|---|---|---|
+| `"Excellent"` (string label) | `10` ✅ | `10` ✅ |
+| `10` (number) | `undefined → 5` ❌ | `10` ✅ |
+| `"10"` (numeric string) | `undefined → 5` ❌ | `10` ✅ |
+| Unknown string | `undefined → 5` | `NaN → 5` (safe fallback) |
+
+No input or output variable names are changed. Only the internal mapping logic is made robust.
+
+---
+
+## Verify
+
+After applying, test the Aaron/Bijo/Cijo case:
+- Tech: Aaron=10, Bijo=9, Cijo=10 (weight 5, higher better)
+- Communication: Aaron=Very Good, Bijo=Excellent, Cijo=Excellent (weight 3, higher better)
+- Ideal: Tech=10, Communication=Excellent
+
+**Expected result:** Cijo wins. Aaron should have a Communication penalty (~37.5 pts). Bijo should have a Tech penalty (~62.5 pts).
+
+---
+
+---
+
+# Copilot Haiku Prompt 379 : Scale Ideal Mapping + Direction Override Fix (server.js)
+
+# final_fix_1.md — Scale Criteria: Ideal Mapping + Direction Override
+
+## Root Cause (Two Bugs)
+
+### Bug 1 — `decisionLogic.js` (wrong ideal)
+`SCALE_MAP[ideals[fi]]` returns `undefined` when the frontend sends a number (e.g. `10`) instead of a label string (e.g. `"Excellent"`). Fallback kicks in: ideal becomes `5` instead of `10`. Normalization then clamps ideal to `0`, wiping all penalties for that criterion.
+
+### Bug 2 — `server.js` (wrong direction)
+For `scale` criteria, "higher is better" is always correct by definition (Excellent > Very Good). But `directions` from the frontend is passed through unchanged. If the user accidentally picked "lower is better", every product that scores *below* the ideal gets zero penalty — which is the opposite of correct.
+
+Both bugs together caused the false 3-way tie.
+
+---
+
+## Fix 1 of 2 — `backend/decisionLogic.js`
+
+### FIND:
+```js
+      // Map ideal scale string too
+      scored_ideals[fi] = SCALE_MAP[ideals[fi]] ?? 5;
+```
+
+### REPLACE WITH:
+```js
+      // Map ideal scale string too
+      const rawIdeal = ideals[fi];
+      scored_ideals[fi] = (typeof rawIdeal === 'string' && SCALE_MAP[rawIdeal] !== undefined)
+        ? SCALE_MAP[rawIdeal]
+        : (parseFloat(rawIdeal) || 5);
+```
+
+---
+
+## Fix 2 of 2 — `backend/server.js`
+
+**Route:** `POST /api/preprocess`
+
+### FIND:
+```js
+    const { scored_data, scored_ideals, metadata, ai_failures } = await preprocessInputs(
+      products_data, feature_types, features, ideals
+    );
+
+    res.json({
+```
+
+### REPLACE WITH:
+```js
+    const { scored_data, scored_ideals, metadata, ai_failures } = await preprocessInputs(
+      products_data, feature_types, features, ideals
+    );
+
+    const corrected_directions = directions.map((dir, i) =>
+      feature_types[i] === 'scale' ? 'True' : dir
+    );
+
+    res.json({
+```
+
+### AND FIND:
+```js
+      directions,
+```
+
+### REPLACE WITH:
+```js
+      directions: corrected_directions,
+```
+
+---
+
+---
+
+# Copilot Haiku Prompt 380 : Groq-only Review Scoring — Gemini Freed for Explanation
+
+# final_fix_2.md — Groq-only Review Scoring, Gemini freed for Explanation
+
+## Why
+
+Review scoring (`extractScoreFromText`) fires N Gemini calls in rapid succession — one per product per review feature. This blows Gemini's free tier RPM limit, so by the time `/api/calculate` calls `generateExplanation`, Gemini is already throttled. Result: Gemini explanation has never been seen.
+
+Fix: Remove Gemini from `extractScoreFromText` entirely. Groq handles review scoring (already works fine). Gemini gets a clean window for explanation — the one place its output quality actually matters.
+
+---
+
+## File: `backend/decisionLogic.js`
+
+Remove the Gemini try block from `extractScoreFromText` entirely. Replace the full function body so only the Groq path remains. The Gemini `generateExplanation` function is untouched — all function signatures, exports, and variable names unchanged.
+
+## Verify
+
+1. Run a Smart Compare with a review-type feature (e.g. 4–5 products)
+2. Console should show NO "Gemini score extraction failed" lines
+3. After calculate, console should show NO "Gemini explanation failed"
+4. The ⚡ badge on the explanation card should read **Gemini** for the first time
+
+---
+
+---
+
+# Copilot Haiku Prompt 381 : Gemini node-fetch Import + Model String Fix (decisionLogic.js)
+
+# final_fix_3.md — Fix Gemini in decisionLogic.js (missing node-fetch + wrong model)
+
+## Root Cause
+
+`server.js` line 3: `const fetch = require('node-fetch');` ← works, Groq succeeds here
+`decisionLogic.js`: no fetch import at all ← uses Node native global fetch
+
+Node's native fetch and node-fetch behave differently at the network level. Gemini calls in decisionLogic.js silently fail because they use native fetch. Additionally: model string is `gemini-2.0-flash` — the working reference project uses `gemini-2.5-flash`.
+
+---
+
+## Fix 1 of 2 — Add node-fetch import
+
+### FIND:
+```js
+require("dotenv").config();
+```
+
+### REPLACE WITH:
+```js
+require("dotenv").config();
+const fetch = require("node-fetch");
+```
+
+---
+
+## Fix 2 of 2 — Update model string (both Gemini calls)
+
+### FIND (both occurrences):
+```js
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
+```
+
+### REPLACE WITH:
+```js
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
+```
+
+---
+
+---
+
+# Copilot Haiku Prompt 382 : Gemini Length Threshold — Lower Word Count + Raise maxOutputTokens
+
+**That's huge progress.** Gemini is now reachable and responding. It's just failing the length check in `isDetailedExplanation`:
+
+```js
+return words >= 45 && sentences >= 3;
+```
+
+Gemini 2.5-flash is giving a concise response that's under 45 words. Both fixes together is safest. In `decisionLogic.js`:
+
+### FIND:
+```js
+    if (!isDetailedExplanation(text)) throw new Error("Gemini response too short");
+```
+### REPLACE WITH:
+```js
+    if (!isDetailedExplanation(text)) console.log("Gemini explanation short but accepted:", text.length, "chars");
+    if (text.length < 30) throw new Error("Gemini response too short");
+```
+
+### FIND (in generateExplanation Gemini call):
+```js
+        generationConfig: { maxOutputTokens: 260, temperature: 0.6 },
+```
+### REPLACE WITH:
+```js
+        generationConfig: { maxOutputTokens: 400, temperature: 0.6 },
+```
+
+---
+
+---
+
+# Copilot Haiku Prompt 383 : Remove Example Sentence from Gemini buildPrompt
+
+Let me look at the actual prompt being sent to Gemini.Found it. The last line of the prompt:
+
+```
+Example: "${winner} had the best Price at X and its Quality was Y."
+```
+
+Gemini is pattern-matching the **example** — it sees one sentence in quotes and produces exactly that. Groq ignores it, Gemini follows it literally.
+
+### File: `backend/decisionLogic.js`
+
+### FIND:
+```js
+Write 4-5 plain sentences explaining WHY ${winner} won using the actual values above.
+Do NOT mention "penalty", "normalized", "weighted points", or any math jargon.
+Speak simply — like explaining to a friend. Example: "${winner} had the best Price at X and its Quality was Y."`;
+```
+
+### REPLACE WITH:
+```js
+Write exactly 4-5 sentences explaining WHY ${winner} won using the actual values above.
+Do NOT mention "penalty", "normalized", "weighted points", or any math jargon.
+Do NOT write just one sentence. Do NOT use an example format. Write a full paragraph.
+Speak simply — like explaining to a friend.`;
+```
+
+---
+
+---
+
+# Copilot Haiku Prompt 384 : Gemini Length Threshold Fix — Retry
+
+**That's huge progress.** Gemini is now reachable and responding. It's just failing the length check in `isDetailedExplanation`:
+
+```js
+return words >= 45 && sentences >= 3;
+```
+
+Gemini 2.5-flash is giving a concise response that's under 45 words. Both fixes together is safest. In `decisionLogic.js`:
+
+### FIND:
+```js
+    if (!isDetailedExplanation(text)) throw new Error("Gemini response too short");
+```
+### REPLACE WITH:
+```js
+    if (!isDetailedExplanation(text)) console.log("Gemini explanation short but accepted:", text.length, "chars");
+    if (text.length < 30) throw new Error("Gemini response too short");
+```
+
+### FIND (in generateExplanation Gemini call):
+```js
+        generationConfig: { maxOutputTokens: 260, temperature: 0.6 },
+```
+### REPLACE WITH:
+```js
+        generationConfig: { maxOutputTokens: 400, temperature: 0.6 },
+```
+
+---
+
+---
+
+# Copilot Haiku Prompt 385 : Remove Example Sentence from buildPrompt — Retry
+
+Let me look at the actual prompt being sent to Gemini.Found it. The last line of the prompt:
+
+```
+Example: "${winner} had the best Price at X and its Quality was Y."
+```
+
+Gemini is pattern-matching the **example** — it sees one sentence in quotes and produces exactly that. Groq ignores it, Gemini follows it literally.
+
+### File: `backend/decisionLogic.js`
+
+### FIND:
+```js
+Write 4-5 plain sentences explaining WHY ${winner} won using the actual values above.
+Do NOT mention "penalty", "normalized", "weighted points", or any math jargon.
+Speak simply — like explaining to a friend. Example: "${winner} had the best Price at X and its Quality was Y."`;
+```
+
+### REPLACE WITH:
+```js
+Write exactly 4-5 sentences explaining WHY ${winner} won using the actual values above.
+Do NOT mention "penalty", "normalized", "weighted points", or any math jargon.
+Do NOT write just one sentence. Do NOT use an example format. Write a full paragraph.
+Speak simply — like explaining to a friend.`;
+```
+
+---
+
+---
+
+# Copilot Haiku Prompt 386 : showStep() Replaced with Stepper-Aware Version
+
+File 3: script.js (The minimal modification)
+Since your file is huge, DO NOT delete everything. Open your script and replace only this specific part.
+
+Find this function in your original script and replace it with this:
+
+```js
+function showStep(stepId) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    const target = document.getElementById(stepId);
+    if (target) target.classList.add('active');
+
+    const dotsMap = {
+        'step-setup': 'dot-step-setup',
+        'step-features': 'dot-step-features',
+        'step-products': 'dot-step-products',
+        'step-ideals': 'dot-step-ideals'
+    };
+    
+    document.querySelectorAll('.step-dot').forEach(dot => dot.classList.remove('active'));
+    
+    const stepOrder = ['step-setup', 'step-features', 'step-products', 'step-ideals'];
+    const currentIdx = stepOrder.indexOf(stepId);
+    if (currentIdx !== -1) {
+        for(let i=0; i<=currentIdx; i++) {
+            const dotId = dotsMap[stepOrder[i]];
+            document.getElementById(dotId).classList.add('active');
+        }
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+```
+
+---
+
+---
+
+# Copilot Haiku Prompt 387 : Dark Mode Pass 1 — CSS Variables + Hardcoded Background Overrides
+
+# Dark Mode Fix — Decision Companion
+*Apply via Copilot Agent (Haiku) in VS Code*
+*Generated: 01 Mar 2026*
+
+Dark mode implementation across styles.css and index.html. Three changes:
+
+1. **styles.css** — Add `[data-theme="dark"]` CSS variable overrides + hardcoded white/light background overrides for all major components (inputs, tabs, cards, badges, alerts)
+
+2. **styles.css** — Add `.dark-toggle-btn` style (right-aligned in tab bar)
+
+3. **index.html** — Add `<button class="dark-toggle-btn">` inside `#tab-bar` and a `<script>` block before `</body>` that reads `localStorage`, detects OS preference, and wires `toggleDark()` to switch `data-theme` on `<html>`
+
+Preference persists via `localStorage('dc-theme')`. Auto-detects OS dark mode on first visit.
+
+---
+
+---
+
+# Copilot Haiku Prompt 388 : Dark Mode Pass 2 — Cards, Loading Overlay, Badges
+
+# Dark Mode Fix — Pass 2 (Cards, Loading, Badges)
+*Apply via Copilot Agent (Haiku) in VS Code*
+*Generated: 01 Mar 2026*
+
+Single change to styles.css: append additional `[data-theme="dark"]` overrides after the existing dark toggle button hover rule.
+
+Covers: search result cards, selected card state, amazon preview cards, ideal rows, criteria-row-removed, thumbnails, loading-card overlay, spinner, suggestion chips, approval section rows, ranking list items, all source/type badges (gemini/groq/numeric/scale/review/fail), tag-inferred, source-tag, warning/tie alert.
+
+---
+
+---
+
+# Copilot Haiku Prompt 389 : Step Progress Navbar — Manual Compare (HTML + CSS + JS)
+
+# Step Progress Navbar — Manual Compare
+*Apply via Copilot Agent (Haiku) in VS Code*
+*Generated: 01 Mar 2026*
+
+Three changes:
+
+1. **index.html** — Insert `<nav id="manual-stepper">` with 4 stepper steps (Setup / Criteria / Options / Ideals) before `#step-setup`
+
+2. **script.js** — Replace `showStep()` with stepper-aware version that marks dots completed/active, hides stepper on approval/results screens, and adds `stepperNav()` for back-navigation via completed dots
+
+3. **styles.css** — Add `.stepper-track`, `.stepper-step`, `.stepper-circle`, `.stepper-label`, `.stepper-line` styles with active/completed states and dark mode variants
+
+---
+
+---
+
+# Copilot Haiku Prompt 390 : Smart Compare Stepper Nav (5-Step)
+
+# Smart Compare Stepper Nav
+*Apply via Copilot Agent (Haiku) in VS Code*
+*Generated: 01 Mar 2026*
+
+Two changes:
+
+1. **index.html** — Insert `<nav id="smart-stepper">` with 5 steps (Search / Results / Products / Priorities / Winner) before `#step-smart-search`
+
+2. **script.js** — Replace `showAmazonStep()` with stepper-aware version using `sdot-*` dot IDs. Smart dots are NOT clickable (API calls between steps make free jumping unsafe). Reuses all stepper CSS from Manual stepper — no new CSS needed.
+
+---
+
+---
+
+# Copilot Haiku Prompt 391 : Mobile Navbar Tab Collapse — Responsive CSS Fix
+
+CHANGE 5 — styles.css — Mobile: collapse navbar tabs
+File: frontend/styles.css
+
+FIND:
+```
+  #tab-bar { padding: 12px 12px 0; }
+  .tab-btn { padding: 8px 14px; font-size: 0.82rem; }
+  .container { padding: 24px 20px; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+  #tab-smart .container,
+  #tab-memory .container { border-radius: var(--radius-lg); }
+```
+
+REPLACE WITH:
+```
+  #tab-bar { padding: 0 12px; gap: 0; }
+  .tab-btn { padding: 8px 12px; font-size: 0.8rem; }
+  .container { padding: 24px 20px; border-radius: var(--radius-lg); }
+```
+
+---
+
+---
+
+# Copilot Haiku Prompt 392 : Setup Step Input Width Fix — Grid Layout Replace
+
+# Setup Step Input Width Fix
+*Apply via Copilot Agent (Haiku) in VS Code*
+*Generated: 01 Mar 2026*
+
+Two changes:
+
+1. **styles.css** — Replace `#step-setup .form-group:nth-child(-n+2)` inline-block hack with `#step-setup .inputs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }`. Also update mobile block to use `grid-template-columns: 1fr` instead of `display: block; width: 100%`
+
+2. **index.html** — Wrap the two setup inputs (`num-products` and `num-features`) in `<div class="inputs-row">` so the grid applies
+
+---
+
+---
+
+# Copilot Haiku Prompt 393 : Memory Tab State Bug Fix — deleteMemory + clearAllMemory (partial fix)
+
+# Memory Tab State Bug Fix
+*Apply via Copilot Agent (Haiku) in VS Code*
+*Generated: 01 Mar 2026*
+
+Two one-line additions to script.js:
+
+1. **deleteMemory** — Before showing `memory-empty`, first `memory-loading.classList.add('hidden')`
+2. **clearAllMemory** — Same — add the hidden class before removing from empty
+
+`loadMemory()` was already correct. Bug was only in delete and clear paths.
+
+---
+
+---
+
+# Copilot Haiku Prompt 394 : Memory Tab setMemoryState() — Atomic State Manager (first send)
+
+# Memory Tab State — Robust Fix
+*Apply via Copilot Agent (Haiku) in VS Code*
+*Generated: 01 Mar 2026*
+
+Three changes to script.js:
+
+1. **Add `setMemoryState(state)`** — new helper that hides all three divs first, then shows exactly one. States: 'loading' | 'empty' | 'list' | 'error'
+
+2. **Replace `loadMemory()`** — use `setMemoryState('loading')` on entry, `setMemoryState('empty'/'list'/'error')` in each branch
+
+3. **Update `deleteMemory()` and `clearAllMemory()`** — replace manual classList manipulation with `setMemoryState('empty')`
+
+---
+
+---
+
+# Copilot Haiku Prompt 395 : Memory Tab setMemoryState() — Resend After Partial Apply
+
+# Memory Tab State — Robust Fix (resend)
+*Apply via Copilot Agent (Haiku) in VS Code*
+*Generated: 01 Mar 2026*
+
+Identical to the previous prompt (Prompt 15 / Sl. 393). Resent because Haiku only partially applied the previous fix — Change 1 was applied but Changes 2 and 3 were missed.
+
+Same three changes: add `setMemoryState()` helper, refactor `loadMemory()`, update `deleteMemory()` and `clearAllMemory()`.
+
+---
+
+---
+
+# Copilot Haiku Prompt 396 : Memory Tab All 3 States Visible Simultaneously — Root Cause Investigation
+
+I have a bug in my frontend Memory tab. All three states — 
+"Loading your comparisons…", "No comparisons yet", and the 
+actual memory cards — are visible simultaneously when the 
+Memory tab is opened.
+
+Please investigate the entire codebase to find the root cause. 
+Don't limit yourself to any specific files — check everything 
+that could be relevant including HTML, CSS, and JS files.
+
+The symptom: all three divs (#memory-loading, #memory-empty, 
+#memory-list) appear on screen at the same time instead of 
+exactly one being visible.
+
+Diagnose the exact cause, then apply the fix directly.
+
+---
+
+---
+
+# Copilot Haiku Prompt 397 : Memory Entry Limit Raised to 50 + Confirm Dialog Before Overwrite
+
+In backend/memoryService.js and backend/server.js, find 
+where the memory list is limited to 20 entries. Change 
+the limit to 50.
+
+Also find out: when the 21st entry is saved, does the 
+oldest get silently deleted from Firestore, or is it just 
+hidden by the query limit?
+
+Then in frontend/script.js, find the saveToMemory() function.
+Before saving, add a check:
+
+1. Call GET /api/memory/list to get the current count
+2. If count is already at the limit (50), show a confirm() 
+   dialog saying:
+   "You have 50 saved comparisons — your oldest one will 
+   be removed to save this new one. Continue?"
+3. If user clicks Cancel, do not save
+4. If user clicks OK, proceed with saving as normal
+
+This warning should only trigger when AT the limit, not before.
+
+---
+
+---
+
+# Copilot Haiku Prompt 398 : Scale Direction Lock in handleTypeChange — Disable Direction Select
+
+In frontend/script.js, find the handleTypeChange function 
+(around line 1204). It currently handles 'review' by hiding 
+the direction select, but for 'scale' it shows the direction 
+select and leaves it editable.
+
+Fix: when typeSelect.value === 'scale', disable the direction 
+select, set its value to 'higher', and add 
+style="opacity:0.5;cursor:not-allowed;" to it.
+
+When typeSelect.value === 'numeric', re-enable the direction 
+select and remove those styles.
+
+The review case (hide entirely) stays unchanged.
+
+---
+
+---
+
+# Copilot Haiku Prompt 399 : Search Result Card Selection Redesign — Left Border + Checkmark Badge
+
+In frontend/styles.css, find .search-result-card and its 
+selected state. Remove the green circle checkbox aesthetic. 
+
+Instead, when a card is selected (.search-result-card:has 
+(.search-card-check:checked)):
+- Add a bold left border: border-left: 4px solid var(--accent)
+- Subtle accent background: background: var(--accent-light)
+- Add a small ✓ checkmark badge in the top-right corner using 
+  ::after pseudo-element: content: '✓', positioned absolute, 
+  accent background, white text, small rounded pill
+
+Also hide the default checkbox input visually (opacity:0, 
+width:0) — the whole card click acts as the selector already 
+via the label.
+
+# Copilot Haiku Prompt 400 : Full-Stack Architecture using Mermaind
+
+ou have full access to my entire project codebase.
+
+Your task is to generate a detailed system architecture diagram in Mermaid syntax.
+
+Project stack:
+
+Backend: Node.js with Express
+
+Frontend: HTML, CSS, Vanilla JavaScript
+
+Database: Firebase
+
+Hosting: Railway (auto-deployed from GitHub)
+
+External APIs: Groq API, Gemini API, Firebase SDK
+
+No Docker
+
+No Redis
+
+Instructions:
+
+Scan the entire project.
+
+Identify:
+
+Folder structure
+
+Express routes
+
+Middleware
+
+Firebase configuration and usage
+
+External API integrations (Groq, Gemini)
+
+Environment variables
+
+Static file serving
+
+Authentication (if present)
+
+Any background tasks or async processing
+
+Determine the real communication flow between:
+
+Client (Browser)
+
+Express server
+
+Firebase
+
+External AI APIs
+
+Railway deployment environment
+
+GitHub CI/CD (if configured)
+
+Generate a clean, well-structured Mermaid diagram using:
+
+flowchart TB
+
+Subgraphs for:
+
+Client Layer
+
+Server Layer
+
+Data Layer
+
+External Services
+
+DevOps / Deployment
+
+Clearly label:
+
+HTTP requests
+
+API calls
+
+Database reads/writes
+
+Authentication flow (if exists)
+
+The output must be ONLY Mermaid code.
+
+Do not explain anything.
+
+Make the diagram detailed but readable.
+
+Return only valid Mermaid syntax.
+
+
+# All Google Searches
+
+## For Finding API keys
+- https://grok.com/ 
+- https://console.x.ai/team/2eeba0c7-2195-425e-baa2-f33e6ca0b648
+- https://aistudio.google.com/u/1/api-keys?projectFilter=gen-lang-client-0898448311
+- https://api.groq.com/
+- https://console.groq.com/login
+- https://console.groq.com/keys
+- https://aistudio.google.com/u/1/usage?project=gen-lang-client-0898448311&timeRange=last-1-day
+- https://serpapi.com/
+- https://serpapi.com/users/welcome
+- https://github.com/serpapi/serpapi-javascript
+- https://console.firebase.google.com/u/0/mfa
+
+## For Finding Characters in Animations 
+- https://linxuelian.itch.io/charres-ega-ffp-ouji
+- https://powerinhand.itch.io/visual-novel-sprite
+- https://nsaid.itch.io/
+- https://sutemo.itch.io/male-character-sprite-for-visual-novel
+- https://st-chem-atelier.itch.io/free-vnsprite-uriah
+- https://itch.io/search?type=games&q=Sutemo+character+sprite
+- https://whimsyamber.itch.io/free-soft-romance-vn-character-shy-male-lead
+- https://itch.io/search?type=games&q=Wise+old+man+visual+novel
+- https://linxuelian.itch.io/charres-xxwx-mob-oldman
+- https://jgesq.itch.io/magick-shadows-ii-third-reich
+- https://itch.io/search?type=games&q=Scientistcharacter+sprite+emotions
+- https://rleon.itch.io/professor-quest
+- https://opengameart.org/
+- https://itch.io/games/genre-visual-novel
+- https://pompack.itch.io/male-doctor-scientist-sprite
+- https://opengameart.org/art-search?keys=old+man+sprite
+- https://eufasy.itch.io/finch-tired-teacher
+- https://itch.io/search?type=games&q=elder+sprite+VN+free
+- https://linxuelian.itch.io/charres-ega-ffp-ouji
+- https://www.photopea.com/
+
+## For Finding Fireballs in Animations 
+
+- https://search.yahoo.com/search;_ylt=Awr.0gwin5xpXL8CFTz7w8QF?p=fireball+2d&type=E210US714G0&fr=mcafee&fr2=p%3As%2Cv%3Av%2Cm%3Apivot&stype=web
+- https://images.search.yahoo.com/search/images;_ylt=Awr93q7rnpxpnEwxU2CJzbkF;_ylu=c2xrA3RleHQEaXQDQWxzb1RyeV9OBHNlYwNyZWwEcG9zAzY-?p=Fireball+Clip+Art&fr2=p%3As%2Cv%3Ai%2Cm%3Ars-top%2Cct%3Abing%2Crgn%3Atop%2Cpos%3A6&fr=mcafee&type=E210US714G0
+- https://images.search.yahoo.com/search/images;_ylt=Awr93q7unpxpMlYxwVmJzbkF;_ylu=c2VjA3NlYXJjaARzbGsDYnV0dG9u;_ylc=X1MDOTYwNjI4NTcEX3IDMgRmcgNtY2FmZWUEZnIyA3A6cyx2OmksbTpzYi10b3AEZ3ByaWQDb0ZSSUx6Ql9UUS5nc1JvM3o2Ry5TQQRuX3JzbHQDMARuX3N1Z2cDMARvcmlnaW4DaW1hZ2VzLnNlYXJjaC55YWhvby5jb20EcG9zAzAEcHFzdHIDBHBxc3RybAMwBHFzdHJsAzQxBHF1ZXJ5A0ZpcmViYWxsJTIwQ2xpcCUyMEFydCUyMHdpdGglMjB2YXJpb3VzJTIwYnJpZ2h0bmVzcwR0X3N0bXADMTc3MTg3MjAxNg--?p=Fireball+Clip+Art+with+various+brightness&fr=mcafee&fr2=p%3As%2Cv%3Ai%2Cm%3Asb-top&ei=UTF-8&x=wrt&type=E210US714G0
+- https://assetstore.unity.com/packages/2d/textures-materials/projectile-fireball-spell-ball-particle-explosion-effects-magic--135100
+- https://pirzthia.itch.io/fireball
+- https://xyezawr.itch.io/pixel-art-fireball-effect
+- https://xyezawr.itch.io/pixel-art-fireball-effect
+- https://willisshek.itch.io/2d-fireball-sprites-3-variations
+- https://itch.io/search?type=games&q=fire+orb+animation+frames+free
+- https://opengameart.org/
+- https://opengameart.org/art-search?keys=fireball&page=2
+- https://opengameart.org/content/sparkling-fireball-effect
+- https://itch.io/search?q=magic%20projectile%20sprite%20free%20transparent%20PNG
+- https://itch.io/search?q=%22fireball+sprite+sheet+free
+- https://weisinx7.itch.io/fireballs-sprites
+- https://weisinx7.itch.io/fireballs-sprites?download#google_vignette
+- https://itch.io/search?type=games&q=fire+orb+animation+frames+free
+- https://nyknck.itch.io/fireball-animation
+
+## For Referencing Web-scraping
+
+- https://www.pricerunner.com/pl/337-3400048695/Shoes/New-Balance-740-Black-Black-Cement-Compare-Prices
+- https://www.pricerunner.com/
+- https://camelcamelcamel.com/search?sq=iphone15
+- https://search.yahoo.com/search?fr=mcafee&type=E210US714G0&p=CamelCamelCamel
+- https://search.yahoo.com/search?fr=mcafee&type=E210US714G0&p=PriceRunner
+- https://www.amazon.com/dp/B0CMSYHFCF?tag=camelweb-20&linkCode=ogi&th=1&psc=1&language=en_US
+- https://www.gsmarena.com/res.php3?sSearch=Washing+Machine
+- https://search.yahoo.com/search?fr=mcafee&type=E210US714G0&p=cROMA
+- https://www.gsmarena.com/res.php3?sSearch=Washing+Machine
+- https://www.gsmarena.com/samsung_galaxy_s24_fe-review-2755.php
+- https://search.yahoo.com/search?fr=mcafee&type=E210US714G0&p=rELIANCE+dIGITIAL
+- https://www.reliancedigital.in/
+- https://www.reliancedigital.in/
+- https://www.reliancedigital.in/sections/washing-machines
+- https://www.reliancedigital.in/collection/best-selling-washing-machines-20-05/?is_available=true&page_no=1&page_size=12&page_type=number
+- https://www.reliancedigital.in/product/ifb-9-kg-fully-automatic-front-load-washing-machine-executive-oxn-9014k-m70ep1-8884534?internal_source=search_collection
+- https://www.reliancedigital.in/product/samsung-galaxy-book5-np750xhd-kd1in-standard-laptop-ai-enabled-intel-core-ultra-5-225u16-gb512-gbintel-graphicswindows-11-homems-office-home-and-student-2024-galaxy-ecosystem-appsfull-hd-3962-cm-156-inch-gray-mfyefq-9488622
+- https://www.reliancedigital.in/product/samsung-7-kg-top-load-fully-automatic-washing-machine-wa70bg4441bytl-l95uso?internal_source=search_collection
+- https://www.reliancedigital.in/product/ifb-9-kg-fully-automatic-front-load-washing-machine-executive-oxn-9014k-m70ep1-8884534?internal_source=search_collection
+- https://www.croma.com/
+- https://www.croma.com/computers-tablets/laptops/c/20
+- https://www.croma.com/asus-tuf-fa506ncg-hn200ws-amd-ryzen-7-gaming-laptop-16gb-512gb-ssd-windows-11-home-4gb-graphics-15-6-inch-144-hz-wuxga-full-hd-display-nvidia-geforce-rtx-3050-ms-office-home-2024-graphite-black-2-3-kg-/p/317192
+- https://www.reliancedigital.in/products?q=ASUS%20TUF%20FA506NCG-HN200WS%20AMD%20Ryzen%207%20Gaming%20Laptop%20%2816GB,%20512GB%20SSD,%20Windows%2011%20Home,%204GB%20Graphics,%2015.6%20inch%20144%20Hz%20WUXGA%20Full%20HD%20Display,%20NVIDIA%20GeForce%20RTX%203050,%20MS%20Office%20Home%202024,%20Graphite%20Black,%202.3%20KG%29
+- https://www.reliancedigital.in/c/no-search-results/?q=ASUS%20TUF%20FA506NCG-HN200WS%20AMD%20Ryzen%207%20Gaming%20Laptop%20%2816GB,%20512GB%20SSD,%20Windows%2011%20Home,%204GB%20Graphics,%2015.6%20inch%20144%20Hz%20WUXGA%20Full%20HD%20Display,%20NVIDIA%20GeForce%20RTX%203050,%20MS%20Office%20Home%202024,%20Graphite%20Black,%202.3%20KG%29&page_no=1&page_size=12&page_type=number
+- https://www.reliancedigital.in/sections/laptops
+- https://www.reliancedigital.in/product/lenovo-yoga-slim-7-14imh9-83cv008yin-standard-laptop-intel-core-ultra-5-125h16-gb1-tb-ssdintel-arc-graphicswindows-11-homemsoffice-home-and-student-2024oled-3556-cm-14-inch-luna-grey-mb7soa-9214423
+- https://www.croma.com/searchB?q=home%20speakers%3Arelevance&text=home%20speakers
+- https://www.croma.com/marshall-emberton-ii-20w-portable-bluetooth-speaker-ip67-water-resistant-multi-directional-control-knob-stereo-channel-black-brass-/p/258433
+- https://www.croma.com/croma-explode-2-0-1400w-bluetooth-party-speaker-with-mic-rgb-party-laser-light-stereo-channel-black-/p/308663
+- https://www.croma.com/samsung-1500w-bluetooth-party-speaker-water-resistant-2-0-channel-black-/p/225884
+- https://www.reliancedigital.in/product/asus-tuf-gaming-f16-fx608jh-rv057ws-gaming-laptop-13th-gen-intel-core-i5-13450hx16-gb1-tb-ssd8-gb-nvidia-geforce-rtx-5050-gpuwindows-11-homemicrosoft-office-home-2024wuxga-4064-cm-16-inch-jaeger-gray-mbum44-9264627
+- https://www.croma.com/croma-explode-2-0-1400w-bluetooth-party-speaker-with-mic-rgb-party-laser-light-stereo-channel-black-/p/308663
+- https://www.reliancedigital.in/product/asus-tuf-gaming-f16-fx608jh-rv057ws-gaming-laptop-13th-gen-intel-core-i5-13450hx16-gb1-tb-ssd8-gb-nvidia-geforce-rtx-5050-gpuwindows-11-homemicrosoft-office-home-2024wuxga-4064-cm-16-inch-jaeger-gray-mbum44-9264627
+- https://www.reliancedigital.in/product/lg-260-litres-2-star-double-door-refrigerator-dazzle-steel-gl-n292ddsy
+- https://www.reliancedigital.in/product/lg-224-litres-5-star-single-door-refrigerator-scarlet-charm-gl-d241ascu-lkwga1-7532891
+- https://www.reliancedigital.in/product/samsung-236-l-2-star-frost-free-double-door-refrigerator-elegant-inox-rt30c3732s8-lwonfk-7678994
+- https://www.reliancedigital.in/product/samsung-183-litres-3-star-single-door-refrigerator-camellia-blue-rr20c1823cu-ldokr1
+- https://www.reliancedigital.in/product/vivo-y29-5g-128-gb-6-gb-ram-dimond-black-mobile-phone-m5f807-8809680
+- https://www.reliancedigital.in/product/whirlpool-whitemagic-elite-7-kg-top-load-fully-automatic-washing-machine-grey-mb4s2q-9213600
+- https://www.reliancedigital.in/product/havells-pro-life-neo-45-l-airfryer-m14ki6-8597285
+- https://www.reliancedigital.in/product/samsung-8-kg-top-loading-fully-automatic-wa80f08b3btl-black-caviar-m919s3-9052253
+- https://www.reliancedigital.in/product/apple-airpods-pro-3rd-gen-with-magsafe-charging-case-active-noise-cancellation-usb-type-c-charging-white-mfdrrm-9379747
+- https://www.reliancedigital.in/product/apple-airpods-4-with-voice-isolation-hey-siri-and-siri-interactions-upto-5-hours-of-listening-time-on-a-single-charge-charging-case-usbc-m0wg9p-8584769
+- https://www.reliancedigital.in/sections/televisions
+- https://www.reliancedigital.in/product/kenstar-tallde-hc-bldc-105-desert-cooler-105-l-white-and-black-m70016-8884069
+- https://www.reliancedigital.in/product/lg-8128-cm-32-inch-hd-smart-led-tv-32lr600b6lc-mbhw5d-9249650
+- https://www.reliancedigital.in/product/lg-80-cm-32-inch-hd-ready-smart-webos-led-tv-32lr570b6la-mcvsa0-9282933
+- https://www.reliancedigital.in/product/samsung-80-cm-32-inches-hd-smart-led-tv-black-ua32h4550fuxxl-mcxakn-9285125
+- https://www.reliancedigital.in/product/google-pixel-10-256-gb-12-gb-ram-frost-mobile-phone-mejxf9-9345019
+- https://www.reliancedigital.in/product/google-pixel-10-256-gb-12-gb-ram-indigo-mobile-phone-mejxfd-9345020
+- https://www.reliancedigital.in/product/samsung-galaxy-s25-5g-256-gb-12-gb-ram-silver-shadow-mobile-phone-m69df8-8850622
+- https://www.reliancedigital.in/collection/mobile-phones-under-80000
+- https://www.reliancedigital.in/compare
+- https://www.reliancedigital.in/c/all-categories
+
+## For Github and Hosting
+- https://github.com/login/oauth/authorize
+- https://github.com/new
+- https://github.com/Christo208/Vonnue-Decision-Maker/tree/main
+- https://railway.com/new?workspaceId=3291dc11-695d-4199-8908-c7eefcd6da87
+- https://www.conventionalcommits.org/en/ (This link was suggested in Google meet conducted by Vonnue)
+
+
+## Ai Tools
+
+- https://claude.ai/new
+- https://chatgpt.com/
+- https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code
+- https://use.ai/
+- https://lovable.dev/
+- https://chatgpt.com/codex
+- https://antigravity.google
+- https://gemini.google.com/app
+- https://mermaid.ai/app/user/onboarding
+

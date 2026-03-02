@@ -721,384 +721,581 @@ TV products rendered in the UI. The Croma scraper was dropped — noted with: *"
 ---
 
 
-## Phase 2.5 — Decision Memory + Algorithm Fixes
+
+---
+
+## Phase 2.5 — Decision Memory
 ### March 1, 2026
 
 ---
 
-### What Phase 2.5 Was
+### Why This Feature Exists
 
-Phase 2.5 was never originally planned. It emerged from two separate problems discovered after Phase 2 was committed:
+After Phase 2.0, every comparison ran and disappeared. The user had no way to revisit a past result, compare their thinking across sessions, or refer back to what the system recommended last week. For a decision companion, this is a gap — decisions are rarely made in one sitting.
 
-1. Every comparison result disappeared the moment the user started a new one — no history
-2. The core algorithm had three silent bugs that gave wrong results in edge cases
-
-Both were fixed in the same session. Firebase Firestore was added for memory persistence. The algorithm bugs were patched in `decisionLogic.js`.
+The name I chose was **Decision Memory**, not "History." History is passive. Memory implies the system retains something on your behalf.
 
 ---
 
-### Decision Memory — Firebase Firestore
+### Architecture Decision — Firebase vs localStorage
 
-**The requirement I identified:** Users run a comparison, see the result, close the tab, and lose everything. For a decision tool, that is a design failure. A decision that took 5 minutes to set up should be replayable.
+Two options:
 
-**Technology choice — Firebase Firestore:**
-- Free tier, no server infrastructure, works from the browser via SDK
-- Chosen over: PostgreSQL (requires a server), localStorage (device-only, no persistence across devices), plain JSON file (no concurrent access)
-- Project name: `vonnue-decision-maker`, test mode, no authentication
+| Option | Pros | Cons |
+|--------|------|------|
+| localStorage | Zero setup, instant to build, no credentials | Clears on browser wipe, device-specific |
+| Firebase Firestore | Persists reliably, survives browser wipes | Requires setup, credentials to manage |
 
-**`backend/services/memoryService.js`** was built as a standalone module with:
-- `saveComparison(payload)` — writes to Firestore, enforces 20-entry cap by deleting oldest
-- `listComparisons()` — returns all entries sorted by timestamp descending
-- `deleteComparison(id)` — removes one entry
-- `renameComparison(id, newTitle)` — patches title field only
-- In-memory fallback array — if Firebase is unavailable, all operations work against a local array with no user-visible error
+I chose **Firebase** for the hosted version, with an in-memory fallback if the env vars are missing. The fallback means the system degrades gracefully — Memory still works during local development without a Firebase project configured.
 
-**The in-memory fallback was important.** Firebase initialisation can fail silently if `FIREBASE_API_KEY` is wrong or missing. Rather than crashing, the system degrades gracefully — comparisons are still saved for the session, they just don't persist across tabs or refreshes. The user never sees an error.
+**Why not a full account/login system:** Not worth building for a take-home deadline. Device-based identity (Firebase credentials in `.env`) is sufficient for the use case.
 
-**Title generation problem:** `generateTitle()` was initially just `"Alice vs Bob vs Charlie"`. Two comparisons of the same products had identical titles in the Memory tab. This was not caught until Phase 2.6 testing.
+**Firebase project created:** `vonnue-decision-maker` (separate from my hotel booking learning project). Firestore in test mode. Collection: `comparisons`.
 
-Fix (Phase 2.6): append `(HH:MM)` timestamp to every title. Two comparisons at the same clock minute are astronomically unlikely. If they do collide, the user can rename either one inline.
+---
 
-```js
-// Before — titles collide
-return joined; // "Alice vs Bob vs Charlie"
+### Data Shape Design
 
-// After — unique by time
-return `${joined} (${timeStamp})`; // "Alice vs Bob vs Charlie (14:32)"
+Each saved comparison stores:
+
+```json
+{
+  "title": "Samsung A17 vs F17",
+  "timestamp": "2026-03-01T...",
+  "source": "smart",
+  "winner": "Samsung Galaxy A17 5G",
+  "products": ["Samsung Galaxy A17 5G", "Samsung Galaxy F17 5G"],
+  "criteria": ["Price (₹)", "Rating (out of 5)", "RAM"],
+  "criteriaCount": 3,
+  "result": { },
+  "products_data": { }
+}
 ```
 
----
-
-### Tab Switching Bug
-
-**The bug:** The app has 3 tabs — Manual Compare, Smart Compare, Memory. After Phase 2.5 was integrated, clicking the Memory tab showed a blank white area. The tab was switching but no content was visible inside it.
-
-**Root cause:** The Memory tab content div `#tab-memory` existed in `index.html` but the `switchTab()` function only knew about 2 tabs (`manual` and `smart`). It was not adding or removing the `hidden` class on the third tab.
-
-**Fix:** Extended `switchTab()` to handle `'memory'` as a valid case, show `#tab-memory`, and hide the others.
-
-**What I learned:** When adding a new UI section, always check whether any existing routing/navigation logic needs to be updated. The `switchTab` function was a hard-coded list, not dynamic.
+The full `result` and `products_data` are stored so any comparison can be fully replayed later — including re-running the animation.
 
 ---
 
-### Algorithm Fixes — Three Silent Bugs
+### Auto-Generated Titles
 
-These bugs existed since Phase 1 but only surfaced in edge cases during Phase 2 testing with real scraped data.
-
-**Bug 1 — Ideal value clamping**
-
-The ideal value entered by the user was normalized using the product min/max range. If the ideal fell outside the range of compared products, the normalized ideal could be below 0 or above 100.
-
-Example: Products have prices ₹15,000–₹25,000. User enters ideal ₹10,000 (cheaper than all options). Normalized ideal = negative number. Penalty calculations became wrong — products with lower prices were being penalized instead of rewarded.
-
-Fix: `normIdeal = Math.max(0, Math.min(100, normIdeal))` — clamp to [0, 100].
-
-**Bug 2 — Identical features**
-
-When all compared products had the exact same value for a criterion (e.g. all had "Android 13"), the min/max normalization produced `0/0 = NaN`. Every penalty calculation for that criterion returned NaN, which propagated through the weighted sum and produced NaN as the final score.
-
-Fix: Detect when all values are identical before normalizing. If `max === min`, set penalty = 0 for all products on that criterion — they're all equally good, no differentiation possible.
-
-**Bug 3 — Tie threshold**
-
-Ties were detected with threshold `0.001` — two scores had to be within 0.001 points to be considered a tie. With weighted penalty scores ranging 0–100, `0.001` was effectively `0`. No ties were ever detected even when scores were meaningfully equal.
-
-Fix: Raised threshold to `1.0` — scores within 1 point of each other are shown as a tie.
+Titles are generated from product names: "Samsung A17 vs F17" for 2 products, "Samsung A17 +2 more" if names are too long. The title is editable — clicking it in the Memory tab converts it to an inline input field. Press Enter to save, Escape to cancel. Same UX pattern as renaming a chat in ChatGPT.
 
 ---
 
-### Manual Comparisons Auto-Saved
+### Implementation
 
-Originally only Smart Compare results were saved to Memory. Manual Compare results disappeared.
+**New file:** `backend/services/memoryService.js` — all Firebase read/write isolated in one service. Four functions: `saveComparison`, `listComparisons`, `deleteComparison`, `renameComparison`.
 
-Fix: Added `saveToMemory()` call at the end of `calculateResult()` in `script.js`, same call that already existed for Smart Compare. Both paths now write to the same `memoryService`.
+**New routes in `server.js`:**
+- `POST /api/memory/save`
+- `GET /api/memory/list`
+- `DELETE /api/memory/:id`
+- `PATCH /api/memory/:id`
+
+**Frontend:** Memory tab added as third tab. Auto-save triggered at end of both `_finishSmartCalculation()` and `runCalculate()`. "View Result →" replays full breakdown. "🎬 Animate" passes saved data into the visualizer.
 
 ---
 
-## Phase 2.6 — Visualizer Images + Comparison Details Panel
-### March 1, 2026
+### Tab Switching Bug Fix
+
+During Phase 2.5 HTML work, the long-standing tab switching bug was fixed. Both tabs were visible simultaneously because `.tab-content.hidden` had no `display: none` rule — the `hidden` class existed but was not hiding anything.
+
+Root cause: `tab-manual` div used `class="container"`, not `class="tab-content"`. `hidden` was added but the CSS rule `.tab-content.hidden { display: none !important; }` never matched it.
+
+Fixes applied:
+1. Added `tab-content` class to `tab-manual` div in `index.html`
+2. Added `.tab-content.hidden { display: none !important; }` to `styles.css`
+3. Old `switchTab()` function (using `.classList.toggle`) replaced with explicit `.add('hidden')` / `.remove('hidden')` version
+
+---
+
+### Mistakes Made During Phase 2.5
+
+| Mistake | Impact | Fix |
+|---------|--------|-----|
+| Only added `saveToMemory()` to Smart Compare flow | Manual comparisons not saved | Added same call inside `runCalculate()` |
+| Old `switchTab` not fully removed — two definitions existed | Tab switching still broken after first attempt | Searched for all occurrences, deleted old toggle-based version |
+| `tab-manual` missing `tab-content` class | `.hidden` never matched the CSS rule | Added `tab-content` class to the div |
+
+---
+
+### Algorithm Fixes — Phase 2.5
+
+While reviewing `decisionLogic.js` four bugs were identified and fixed:
+
+**Bug 1 — Ideal out of range**
+
+If the user's ideal falls outside the range of compared products (e.g., ideal price ₹50,000 but both products cost ₹70,000–₹80,000), the normalization formula produces a negative normalized ideal. `Math.max(0, ...)` then clamps all penalties to zero, making every product appear to perfectly meet the ideal. The cheaper product gets no advantage.
+
+Fix: Clamp normalized ideal to `[0, 100]`:
+```js
+const raw = ((req_list[i] - min_v) / (max_v - min_v)) * 100;
+norm_req_list.push(Math.min(100, Math.max(0, raw)));
+```
+
+**Bug 2 — Identical features produce phantom penalties**
+
+When all products share the same value for a criterion, the old code normalized all values to 50 — but if the user's ideal was different from 50, every product received a penalty on a criterion where no differentiation was possible.
+
+Fix: Track identical features in a `Set`. If `max === min`, set penalty = 0 for all products on that feature regardless of ideal.
+
+**Bug 3 — Tie threshold too tight**
+
+Ties were checked with `abs(score - mvp_score) < 0.001`. With floating point penalty scores ranging 0–100, this effectively meant ties were never detected.
+
+Fix: Raised threshold to `1.0`.
+
+**Bug 4 — Review criteria ideal anchored to 10**
+
+For AI-scored review criteria, the ideal was hardcoded as `10`. If the best available product only scores `7/10`, it still gets penalized for not being a perfect 10.
+
+Fix: Set ideal to `Math.max(...validScores)` — best available score becomes the anchor.
+
+---
+
+### Tool Change Discovery
+
+During this session I discovered that **Antigravity** — the IDE I had been using for file edits — runs **Claude Haiku** (via VS Code Copilot in agentic mode), not Gemini as I had assumed. The model selector shows Claude Haiku 4.5 as active.
+
+The workflow remains the same: Claude Sonnet (this chat) plans and writes `.md` instruction files; Haiku in the IDE reads and applies them to actual project files. The separation worked well — Sonnet for reasoning, Haiku for execution.
+
+---
+
+## Phase 2.6 — Visualizer Product Images + Comparison Details Panel
+### March 1–2, 2026
 
 ---
 
 ### Task 1 — Product Images in Visualizer
 
-**The problem I identified:** Smart Compare compares real products. The visualizer shows anime character sprites standing on platforms. The character sprites make sense for Manual Compare (abstract candidates like "Alice" and "Bob"). For Smart Compare they are visually disconnected — the platform says "Samsung Galaxy A17" but the character is a generic anime figure. Immersion breaks.
+The visualizer uses PIXI.js sprite characters with emotion frames. For Smart Compare, these generic anime sprites made no sense — the platform said "Samsung Galaxy A17" but the character was a random anime figure. I wanted actual product thumbnails to replace the sprites when available.
 
-**What I wanted:** When a product image is available, replace the sprite with the actual product thumbnail. Maintain the sprite + full emotion system for any product without an image, and for all Manual Compare.
+The product images already existed in `smartState.searchResults` as `thumbnail` URLs. The problem was entirely plumbing — getting those URLs into the visualizer iframe.
 
----
-
-#### Data Flow Design
-
-The key insight was that product images already existed in `smartState.searchResults` as the `thumbnail` field. The problem was purely plumbing — getting those URLs from `script.js` into the visualizer iframe.
-
+**Data flow I designed:**
 ```
 smartState.searchResults[i].thumbnail
   → vizImages map { productTitle: imageUrl }
     → window.__VISUALIZER_DATA__.images
       → DEMO.images inside iframe
-        → PIXI.Assets.load(url)
-          → productTextures[i]
-            → used in spawnChars() instead of charTex[i]
+        → PIXI.Assets.load(url) → productTextures[i]
+          → spawnChars() uses productTextures[i] || charTex[i]['normal']
 ```
 
----
+**Mistake 1 — wrong field name.** First version used `p.name` but the field on searchResults objects is `p.title`. The images map was always `{}`. Found by console logging `searchResults[0]`.
 
-#### Mistakes Made During Task 1
+**Mistake 2 — key mismatch.** After fixing the field name, `DEMO.images` had full titles as keys (`"Samsung 108 cm (43 inches), Crystal 4K Ultra HD Smart LED TV, Black, UA43UE81AFULXL"`) but `DEMO.candidates` used shortened names (`"Samsung Crystal 4K Ultra HD Smart LED TV 43"`). Exact match always failed.
 
-**Mistake 1 — Wrong field name**
-
-First version of the image map builder used `p.name`:
-```js
-if (p.name && p.thumbnail) vizImages[p.name] = p.thumbnail;
-```
-The actual field on `searchResults` objects is `p.title`, not `p.name`. `name` is undefined on every object. Result: `images` was always `{}`.
-
-Found by: `console.log(JSON.stringify(smartState.searchResults?.[0]))` — immediately showed `title` not `name`.
-
-**Mistake 2 — Key mismatch between images map and DEMO.candidates**
-
-After fixing the field name, `DEMO.images` had URLs keyed by full product titles like:
-```
-"Samsung 108 cm (43 inches), Crystal 4K Ultra HD Smart LED TV, Black, UA43UE81AFULXL"
-```
-
-But `DEMO.candidates` (the product names used inside the visualizer) were shortened names like:
-```
-"Samsung Crystal 4K Ultra HD Smart LED TV 43"
-```
-
-Exact match lookup always failed. `productTextures` stayed null for every candidate.
-
-Found by:
+Found with:
 ```js
 iframe.contentWindow.eval(`
-  DEMO.candidates.forEach((c, i) => console.log(i, '| match:', !!DEMO.images[c], '|', c));
+  DEMO.candidates.forEach((c,i) => console.log(i, '| match:', !!DEMO.images[c], '|', c));
 `);
 ```
 
-Fix: Fuzzy word-overlap lookup. Split candidate name into words, count how many appear in each image key, pick highest score, require ≥ 2 matches:
+Fix: fuzzy word-overlap lookup — split candidate name on spaces and hyphens, count how many words appear in each image key, require score ≥ 2:
 ```js
 const candidateWords = DEMO.candidates[i].toLowerCase().split(/[\s\-]+/);
-let bestKey = null, bestScore = 0;
-for (const key of Object.keys(DEMO.images)) {
-  const matches = candidateWords.filter(w => w.length > 2 && key.toLowerCase().includes(w)).length;
-  if (matches > bestScore) { bestScore = matches; bestKey = key; }
-}
-return bestScore >= 2 ? DEMO.images[bestKey] : null;
 ```
+Splitting on hyphens as well as spaces was important — `"15-Fb3124AX"` as one token never matched anything.
 
-Splitting on hyphens as well as spaces was important — `"15-Fb3124AX"` as one token never matched anything; split into `"15"` + `"fb3124ax"` gave two chances to match.
+**Mistake 3 — accessing iframe variables from parent console.** `const DEMO` inside the iframe's script tag does not attach to `window`. Had to use `iframe.contentWindow.eval(...)` to reach it. Lost time on this.
 
-**Mistake 3 — Accessing iframe variables from parent console**
+**Mistake 4 — iframe selector returning null.** Multiple failed attempts because the visualizer overlay was closed before running the console command, or `const iframe` declared in a previous console session didn't persist.
 
-Multiple failed attempts at `vizWin.DEMO` from the parent window console. `DEMO` is a `const` declared inside the iframe's `<script>` tag — it does not attach to `window`. Only `window.eval()` can reach it:
-```js
-iframe.contentWindow.eval('JSON.stringify(DEMO.images)')
-```
+For Manual Compare: full sprite + emotion system unchanged. For Smart Compare products without images: sprite fallback. `setEmo()` returns early if `productTextures[i]` is set — product photos don't change expression.
 
-This is not a mistake in the code — it is a JavaScript scoping fact worth documenting. `const` and `let` at module/script scope are not properties of `window`.
-
-**Mistake 4 — iframe selector returning null**
-
-Repeatedly got `Cannot read properties of null (reading 'contentWindow')` because:
-- The visualizer overlay was closed before running the console command
-- `const iframe = ...` declared in a previous console session does not persist — must re-declare every session
-
-**Mistake 5 — `window.__VISUALIZER_DATA__` undefined inside iframe**
-
-The visualizer sets data on `window.parent.__VISUALIZER_DATA__` (the parent window), then reads it back via `window.__VISUALIZER_DATA__ || window.parent.__VISUALIZER_DATA__`. Checking `iframe.contentWindow.__VISUALIZER_DATA__` from outside always returned undefined — the iframe's own `window.__VISUALIZER_DATA__` is never set; only the parent's is.
-
----
-
-#### PIXI.js Integration Detail
-
-The visualizer uses PIXI.js (v7.3.2) WebGL renderer. Characters are `PIXI.Sprite` objects loaded from local PNG files. The sprite system:
-
-- `charTex[i]` — object of `{ emotion: PIXITexture }` per candidate index
-- `charSprites[i]` — the live PIXI.Sprite on screen
-- `setEmo(i, emo)` — swaps `charSprites[i].texture` to the emotion frame
-
-For product images:
-- Added `productTextures[i]` array, initialized to `null`
-- In `loadTextures()`: if `DEMO.images[DEMO.candidates[i]]` resolves (via fuzzy match), load it as a PIXI texture into `productTextures[i]`
-- In `spawnChars()`: use `productTextures[i] || charTex[i]['normal']` — product image takes priority
-- In `setEmo()`: early return if `productTextures[i]` is set — product photos don't change expression
-
-This means for Smart Compare, product image candidates are static (no emotional reaction). For Manual Compare or products without images, the full emotion system runs unchanged.
+Result: 2 of 3 images rendered on first working attempt. Third failed due to key mismatch — fixed by the fuzzy matcher.
 
 ---
 
 ### Task 2 — Comparison Details Panel
 
-**The problem:** After the decision engine runs and shows the winner, the user sees a ranking list and a detailed breakdown section — but the breakdown only shows penalty × weight per criterion, not the raw values. There was no way to see "what was the actual price of product B?" or "which spec was better?" in a clear table. Also, any spec that failed the ≥50% coverage threshold was silently discarded — the user had no idea which specs were available but excluded.
+After the decision engine ran, the user could only see penalty × weight per criterion in the breakdown. No way to see raw values, no way to know which specs were dropped. I wanted a table showing all products × all criteria with the best value marked, plus a ruled-out section showing specs that failed the ≥50% threshold.
+
+**Architecture decision — one button, not per-row.** I initially implemented per-row 👁 Details buttons (one per candidate in the ranking list). Every button showed the identical full table. One `📋 Comparison Table` button next to the h3 was obviously correct. Removed the per-row buttons — should have seen this before implementation.
+
+**The nested div bug.** `renderDetailsRow()` returned `<div class="det-panel">...</div>` but the call site already wrapped it in `<div class="det-panel open">`. The inner panel had `display:none` from CSS and never received `.open`. The div had 16px height (padding) but no visible content.
+
+Found by calling `renderDetailsRow(...)` directly in console — the HTML was correct. Structural nesting, not logic.
+
+Fix: return a plain `<div>` wrapper from `renderDetailsRow`, not `<div class="det-panel">`.
+
+**ruled_out count was always 0.** The count check looked in `products_data` for each ruled-out spec. Those specs were dropped before `products_data` was built — they never entered it. Every spec showed `"Only 0 of N products had this"`. Fixed message to `"Not available in selected products"`.
+
+**state.ideals overwrite loses review criteria text.** Before `displayResults()` runs, `state.ideals` is overwritten with `ideals.map(v => typeof v === 'string' ? 10 : v)`. The Ideal column shows `10` for every review-type criterion instead of the actual text. Identified but not fully fixed before deadline — `renderDetailsRow` needs to receive raw ideals from `smartState.pendingCalc.ideals` before coercion.
+
+**Works for both Manual and Smart Compare.** The button uses `smartState.scrapeResult?.products_data || state.products` — Smart Compare data falls through to Manual Compare data automatically.
 
 ---
 
-#### Architecture Decision — Where to Put the Button
+### View Products Reference Button
 
-Two options considered:
+On both the Smart Compare "Set Your Priorities" step and the Manual Compare "Define Ideal Values" step, the user had to navigate back to see product values while filling in ideals. Added a `📦 View Products` toggle button in the top-right of both steps showing a compact raw values table — all products × all criteria, no scoring, no ideal column, pure reference.
 
-Option A: A separate collapsible panel below the results section  
-Option B: A single button next to the "Complete Ranking" heading, toggling one table inline
+Smart Compare: populated at start of `showSmartIdeals()` from `smartState.scrapeResult.products_data`.
 
-Option B was chosen. Option A required adding a new div to `index.html` in the exact right position and managing its visibility separately. Option B puts everything inside `displayResults()` — no new HTML structure needed, the panel is generated and injected at render time.
-
-**Later refinement:** Initially implemented as per-row buttons (one 👁 Details button per candidate in the ranking list). This was wrong — all 5 buttons showed the identical full table. One button was correct. Removed per-row buttons, added one `📋 Comparison Table` button next to the h3.
+Manual Compare: populated at start of `generateIdealsForm()` from `state.products`, which is fully populated by Step 4.
 
 ---
 
-#### The Nested div Bug
+### Cross-Tab State Bug
 
-`renderDetailsRow()` returned:
-```html
-<div class="det-panel">
-  <table>...</table>
-</div>
-```
+After completing a Manual Compare then switching to Smart Compare, the Smart tab showed a blank area. The `switchTab()` function showed the right div but nothing inside it was visible.
 
-But the call site in `displayResults()` already wrapped it in another `<div class="det-panel">`:
-```html
-<div class="det-panel open">          ← toggled by button
-  <div class="det-panel">             ← returned by renderDetailsRow
-    <table>...</table>                ← CSS: display:none, never gets .open
-  </div>
-</div>
-```
+**Initial hypothesis was wrong.** I suspected the ID-swap bug (`results-container` temporarily renamed to `smart-results-container`). Checked the IDs — both correct. The real issue was `showAmazonStep()` stripping `active` from all smart steps including `step-smart-search`. Switching to the Smart tab later found no step with `active` — blank.
 
-The inner `.det-panel` had `display:none` from CSS and never got the `.open` class added to it. Table was invisible. The div had height 16px (its own padding) but no visible content.
+Fix: in `switchTab()`, if switching to `'smart'` and no step has `active`, force `step-smart-search` active.
 
-Found by: calling `renderDetailsRow(...)` directly in console — the HTML was generated correctly. The bug was structural nesting, not logic.
-
-Fix: Change `renderDetailsRow` to return a plain `<div>` wrapper, not `<div class="det-panel">`. The outer panel is already provided by the call site.
+Added `try/finally` around the ID swap anyway as a safety net.
 
 ---
 
-#### ruled_out "Only 0 of N" Bug
+### Minor Fixes This Session
 
-The ruled-out section showed `"Only 0 of 5 products had this"` for every spec. The count was always 0.
+**Duplicate comparison titles.** `generateTitle()` produced identical titles for repeated comparisons. Fixed by appending `(HH:MM)` timestamp to every title.
 
-Root cause: The count check looked in `products_data`, which only has the *short names* of selected products. The ruled-out specs were scraped specs that failed the ≥50% threshold — they were dropped *before* `products_data` was built. So checking `products_data[candidate][spec]` always returned undefined.
+**Product limit raised from 5 to 8.** The original `urls.length > 5` validation was conservative. Raised to 8. The comparison table has no hardcoded column limit.
 
-The specs genuinely had 0 presence in `products_data` — they just never made it into that object. The message was technically accurate but misleading.
+**Search results raised from 12 to 20.** Changed `page_size` parameter in `relianceSearch.js`.
 
-Fix: Change message to `"Not available in selected products"` instead of the count — cleaner and honest.
-
----
-
-#### View Products Reference Button
-
-**The user problem:** When filling in ideal values (Step 4 for Manual Compare, "Set Priorities" for Smart Compare), the actual product values are on a previous step. The user must remember or go back.
-
-**Fix:** A `📦 View Products` toggle button in the top-right of both ideals steps. Clicking it shows a compact raw values table — all products × all criteria — as a reference. No ideal column, no tick marks, no scoring. Pure reference.
-
-For Smart Compare: table is built at the start of `showSmartIdeals()` from `smartState.scrapeResult.products_data`.
-
-For Manual Compare: table is built at the start of `generateIdealsForm()` from `state.products`, which is already fully populated when Step 4 renders.
+**Subtitle text corrected.** "Select 2–5 to compare" updated to "Select 2–8 to compare."
 
 ---
 
-#### Tab Switching After Comparison (Cross-Tab Bug)
+### Tool Used This Session
 
-**The bug:** After completing a Manual Compare, switching to Smart Compare showed a blank area. After completing a Smart Compare, switching back to Manual had the same problem.
-
-**Initial hypothesis:** The ID-swap bug — `displayResults()` temporarily renames `results-container` to `smart-results-container` and back. If it throws mid-execution, the IDs stay swapped permanently.
-
-**Actual root cause:** The ID swap was fine. The real issue was `showAmazonStep()` being called during smart result rendering, which stripped `active` from all smart steps including `step-smart-search`. When the user later switched to the Smart tab, no step had `active` — blank.
-
-**Fix:** In `switchTab()`, if switching to `'smart'` and no step inside `#tab-smart` has the `active` class, force `step-smart-search` active:
-```js
-if (tab === 'smart') {
-  const hasActive = document.querySelector('#tab-smart .step.active');
-  if (!hasActive) {
-    document.getElementById('step-smart-search').classList.add('active');
-  }
-}
-```
-
-**The try/finally wrap** was added anyway as a safety net — the ID swap genuinely would cause issues if `displayResults()` ever threw:
-```js
-try {
-  displayResults(result);
-} finally {
-  smartContainer.id = 'smart-results-container';
-  main.id = 'results-container';
-}
-```
+File edits applied via **VS Code Copilot Agent in agentic mode (Claude Haiku)**. Claude Sonnet (this chat) planned, diagnosed, and wrote instruction `.md` files. Haiku read and applied them to project files. The separation worked well for this session — Sonnet for reasoning, Haiku for execution.
 
 ---
 
-### Tool Change — VS Code Copilot Agent (Haiku)
+### What I Would Do Differently
 
-From Phase 2.6 onward, file edits were applied using **VS Code Copilot Agent in Agentic mode with Claude Haiku** rather than Antigravity.
+**1. Fuzzy matching should have been the first design, not a debugging fix.** The key mismatch between short candidate names and full image title keys was predictable. The `cleanName` logic in the scraper always produces shortened names — they were never going to match full product titles. A fuzzy lookup should have been part of the initial spec.
 
-Observations:
-- Haiku in agentic mode was fast and accurate for surgical find-and-replace edits
-- It read files directly from the workspace — no need to paste file contents into a chat
-- Claude (Sonnet, this chat) handled planning, debugging, and console diagnosis; Haiku handled execution
-- The separation worked well: Sonnet for reasoning, Haiku for applying
+**2. One table button was obviously correct from the start.** Five identical tables behind five buttons is bad UX. I should have caught this during design, not after implementation.
 
-This is an effective pattern for codebases where the planning and the typing are different cognitive tasks.
+**3. The ID-swap trick is fragile.** Temporarily renaming DOM elements (`main.id = '__hidden'`) is a side-effect-based pattern that is hard to reason about. A dedicated shared result container would be cleaner.
+
+**4. ruled_out count message should have been thought through before writing.** One moment of tracing where `products_data` is built would have caught that ruled-out specs never enter it.
 
 ---
 
-### What Could Have Been Done Differently
-
-**1. Fuzzy matching should have been built from the start**
-
-The image key mismatch was predictable. The short names used as `DEMO.candidates` were generated by `cleanName` logic in the scraper — they were never going to match full product titles exactly. A fuzzy lookup should have been part of the initial design, not a debugging fix.
-
-**2. The per-row Details button was a wrong first instinct**
-
-Five identical tables behind five buttons is bad UX. One table behind one button was obviously correct in retrospect. The initial plan described per-row buttons; the right design should have been spotted before implementation.
-
-**3. `state.ideals` overwrite for review criteria**
-
-`state.ideals` gets overwritten with `ideals.map(v => typeof v === 'string' ? 10 : v)` before `displayResults()` runs. The Ideal column in the comparison table then shows `10` for every review-type criterion instead of the actual text like `"Excellent build quality"`. 
-
-Fix: pass raw ideals separately into `renderDetailsRow` from `smartState.pendingCalc.ideals` before they are coerced. This was identified but not fully implemented before the deadline.
-
-**4. ruled_out count was misleading from day one**
-
-`"Only 0 of 5 products had this"` was always going to be wrong because ruled-out specs never enter `products_data`. The message should have been `"Not available in selected products"` from the start. A moment of thinking about data flow before writing the message would have caught this.
-
-**5. Memory titles should have been unique from day one**
-
-`generateTitle()` producing duplicate titles for repeated comparisons was a foreseeable problem. A timestamp or incrementing counter should have been part of the initial implementation, not a patch.
-
-**6. Cross-tab state contamination**
-
-The ID-swap trick (`main.id = '__hidden'`) is fragile. A cleaner approach would have been a dedicated result rendering container that both Manual and Smart tabs share by reference, rather than temporarily renaming DOM elements. This worked but it is not a good pattern — it is side-effect-based DOM manipulation that is hard to reason about.
-
----
-
-### Current State After Phase 2.6
+### Feature Status Update
 
 | Feature | Status |
 |---------|--------|
-| Manual Compare — full flow | ✅ |
-| Smart Compare — Reliance Digital search + scrape | ✅ |
-| AI-suggested ideal values + criteria weights | ✅ |
-| Decision Memory — Firebase + fallback | ✅ |
-| Memory — save, load, delete, rename, replay, animate | ✅ |
-| Visualizer — product images for Smart Compare | ✅ |
-| Visualizer — sprite + emotion system for Manual Compare | ✅ |
+| Product images in visualizer (Smart Compare) | ✅ |
+| Sprite + emotion system (Manual Compare) | ✅ |
 | Comparison details table in results | ✅ |
-| Ruled-out specs display | ✅ |
-| View Products reference button on ideals step | ✅ |
-| Tab switching bug | ✅ |
-| Ideal column in details table (review criteria) | ⚠️ Partial — shows 10 for review criteria |
-| Phase 3 — review analysis | ❌ Not attempted |
+| Ruled-out specs panel | ✅ |
+| 📦 View Products button — Smart Compare ideals | ✅ |
+| 📦 View Products button — Manual Compare ideals | ✅ |
+| Cross-tab blank state bug | ✅ |
+| Unique comparison titles | ✅ |
+| Product limit raised to 8 | ✅ |
+| Ideal column for review criteria in details table | ⚠️ Shows 10 instead of text |
 
 ---
 
 ### Git Commit
 
 ```
-Phase 2.5 + 2.6 complete — memory, algorithm fixes, visualizer images, details panel
+Phase 2.6: product images in visualizer, comparison details panel, UX fixes
 ```
 
-Files changed in this phase: `server.js`, `decisionLogic.js`, `script.js`, `index.html`, `styles.css`, `visualizer_prototype.html`, `backend/services/memoryService.js`, `backend/scrapers/relianceSearch.js`
+---
+
+## Phase 2.6 — Scale Bug Fix, Gemini Integration, Form Validation, UI Polish
+### March 1–2, 2026
+
+---
+
+### Task 1 — Scale Criteria False Tie Bug
+
+The algorithm was producing a 3-way tie between Aaron, Bijo, and Cijo when Cijo should have won outright. The detailed breakdown showed `Communication: ScalePenalty: 0.00` for Aaron despite Aaron scoring "Very Good" (9) against an ideal of "Excellent" (10). A penalty of zero when there should have been one.
+
+The root cause was in `preprocessInputs` in `decisionLogic.js`. The ideal value for scale criteria was mapped via:
+
+```js
+scored_ideals[fi] = SCALE_MAP[ideals[fi]] ?? 5;
+```
+
+The frontend was sending the scale ideal as a number (`10`) rather than the label string (`"Excellent"`). `SCALE_MAP[10]` returns `undefined`, fallback kicks in, ideal becomes `5`. In `calculateDecision`, ideal `5` normalizes to `((5-9)/(10-9))*100 = -400`, clamped to `0`. With ideal at `0` and direction "higher is better", penalty formula `max(0, 0 - normalizedValue)` always returns `0`. The entire criterion became meaningless.
+
+Fix: guard the mapping to handle numeric ideals:
+
+```js
+const rawIdeal = ideals[fi];
+scored_ideals[fi] = (typeof rawIdeal === 'string' && SCALE_MAP[rawIdeal] !== undefined)
+  ? SCALE_MAP[rawIdeal]
+  : (parseFloat(rawIdeal) || 5);
+```
+
+**Second part of the same bug — direction.** Even after fixing the ideal, if the user accidentally selected "lower is better" for a scale criterion, the same false tie could occur. Products scoring below the ideal get zero penalty in a lower-is-better direction. For scale criteria this is always wrong — Excellent is always better than Poor, the label names encode this. I added a direction override in `/api/preprocess` in `server.js`. After the `preprocessInputs` call, before sending the response:
+
+```js
+const corrected_directions = directions.map((dir, i) =>
+  feature_types[i] === 'scale' ? 'True' : dir
+);
+```
+
+`/api/preprocess` is the only route where both `feature_types` and `directions` are available simultaneously. `/api/calculate` never receives `feature_types` — the fix couldn't go there. `preprocessInputs` doesn't receive `directions` — couldn't go there either. The seam was forced.
+
+---
+
+### Task 2 — Gemini Never Working
+
+Gemini had been set as primary for explanation generation since the beginning of the project. It had never once produced an explanation — always falling back to Groq with a 429 error. I assumed rate limiting or quota, but the Google AI Studio dashboard showed near-zero actual usage. On March 1 it showed a 100% success rate spike, meaning the API was reachable.
+
+**Attempt 1 — assumed geo-restriction.** Tried to confirm via curl from Windows CMD. I sent a bash command with backslash line continuation — doesn't work on CMD. Got `000` response code which could mean connection failure or just a bad command. Wasted time on this.
+
+**Attempt 2 — wrong root cause entirely.** Another project I had (`visual_python_gemini_working_server.js`) used the same Gemini API from the same machine and worked correctly. That server used `const fetch = require('node-fetch')` at the top level. My `decisionLogic.js` had no fetch import at all — it used Node's native global `fetch`. `server.js` had `const fetch = require('node-fetch')` at line 3, which is why Groq always worked — those calls went through server.js. But `decisionLogic.js` is a separate module. Its fetch calls used Node's native fetch, which behaves differently from node-fetch at the network level.
+
+Fix: set `global.fetch = fetch` in `server.js` immediately after the require. One line. `decisionLogic.js` then finds `fetch` in global scope — the same working instance that Groq uses.
+
+**Model string mismatch.** The working reference project used `gemini-2.5-flash`. My code used `gemini-2.0-flash`. After switching:
+
+- `gemini-2.0-flash` → 429 (rate limited on free tier)
+- `gemini-2.5-flash` with no extra config → short truncated output (~84 chars, cut mid-sentence)
+
+**Thinking tokens.** `gemini-2.5-flash` has thinking mode. Thinking tokens consume from `maxOutputTokens` before the actual response gets any budget. With `maxOutputTokens: 260`, almost nothing was left for visible output. First attempt to fix: added `thinkingConfig: { thinkingBudget: 0 }` outside `generationConfig` → 400 error. Second attempt: moved it inside `generationConfig` and raised `maxOutputTokens: 1024` → works. Full paragraph explanations rendering correctly.
+
+**Prompt was being copied literally.** Even after token budget was fixed, Gemini kept returning one-sentence responses that matched the example in the prompt:
+```
+Example: "${winner} had the best Price at X and its Quality was Y."
+```
+Groq ignores examples. Gemini follows them precisely. Removed the example entirely, added explicit instruction: "Write exactly 4-5 sentences... Do NOT write just one sentence."
+
+**Review scoring Gemini calls were blowing the RPM limit.** With N products and review-type features, `extractScoreFromText` fires N Gemini calls with only 200ms gaps. By the time `generateExplanation` ran, Gemini was already throttled. Moved review scoring to Groq-only. Gemini now gets a clean window for the explanation, which is the one place the quality difference is noticeable.
+
+---
+
+### Task 3 — Form Input Restrictions
+
+Three issues: options accepting non-integers, weight accepting any value, direction select always active for scale/review.
+
+**Whole number options.** `parseInt("3.6")` returns `3`, so `Number.isInteger(3)` is `true` and the check passed. The fix required reading the raw string value before parsing and checking for `"."` before calling parseInt. Setting `step="1"` in the HTML input prevents spinner clicks from producing decimals but doesn't block typed values.
+
+**Weight 1–10.** Changed label from "Importance (1-5)" to "Importance (1–10)", set `min="1" max="10" step="0.1"`. Added JS validation: range check and `Math.round(weight * 10) !== weight * 10` to catch more than one decimal place. `step="0.1"` in the input doesn't block typed values like `3.5555` — the JS check does.
+
+**Direction lock for scale and review.** Added logic to `updateTypeHint()` — if type is `scale` or `review`, set direction select to `"True"`, disable it, set `opacity: 0.4`, add tooltip explaining why. If type is `numeric`, re-enable. Scale criteria have inherent direction baked into the label names — "lower is better" is semantically nonsense for Excellent vs Poor. Note: `updateTypeHint` only fires on change event, not on initial render. This should be called for each criterion on form generation too — not fixed before deadline.
+
+---
+
+### Task 4 — UI Polish
+
+The container was `max-width: 800px` on a 1920px screen, leaving ~35% unused on each side. The tab bar was a disconnected floating strip above the card. Font was system stack. Background was the purple gradient that appears in approximately 40% of all AI-generated tools.
+
+Rewrote `styles.css` entirely — same class names, no JS changes. Key decisions:
+
+- Font: Plus Jakarta Sans via Google Fonts. Loads via `@import` at top of CSS — no HTML change needed.
+- Container: `max-width: 1100px`. Tab bar integrated flush with card top edge using `margin-bottom: -2px` and `z-index` layering.
+- Background: `#f1f3f7` with two `radial-gradient` overlays at 20%/80% — barely visible, just enough depth.
+- All colours in CSS variables. `--accent: #4f46e5` replaces the original `#667eea` everywhere. One variable change recolours the whole app.
+- Setup step: `#step-setup .form-group:nth-child(-n+2)` targets the first two form groups and sets them side-by-side via `inline-block` + `calc(50% - 8px)`. Saves vertical space without HTML changes.
+- Responsive: single column below 768px, side-by-side reverts, container padding reduces.
+- Duplicated CSS removed — `ranking-list`, `breakdown-row`, and others were defined twice in the original file.
+
+---
+
+### What I Would Do Differently
+
+**1. Scale criteria should have never had a direction input.** From the beginning, showing "Better When: Higher/Lower" for a scale criterion was wrong. The fix was an override in the backend. The correct design was to not show the selector at all for scale — or to set it, grey it out, and label it "Always Higher." This is now partially done (greyed out in Manual) but the selector is still rendered.
+
+**2. The fetch issue would have been caught immediately with a one-line console.log.** `console.log(typeof fetch)` in `decisionLogic.js` at startup would have shown `undefined`. Instead I spent time on geo-restriction theories, curl commands, and API key rotations. The working reference project was the correct diagnostic tool — I should have compared the two files line by line on first failure, not after days of Groq fallbacks.
+
+**3. Gemini's example-copying behaviour should have been anticipated.** Groq is permissive about instructions. Gemini is literal. Any example sentence in a prompt becomes the template Gemini writes to. This is a known difference. I should have tested with a bare prompt first.
+
+**4. The CSS rewrite should have happened at Phase 1.** Adding styles piecemeal across phases produced duplicated rules, inconsistent spacing, and a file with no structure. Starting with CSS variables and a proper layout system at Phase 1 would have made every subsequent phase faster to style.
+
+---
+
+### Feature Status Update
+
+| Feature | Status |
+|---------|--------|
+| Scale criteria false tie fix | ✅ |
+| Scale direction always higher-is-better | ✅ |
+| Gemini explanation working (gemini-2.5-flash) | ✅ |
+| Review scoring Groq-only | ✅ |
+| Form: whole-number options only | ✅ |
+| Form: weight 1–10, one decimal max | ✅ |
+| Form: direction locked for scale/review | ✅ (Manual tab only) |
+| UI: 1100px container, Plus Jakarta Sans, CSS vars | ✅ (applied, pending screenshot verify) |
+| Form: direction lock on initial render | ⚠️ Only fires on change, not on load |
+| Form: direction lock — Smart Compare tab | ⚠️ Not yet applied |
+| Memory tab loading/empty state overlap | ⚠️ Not fixed |
+
+---
+
+### Git Commit
+
+```
+Fix scale tie bug, Gemini explanation, form validation, UI polish pass
+```
+
+---
+
+## Phase 2.7 — UI Polish, Bug Fixes, and Railway Deployment
+### March 2, 2026
+
+---
+
+### Overview
+
+This session covered the final UI pass before submission and the full deployment to Railway. It took longer than expected — mostly because of deployment. The UI work was straightforward. The deployment was not.
+
+---
+
+### Task 1 — Dark Mode Completion
+
+Dark mode was partially working from the previous session. The remaining issues were hardcoded white backgrounds on search cards, product cards, the loading overlay, and the approval sections. Fixed by auditing every component against the `var(--bg)` and `var(--card)` CSS variables and replacing any hardcoded `#fff` or `background: white`.
+
+Badge colors needed to be inverted for dark backgrounds — the light-mode badge colors (light pastel fills with dark text) became unreadable on dark cards. Fixed with `[data-theme="dark"]` overrides.
+
+Dark mode toggle persists via `localStorage` with `dc-theme` as the key. OS preference detection added for first visit using `prefers-color-scheme: dark`.
+
+No notable bugs here. Straightforward CSS variable work.
+
+---
+
+### Task 2 — Sticky Full-Width Navbar + Stepper
+
+I wanted the tab bar to span the full viewport width — the body had `padding: 24px 16px` which was eating into the sides of the navbar, making it appear as a floating rectangle rather than a full-bleed bar. Fix was removing body padding and moving it to `.tab-content` instead.
+
+The stepper (1→2→3→4 progress bar for Manual Compare, 1→5 for Smart Compare) was converted from an inline element to a sticky rounded rectangle card positioned below the navbar at `top: 68px`. Uses the same `var(--accent)` purple as the rest of the app. Connector lines between dots turn accent when steps are completed.
+
+Manual Compare stepper: dots are clickable to navigate back to completed steps. Smart Compare stepper: dots are purely informational — API calls happen between steps, so jumping back would break state.
+
+**Mistake:** Initial sticky stepper used `background: var(--bg)` with a bottom border — it looked like a grey band, not a card. Changed to `background: var(--card)` with a full border and `border-radius: var(--radius-lg)`. Much better.
+
+---
+
+### Task 3 — Memory Tab State Bug
+
+The Memory tab was showing all three states simultaneously — "Loading your comparisons…", "No comparisons yet", and the actual memory cards. All visible at once.
+
+**First hypothesis (mine):** The bug was in `deleteMemory()` and `clearAllMemory()` — they showed `memory-empty` without hiding `memory-loading` first. Applied a fix. No change.
+
+**Second attempt:** Introduced `setMemoryState('loading' | 'empty' | 'list' | 'error')` — a centralized helper that hides all three divs first, then shows exactly one. Still no change.
+
+**Actual root cause (found by Haiku with full file access):** There was no `.hidden { display: none; }` rule anywhere in `styles.css`. Every `classList.add('hidden')` call was silently doing nothing — the class was being added to the DOM but had no effect because CSS never defined what `.hidden` meant. The `memory-empty` div had `class="hidden"` in the HTML so it started hidden, but nothing was enforcing that hiding.
+
+One line fix: `.hidden { display: none !important; }` added to `styles.css`.
+
+**What I would do differently:** Check the CSS definition of utility classes before writing complex JS state management. I spent three debugging rounds on the JS when the problem was entirely in CSS. The correct first step was: open DevTools, inspect one of the divs, check if `.hidden` actually has any computed styles. It didn't.
+
+The lesson for prompting: when I asked Claude to diagnose, I initially scoped the search to specific files. Claude found the fix only after I gave it unrestricted access to the full codebase. Should have done that first.
+
+---
+
+### Task 4 — Post-Smart-Compare Manual Tab Bug
+
+After completing a Smart Compare, switching to the Manual Compare tab showed a blank screen — only the header was visible, no step content.
+
+Root cause: `switchTab('manual')` showed the `#tab-manual` div but never activated any step inside it. The Smart Compare tab had a guard — `if (!hasActive) showStep('step-smart-search')` — that ran when switching to Smart. Manual had no equivalent guard. After Smart Compare completed, all manual steps had their `active` class stripped and nothing re-added it.
+
+Fix: added the same guard to the `manual` case in `switchTab()` — if no step has `active`, call `showStep('step-setup')`.
+
+---
+
+### Task 5 — Direction Lock on Smart Compare
+
+The Smart Compare priorities step had `handleTypeChange()` for when criteria type changed between Numeric / Scale / Review. Manual Compare already locked the direction select to "Higher is better" (disabled, greyed out) when type was Scale. Smart Compare did not — the direction dropdown stayed editable even when Scale was selected.
+
+Fix: in `handleTypeChange()`, added a check for `typeSelect.value === 'scale'` — disables the select, sets value to `'higher'`, applies `opacity: 0.5; cursor: not-allowed`. Re-enables on `'numeric'`. `'review'` case unchanged (parent hidden entirely).
+
+---
+
+### Task 6 — Selection Icon Redesign
+
+The criteria toggle buttons in "Set Your Priorities" were using 🟢 and ⬜ emoji. Replaced with a CSS-styled 18×18px checkbox div (`.crit-check`) — accent fill with white ✓ when active, grey outline when inactive. The search result cards already had the accent circle checkmark from a previous session — those were left unchanged.
+
+Also removed the legend text line ("🟢 Selected — values differ… ⬜ Deselected… 🔘 Identical…") from the priorities step — the visual state of each card makes the legend redundant.
+
+---
+
+### Task 7 — Reliance Query and AI Suggestion Optimization
+
+Two prompt engineering changes in `server.js`:
+
+**`/api/refine-query`:** The old prompt was generic ("suggest queries for an Indian e-commerce site"). Replaced with Reliance Digital-specific guidance — short Brand + Product Type + Key Spec format with concrete examples ("Samsung 65 inch 4K TV"). Avoids vague words like "best", "good", "latest" which return poor results on Reliance's search.
+
+**`buildIdealSuggestionPrompt()`:** The old prompt gave generic consumer advisor instructions. New version is India-specific with concrete rules: Price ideal = lowest shown minus 5-10%, Rating ideal = 4.5, Battery/Capacity = highest shown, Weight = lowest shown. Also added strong instruction that ideal must always be a plain number — the old prompt was getting values like "30 hours" or "5000 mAh" instead of 30 and 5000.
+
+---
+
+### Task 8 — Railway Deployment
+
+This took most of the session. Summary of what went wrong in order:
+
+**Problem 1 — Railpack couldn't detect the app.** Root `package.json` didn't exist — Railpack saw `backend/`, `frontend/`, `docs/` folders and no entry point. Set root directory to `backend/` in Railway settings.
+
+**Problem 2 — Frontend path wrong.** With root set to `backend/`, Railway only deployed the `backend/` folder. `express.static('../frontend')` resolved to `/frontend` which didn't exist. Added a root `package.json` with `"start": "node backend/server.js"` to deploy from project root instead.
+
+**Problem 3 — `Cannot find module 'dotenv'`.** The root `package.json` had no `dependencies` — Railway ran `npm install` at root and found nothing. `backend/node_modules` was never populated. Fixed by adding an `install` script: `"install": "cd backend && npm install"`.
+
+**Problem 4 — `secret FIREBASE_API_KEY: not found`.** Railpack was trying to mount environment variables as build secrets during the Docker build step. Secrets aren't available at build time in Railway's sandbox. Added `railway.toml` to switch from Railpack to Nixpacks builder, which only injects env vars at runtime.
+
+**Problem 5 — `ReferenceError: File is not defined`, Node v18.** Nixpacks provisioned Node 18 by default. `node-fetch` v3 requires Node 20 — `File` is a global that doesn't exist in Node 18. Tried `[build.environment] NODE_VERSION = "20"` in `railway.toml` — ignored. Tried `"engines": { "node": ">=20.0.0" }` in `package.json` — ignored. Fixed by adding `NIXPACKS_NODE_VERSION = 20` as a Railway service variable — this is the actual variable Nixpacks reads.
+
+**Problem 6 — Groq 401.** Trailing space in the `GROQ_API_KEY` value in Railway's variables panel. Re-pasted carefully.
+
+**What I would do differently:** Write a `Dockerfile` before touching Railway at all. Eight lines would have fixed every single one of these problems:
+
+```dockerfile
+FROM node:20
+WORKDIR /app
+COPY backend/ ./backend/
+COPY frontend/ ./frontend/
+RUN cd backend && npm install
+CMD ["node", "backend/server.js"]
+```
+
+Node version pinned. Path structure explicit. No platform guessing. Estimated time with Dockerfile: 5 minutes. Actual time without: 2+ hours.
+
+The prompting lesson: before starting any unfamiliar phase, ask "what should I know before doing X" and "what could go wrong with X given my setup" rather than jumping straight to execution. I asked "how do I deploy" when I should have asked "what's the right way to deploy this for the first time."
+
+---
+
+### Final State
+
+App is live at `https://vonnue-decision-maker-production.up.railway.app`
+
+Every push to `main` on GitHub triggers an automatic Railway redeploy.
+
+Firebase: persistent Firestore memory ✅  
+Gemini: explanations working ✅  
+Groq: query refinement, spec scoring, explanations ✅  
+Reliance scraping: 12–20 products per search ✅  
+
+---
+
+### Feature Status Update
+
+| Feature | Status |
+|---------|--------|
+| Dark mode — full coverage including cards, badges, overlays | ✅ |
+| Full-width sticky navbar | ✅ |
+| Sticky stepper — Manual Compare (1→2→3→4, clickable back) | ✅ |
+| Sticky stepper — Smart Compare (1→5, display only) | ✅ |
+| Memory tab state bug (.hidden CSS fix) | ✅ |
+| Post-Smart-Compare manual tab blank bug | ✅ |
+| Direction lock — Smart Compare Scale criteria | ✅ |
+| Criteria toggle — CSS checkbox replacing emoji | ✅ |
+| Reliance-optimized query refinement prompt | ✅ |
+| Improved AI ideal suggestion prompt | ✅ |
+| Railway deployment — live public URL | ✅ |
+| Ideal column for review criteria in details table | ⚠️ Shows 10 instead of text (carried over) |
+
+---
+
+### Git Commit
+
+```
+Feat: Final UI touchup — dark mode, sticky navbar, stepper nav, rounded cards, memory state fix, direction lock Smart Compare, Reliance query optimization, AI suggestion improvement, Railway deployment
+```
 
 ---
 
